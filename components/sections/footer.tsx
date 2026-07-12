@@ -28,13 +28,15 @@ export function Footer() {
                   {...(action.external
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}
-                  className={`block px-5 py-8 font-display text-2xl font-bold transition-colors font-stretch-expanded md:text-3xl ${
+                  className={`group block px-5 py-8 font-display text-2xl font-bold transition-colors font-stretch-expanded md:text-3xl ${
                     action.accent
                       ? "text-hazard hover:bg-surface"
                       : "text-fog hover:bg-surface hover:text-paper"
                   }`}
                 >
-                  {action.label}
+                  <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5">
+                    {action.label}
+                  </span>
                 </a>
               </li>
             ))}
@@ -44,9 +46,11 @@ export function Footer() {
               <li key={anchor.id} className="border-r border-b border-border">
                 <a
                   href={`#${anchor.id}`}
-                  className="block px-5 py-6 font-display text-lg font-bold text-fog transition-colors font-stretch-expanded hover:bg-surface hover:text-paper md:text-xl"
+                  className="group block px-5 py-6 font-display text-lg font-bold text-fog transition-colors font-stretch-expanded hover:bg-surface hover:text-paper md:text-xl"
                 >
-                  {anchor.label}
+                  <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5">
+                    {anchor.label}
+                  </span>
                 </a>
               </li>
             ))}

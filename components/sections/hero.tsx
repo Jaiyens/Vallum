@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, SplitText, useGSAP } from "@/lib/gsap";
 import { getRevealMode } from "@/lib/reveal-mode";
 import { AutoPauseVideo } from "@/components/media/auto-pause-video";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,9 @@ const HEADLINE_1 = "Humans were never meant to do this work.";
 const SUB_1 = "Vallum captures it, so machines can learn it.";
 const HEADLINE_2 =
   "The real world’s most dangerous work, captured for the machines learning to do it.";
+
+const HEADLINE_CLASS =
+  "max-w-5xl font-display text-[2.6rem] leading-[0.98] font-bold text-balance tracking-tight text-paper font-stretch-expanded md:text-7xl xl:text-8xl";
 
 export function Hero() {
   const scope = useRef<HTMLElement>(null);
@@ -29,18 +32,45 @@ export function Hero() {
             : { autoAlpha: 0, filter: "blur(12px)" }),
         });
 
-        // load-in, plays once
+        // load-in: headline rises line by line out of masks, then the rest
+        const split = SplitText.create('[data-hero="h1"]', {
+          type: "lines",
+          mask: "lines",
+          autoSplit: true,
+          onSplit: (self) =>
+            gsap.from(self.lines, {
+              yPercent: 110,
+              duration: 0.9,
+              stagger: 0.09,
+              ease: "power3.out",
+              delay: 0.15,
+            }),
+        });
         gsap
-          .timeline({ defaults: { ease: "power3.out" } })
-          .from('[data-hero="h1wrap"]', { autoAlpha: 0, y: 32, duration: 0.8 })
-          .from('[data-hero="cta-row"]', { autoAlpha: 0, y: 16, duration: 0.6 }, "-=0.4")
-          .from('[data-hero="cue"]', { autoAlpha: 0, duration: 0.6 }, "-=0.3");
+          .timeline({ defaults: { ease: "power3.out" }, delay: 0.5 })
+          .from('[data-hero="sub"]', { autoAlpha: 0, y: 24, duration: 0.7 })
+          .from('[data-hero="cta-row"]', { autoAlpha: 0, y: 16, duration: 0.6 }, "-=0.35")
+          .from(
+            '[data-hero="hud"] > *',
+            { autoAlpha: 0, y: 8, duration: 0.5, stagger: 0.08 },
+            "-=0.3",
+          );
+        // the cue is deliberately NOT in this timeline: the scrub timeline is
+        // its only opacity owner, so a mid-intro scroll can never revive it
 
+        // ambient loops
         gsap.to('[data-hero="cue-line"]', {
           y: 6,
           repeat: -1,
           yoyo: true,
           duration: 1.2,
+          ease: "sine.inOut",
+        });
+        gsap.to('[data-hero="rec-dot"]', {
+          autoAlpha: 0.15,
+          repeat: -1,
+          yoyo: true,
+          duration: 0.9,
           ease: "sine.inOut",
         });
 
@@ -68,7 +98,9 @@ export function Hero() {
             },
           },
         });
-        tl.to('[data-hero="cue"]', { autoAlpha: 0, duration: 0.08 }, 0.02)
+        // overwrite kills the intro's cue fade-in if the user scrolls mid-intro;
+        // without it the intro re-renders the cue after this tween already ended
+        tl.to('[data-hero="cue"]', { autoAlpha: 0, duration: 0.08, overwrite: "auto" }, 0.02)
           .to('[data-hero="human"]', { scale: 1.06, duration: 0.3 }, 0.15)
           .to(
             '[data-hero="robot"]',
@@ -77,14 +109,18 @@ export function Hero() {
               : { autoAlpha: 1, filter: "blur(0px)", duration: 0.3 },
             0.15,
           )
-          .to('[data-hero="h1wrap"]', { autoAlpha: 0, y: -24, duration: 0.1 }, 0.35)
+          .to('[data-hero="h1wrap"]', { autoAlpha: 0, y: -32, duration: 0.1 }, 0.35)
+          .to('[data-hero="src-human"]', { autoAlpha: 0, duration: 0.06 }, 0.42)
+          .to('[data-hero="src-robot"]', { autoAlpha: 1, duration: 0.06 }, 0.48)
           .fromTo(
             '[data-hero="h2wrap"]',
-            { autoAlpha: 0, y: 24 },
-            { autoAlpha: 1, y: 0, duration: 0.12 },
+            { autoAlpha: 0, y: 48 },
+            { autoAlpha: 1, y: 0, duration: 0.14 },
             0.5,
           )
-          .to({}, { duration: 0.38 }, 0.62); // pad total to 1 so positions read as progress
+          .to({}, { duration: 0.36 }, 0.64); // pad total to 1 so positions read as progress
+
+        return () => split.revert();
       });
     },
     { scope },
@@ -123,32 +159,63 @@ export function Hero() {
             className="absolute inset-0 h-full w-full object-cover"
             aria-hidden="true"
           />
+          <div aria-hidden="true" className="scanlines absolute inset-0" />
           <div
             aria-hidden="true"
             className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-ink/40"
           />
         </div>
 
+        {/* capture HUD */}
+        <div
+          data-hero="hud"
+          aria-hidden="true"
+          translate="no"
+          className="pointer-events-none absolute inset-0 z-10 font-mono text-[11px] tracking-[0.18em] text-paper/70 max-md:hidden"
+        >
+          <div className="absolute top-20 left-6 flex items-center gap-2.5">
+            <span data-hero="rec-dot" className="size-2 rounded-full bg-hazard" />
+            REC
+          </div>
+          <div className="absolute top-20 right-6 text-right">
+            <span data-hero="src-human" className="block">
+              src: human_worker
+            </span>
+            <span data-hero="src-robot" className="block opacity-0 motion-reduce:opacity-100">
+              src: robot_policy
+            </span>
+          </div>
+          <div className="absolute bottom-6 right-6">fov: 120 · fps: 30 · consent: cleared</div>
+          {/* viewfinder corners */}
+          <span className="absolute top-[4.2rem] left-4 h-5 w-5 border-t border-l border-paper/25" />
+          <span className="absolute top-[4.2rem] right-4 h-5 w-5 border-t border-r border-paper/25" />
+          <span className="absolute bottom-4 left-4 h-5 w-5 border-b border-l border-paper/25" />
+          <span className="absolute right-4 bottom-4 h-5 w-5 border-r border-b border-paper/25" />
+        </div>
+
         {/* content */}
         <div className="absolute inset-0 z-10 mx-auto flex w-full max-w-site flex-col justify-end px-4 pb-24 md:px-6 md:pb-28 motion-reduce:relative motion-reduce:inset-auto motion-reduce:pt-28">
           <div className="relative">
             <div data-hero="h1wrap">
-              <h1 className="max-w-4xl font-display text-4xl font-bold text-balance text-paper font-stretch-expanded md:text-6xl xl:text-7xl">
+              <h1 data-hero="h1" className={HEADLINE_CLASS}>
                 {HEADLINE_1}
               </h1>
-              <p className="mt-5 max-w-xl text-lg text-paper/80">{SUB_1}</p>
+              <p
+                data-hero="sub"
+                className="mt-6 max-w-xl text-lg text-paper/80 md:text-xl"
+              >
+                {SUB_1}
+              </p>
             </div>
             <div
               data-hero="h2wrap"
               className="absolute inset-x-0 bottom-0 opacity-0 motion-reduce:static motion-reduce:mt-10 motion-reduce:opacity-100"
             >
-              <p className="max-w-4xl font-display text-4xl font-bold text-balance text-paper font-stretch-expanded md:text-6xl xl:text-7xl">
-                {HEADLINE_2}
-              </p>
+              <p className={HEADLINE_CLASS}>{HEADLINE_2}</p>
             </div>
           </div>
           <div data-hero="cta-row" className="mt-10">
-            <Button asChild className="h-11 px-6 text-base">
+            <Button asChild className="h-12 px-7 text-base">
               <a href={CAL_COM_LINK} target="_blank" rel="noopener noreferrer">
                 Book a call
               </a>

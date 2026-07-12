@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SECTION_IDS } from "@/lib/site";
+import { MaskedRise } from "@/components/motion/masked-rise";
 
 const PRODUCTS = [
   {
@@ -32,9 +33,9 @@ export function Products() {
     >
       <div className="mx-auto max-w-site px-4 md:px-6">
         <p translate="no" className="mb-4 font-mono text-xs text-fog">section_04 / products</p>
-        <h2 className="max-w-3xl font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
+        <MaskedRise className="max-w-3xl font-display text-4xl font-bold text-balance text-paper font-stretch-expanded md:text-6xl">
           Data products
-        </h2>
+        </MaskedRise>
         <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
           {PRODUCTS.map((product, i) => (
             <motion.div
@@ -47,11 +48,14 @@ export function Products() {
                 y: -4,
                 transition: { type: "spring", stiffness: 300, damping: 24 },
               }}
-              className="h-full"
+              className="group h-full"
             >
-              <Card className="h-full rounded-panel border border-border bg-surface ring-0">
+              <Card className="h-full rounded-panel border border-border bg-surface ring-0 transition-colors duration-300 group-hover:border-paper/30">
                 <CardHeader>
-                  <p translate="no" className="font-mono text-xs text-fog tabular-nums">
+                  <p
+                    translate="no"
+                    className="font-mono text-xs text-fog transition-colors duration-300 tabular-nums group-hover:text-signal"
+                  >
                     {product.index}
                   </p>
                   <h3 className="mt-4 font-display text-xl font-bold text-balance text-paper font-stretch-expanded md:text-2xl">

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { RIG_PARTS } from "@/lib/assets";
 import { SECTION_IDS } from "@/lib/site";
+import { MaskedRise } from "@/components/motion/masked-rise";
 
 // Vertical explode factors: fraction of the available half-height each part
 // travels from the stacked center. Order matches RIG_PARTS (top to bottom).
@@ -80,9 +81,9 @@ export function Exploded() {
         <div className="mx-auto grid w-full max-w-site flex-1 grid-cols-1 gap-6 px-4 pt-20 pb-8 md:grid-cols-2 md:px-6 md:pt-24">
           <div className="md:self-center">
             <p translate="no" className="mb-4 font-mono text-xs text-fog">section_03 / hardware</p>
-            <h2 className="font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
+            <MaskedRise className="font-display text-4xl font-bold text-balance text-paper font-stretch-expanded md:text-6xl">
               The rig is deliberately boring.
-            </h2>
+            </MaskedRise>
             <p className="mt-5 max-w-md text-fog md:text-lg">
               Refurbished iPhone 12 and newer. Head strap or chest harness. A cable. A hard
               hat mount for construction. Nothing exotic, so anyone can wear it on a real

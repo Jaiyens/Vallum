@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { SECTION_IDS } from "@/lib/site";
+import { MaskedRise } from "@/components/motion/masked-rise";
 
 const STEPS = [
   {
@@ -31,9 +32,9 @@ export function HowItWorks() {
     >
       <div className="mx-auto max-w-site px-4 md:px-6">
         <p translate="no" className="mb-4 font-mono text-xs text-fog">section_02 / process</p>
-        <h2 className="max-w-2xl font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
+        <MaskedRise className="max-w-2xl font-display text-4xl font-bold text-balance text-paper font-stretch-expanded md:text-6xl">
           How it works
-        </h2>
+        </MaskedRise>
         <ol className="mt-12 grid grid-cols-1 gap-px overflow-hidden rounded-panel border border-border bg-border md:grid-cols-3">
           {STEPS.map((step, i) => (
             <motion.li

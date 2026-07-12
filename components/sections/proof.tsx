@@ -1,9 +1,33 @@
 "use client";
 
-import { motion } from "motion/react";
+import { useEffect, useRef } from "react";
+import { animate, motion, useInView, useReducedMotion } from "motion/react";
 import { SECTION_IDS } from "@/lib/site";
+import { MaskedRise } from "@/components/motion/masked-rise";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
+
+// Counts up once when scrolled into view. Renders the final value on the
+// server so no-JS and reduced-motion users always see the real number.
+function CountUp({ to }: { to: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.8 });
+  const reduced = useReducedMotion();
+  useEffect(() => {
+    if (!inView || reduced || !ref.current) return;
+    const controls = animate(0, to, {
+      duration: 1.6,
+      ease: EASE,
+      onUpdate: (v) => {
+        if (ref.current) {
+          ref.current.textContent = Math.round(v).toLocaleString("en-US");
+        }
+      },
+    });
+    return () => controls.stop();
+  }, [inView, reduced, to]);
+  return <span ref={ref}>{to.toLocaleString("en-US")}</span>;
+}
 
 export function Proof() {
   return (
@@ -13,15 +37,9 @@ export function Proof() {
     >
       <div className="mx-auto max-w-site px-4 md:px-6">
         <p translate="no" className="mb-4 font-mono text-xs text-fog">section_05 / audience</p>
-        <motion.h2
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.6, ease: EASE }}
-          className="max-w-3xl font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl"
-        >
+        <MaskedRise className="max-w-3xl font-display text-4xl font-bold text-balance text-paper font-stretch-expanded md:text-6xl">
           Built for the labs teaching robots to work.
-        </motion.h2>
+        </MaskedRise>
 
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -49,9 +67,12 @@ export function Proof() {
           >
             <p className="font-mono text-sm leading-relaxed text-paper/85">
               Public egocentric datasets like Ego4D reached{" "}
-              <span className="text-signal tabular-nums">3,670&nbsp;hours</span> across{" "}
-              <span className="text-signal tabular-nums">9&nbsp;countries</span>. Almost none
-              of it is dangerous outdoor work.
+              <span className="text-signal tabular-nums">
+                <CountUp to={3670} />
+                &nbsp;hours
+              </span>{" "}
+              across <span className="text-signal tabular-nums">9&nbsp;countries</span>.
+              Almost none of it is dangerous outdoor work.
             </p>
             <p translate="no" className="mt-6 font-mono text-xs text-fog">
               source: Ego4D dataset, Grauman et al.

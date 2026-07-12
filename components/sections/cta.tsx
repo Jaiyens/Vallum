@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { CAL_COM_LINK, CONTACT_EMAIL, SECTION_IDS } from "@/lib/site";
+import { MaskedRise } from "@/components/motion/masked-rise";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -15,15 +16,9 @@ export function Cta() {
       <div className="mx-auto max-w-site px-4 md:px-6">
         <div className="mx-auto max-w-2xl text-center">
           <p translate="no" className="mb-4 font-mono text-xs text-fog">section_06 / contact</p>
-          <motion.h2
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: 0.6, ease: EASE }}
-            className="mx-auto max-w-3xl font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl"
-          >
+          <MaskedRise className="mx-auto max-w-3xl font-display text-4xl font-bold text-balance text-paper font-stretch-expanded md:text-6xl">
             If you are training robots for the physical world, let’s talk.
-          </motion.h2>
+          </MaskedRise>
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}

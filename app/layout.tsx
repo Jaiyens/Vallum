@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
 import { MotionProvider } from "@/components/providers/motion-provider";
+import { SmoothScroll } from "@/components/providers/smooth-scroll";
+import { ScrollProgress } from "@/components/scroll-progress";
 import { ScrollRefresh } from "@/components/scroll-refresh";
 import "./globals.css";
 
@@ -48,9 +50,11 @@ export default function RootLayout({
         {/* Motion SSR-renders entrance targets with inline opacity:0; without JS
             they would never reveal, so unhide them when scripts are off. */}
         <noscript>
-          <style>{`[style*="opacity:0"],[style*="opacity: 0"]{opacity:1!important;transform:none!important}`}</style>
+          <style>{`[style*="opacity:0"],[style*="opacity: 0"],[style*="translateY"]{opacity:1!important;transform:none!important}`}</style>
         </noscript>
         <MotionProvider>{children}</MotionProvider>
+        <SmoothScroll />
+        <ScrollProgress />
         <ScrollRefresh />
       </body>
     </html>

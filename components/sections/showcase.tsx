@@ -6,6 +6,7 @@ import { AutoPauseVideo } from "@/components/media/auto-pause-video";
 import { ShowcaseOverlay } from "@/components/sections/showcase-overlay";
 import { SHOWCASE_VIDEO } from "@/lib/assets";
 import { SECTION_IDS } from "@/lib/site";
+import { MaskedRise } from "@/components/motion/masked-rise";
 
 export function Showcase() {
   const scope = useRef<HTMLElement>(null);
@@ -69,9 +70,9 @@ export function Showcase() {
     >
       <div className="mx-auto max-w-site px-4 md:px-6">
         <p translate="no" className="mb-4 font-mono text-xs text-signal">dataset_sample / ego4d_format</p>
-        <h2 className="max-w-3xl font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
+        <MaskedRise className="max-w-3xl font-display text-4xl font-bold text-balance text-paper font-stretch-expanded md:text-6xl">
           This is what training data looks like.
-        </h2>
+        </MaskedRise>
         <p className="mt-4 max-w-xl text-lg text-fog">
           First-person capture, action-labeled, consent-cleared.
         </p>

@@ -1,5 +1,6 @@
 import { Nav } from "@/components/sections/nav";
 import { Hero } from "@/components/sections/hero";
+import { Marquee } from "@/components/sections/marquee";
 import { Problem } from "@/components/sections/problem";
 import { Showcase } from "@/components/sections/showcase";
 import { HowItWorks } from "@/components/sections/how-it-works";
@@ -15,6 +16,7 @@ export default function Home() {
       <Nav />
       <main id="content" tabIndex={-1}>
         <Hero />
+        <Marquee />
         <Problem />
         <Showcase />
         <HowItWorks />
