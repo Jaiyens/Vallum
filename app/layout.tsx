@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
 import { MotionProvider } from "@/components/providers/motion-provider";
-import { SmoothScroll } from "@/components/providers/smooth-scroll";
+import { SmoothScroll } from "@/components/SmoothScroll";
 import { ScrollProgress } from "@/components/scroll-progress";
 import { ScrollRefresh } from "@/components/scroll-refresh";
 import "./globals.css";

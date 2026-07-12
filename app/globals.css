@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "lenis/dist/lenis.css";
 
 @theme {
   /* Vallum brand tokens */
@@ -115,6 +114,18 @@
     opacity: 0.05;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
+}
+
+/* Fades the rig frame's charcoal background into the page ink so the
+   1280x720 rectangle never reads as a seam. Applied to every rig raster
+   (poster, canvas, exploded still); overlaid dots and captions stay outside
+   the masked elements so they never fade. */
+@utility rig-edge-blend {
+  mask-image: radial-gradient(
+    ellipse closest-side at 50% 50%,
+    black 72%,
+    transparent 100%
+  );
 }
 
 @utility scanlines {

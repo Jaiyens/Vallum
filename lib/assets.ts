@@ -33,5 +33,7 @@ export const SHOWCASE_VIDEO = {
   },
 } satisfies Record<string, VideoAsset>;
 
-// The future rig section draws its schematic as inline SVG. Its geometry and
-// copy live in components/future-rig/callouts.ts.
+// The future rig section scrubs a webp frame sequence at /rig/frames,
+// generated from assets-src/new-rig-silent.mp4 (never shipped to the
+// client). Frame paths live in components/future-rig/frames-manifest.ts;
+// copy and dot geometry live in components/future-rig/callouts.ts.
