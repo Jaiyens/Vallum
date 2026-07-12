@@ -1,19 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import {
-  animate,
-  createScope,
-  createTimeline,
-  onScroll,
-  stagger,
-  utils,
-  type Scope,
-} from "animejs";
+import { animate, createScope, onScroll, type Scope } from "animejs";
 import { MaskedRise } from "@/components/motion/masked-rise";
 import { RigScrub, type RigScrubHandle } from "./RigScrub";
-import { RigMobileBlock, RigPinnedGrid } from "./rig-static";
-import { CLUSTERS, SECTION_COPY } from "./callouts";
+import { RigMobileBlock, RigPinnedStage } from "./rig-static";
+import { SECTION_COPY } from "./callouts";
 import { FRAME_COUNT } from "./frames-manifest";
 import { SECTION_IDS } from "@/lib/site";
 
@@ -32,80 +24,36 @@ export function FutureRigSection() {
     }).add((self) => {
       if (!self) return;
       const matches = self.matches as { reduceMotion: boolean; isDesktop: boolean };
-      // The static markup is authored fully visible on the exploded still,
-      // so reduced motion needs no work at all. Skip every animation.
-      if (matches.reduceMotion) return;
+      // Reduced motion and stacked layouts show static stills; nothing to do.
+      if (matches.reduceMotion || !matches.isDesktop) return;
 
-      if (matches.isDesktop) {
-        const pin = root.current?.querySelector<HTMLElement>(".rig-pin");
-        if (!pin) return;
+      const pin = root.current?.querySelector<HTMLElement>(".rig-pin");
+      if (!pin) return;
 
-        // Labels are authored visible for reduced motion and no-JS; hide
-        // them only now that the scrub owns their reveal. Dots stay CSS
-        // hidden under motion-safe, so their tween's inline opacity is the
-        // only thing that ever shows them.
-        utils.set(".rig-label", { opacity: 0, translateY: "0.75rem" });
+      const frameObj = { frame: 0 };
 
-        const frameObj = { frame: 0 };
-
-        // One scrubbed timeline, 1000 units long: the frame sequence runs
-        // edge to edge, cluster labels land sequentially across the last
-        // 30%, dots only in the final 10% where their positions are valid
-        // on the exploded frame. The scrub enters when the pin wrapper's
-        // top reaches the viewport bottom and completes when its center
-        // passes the viewport center, so the rest of the pin holds the
-        // final frame. container is omitted on purpose: it defaults to the
-        // window scroll, which is what Lenis drives.
-        const tl = createTimeline({
-          defaults: { ease: "inOutQuad" },
-          autoplay: onScroll({
-            target: pin,
-            enter: "bottom top",
-            leave: "center center",
-            sync: true,
-          }),
-        });
-
-        tl.add(
-          frameObj,
-          {
-            frame: FRAME_COUNT - 1,
-            duration: 1000,
-            ease: "linear",
-            onUpdate: () => scrub.current?.draw(frameObj.frame),
-          },
-          0,
-        );
-        CLUSTERS.forEach(({ key }, i) => {
-          tl.add(
-            `.rig-label[data-cluster="${key}"]`,
-            {
-              opacity: [0, 1],
-              translateY: ["0.75rem", "0rem"],
-              duration: 80,
-              delay: stagger(15),
-            },
-            700 + i * 90,
-          );
-        });
-        tl.add(".rig-dot", { opacity: [0, 1], duration: 60, delay: stagger(4) }, 900);
-      } else {
-        // Stacked layouts get a light staggered fade on enter. Set the
-        // hidden state only now, so no JS or reduced motion always shows
-        // the list.
-        utils.set(".rig-callout-item", { opacity: 0, translateY: "1rem" });
-        animate(".rig-callout-item", {
-          opacity: [0, 1],
-          translateY: ["1rem", "0rem"],
-          duration: 500,
-          ease: "outQuad",
-          delay: stagger(60),
-          autoplay: onScroll({
-            target: root.current?.querySelector(".rig-callout-list") ?? root.current!,
-            enter: "bottom top+=80",
-          }),
-        });
-      }
+      // Aria-style pacing over the pinned range (~200vh of scroll): the
+      // scrub only starts once the stage is pinned under the nav, the
+      // first 15% holds on the closed unit so you sit with the camera,
+      // the explosion plays across the next 75%, and the last 10% rests
+      // on the exploded frame before the pin releases. The pacing lives
+      // in the ease (one always-active tween) because a positioned tween
+      // does not re-render when the scrub seeks back before its start,
+      // which would freeze the canvas mid-explosion during the hold.
+      // container is omitted on purpose: it defaults to the window
+      // scroll, which is what Lenis drives.
+      animate(frameObj, {
+        frame: FRAME_COUNT - 1,
+        duration: 1000,
+        ease: (t: number) => Math.min(1, Math.max(0, (t - 0.15) / 0.75)),
+        onUpdate: () => scrub.current?.draw(frameObj.frame),
+        autoplay: onScroll({
+          target: pin,
+          enter: "top+=56 top",
+          leave: "bottom bottom",
+          sync: true,
+        }),
+      });
     });
 
     return () => scope.current?.revert();
@@ -130,9 +78,9 @@ export function FutureRigSection() {
         <p className="mt-2 max-w-xl text-sm text-fog">{SECTION_COPY.bridge}</p>
 
         {/* desktop: pinned, scroll-scrubbed explosion */}
-        <RigPinnedGrid visual={<RigScrub ref={scrub} />} />
+        <RigPinnedStage visual={<RigScrub ref={scrub} />} />
 
-        {/* tablet and mobile: static exploded still, then a plain list */}
+        {/* tablet and mobile: static exploded still */}
         <RigMobileBlock />
       </div>
     </section>

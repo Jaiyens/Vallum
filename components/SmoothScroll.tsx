@@ -12,10 +12,15 @@ export function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // duration + easing (not lerp) gives the long, carried glide; the
+    // reduced wheelMultiplier makes each wheel tick travel less page so
+    // sections arrive slower.
     const lenis = new Lenis({
       autoRaf: true,
       anchors: true,
       stopInertiaOnNavigate: true,
+      duration: 1.6,
+      wheelMultiplier: 0.8,
     });
     return () => lenis.destroy();
   }, []);
