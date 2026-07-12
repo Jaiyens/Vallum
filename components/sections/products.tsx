@@ -33,7 +33,7 @@ export function Products() {
     >
       <div className="mx-auto max-w-site px-4 md:px-6">
         <p translate="no" className="mb-4 font-mono text-xs text-fog">section_04 / products</p>
-        <MaskedRise className="max-w-3xl font-display text-4xl font-bold text-balance text-paper font-stretch-expanded md:text-6xl">
+        <MaskedRise className="max-w-3xl font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
           Data products
         </MaskedRise>
         <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">

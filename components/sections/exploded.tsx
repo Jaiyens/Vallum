@@ -81,7 +81,7 @@ export function Exploded() {
         <div className="mx-auto grid w-full max-w-site flex-1 grid-cols-1 gap-6 px-4 pt-20 pb-8 md:grid-cols-2 md:px-6 md:pt-24">
           <div className="md:self-center">
             <p translate="no" className="mb-4 font-mono text-xs text-fog">section_03 / hardware</p>
-            <MaskedRise className="font-display text-4xl font-bold text-balance text-paper font-stretch-expanded md:text-6xl">
+            <MaskedRise className="font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
               The rig is deliberately boring.
             </MaskedRise>
             <p className="mt-5 max-w-md text-fog md:text-lg">

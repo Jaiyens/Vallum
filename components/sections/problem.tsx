@@ -22,7 +22,7 @@ export function Problem() {
             <p translate="no" className="mb-4 font-mono text-xs text-fog">
               section_01 / problem
             </p>
-            <MaskedRise className="font-display text-4xl font-bold text-balance text-paper font-stretch-expanded md:text-6xl">
+            <MaskedRise className="font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
               Dangerous outdoor work is the last data desert.
             </MaskedRise>
           </div>

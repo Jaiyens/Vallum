@@ -37,7 +37,7 @@ export function Proof() {
     >
       <div className="mx-auto max-w-site px-4 md:px-6">
         <p translate="no" className="mb-4 font-mono text-xs text-fog">section_05 / audience</p>
-        <MaskedRise className="max-w-3xl font-display text-4xl font-bold text-balance text-paper font-stretch-expanded md:text-6xl">
+        <MaskedRise className="max-w-3xl font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
           Built for the labs teaching robots to work.
         </MaskedRise>
 
