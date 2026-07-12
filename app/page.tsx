@@ -4,7 +4,7 @@ import { Marquee } from "@/components/sections/marquee";
 import { Problem } from "@/components/sections/problem";
 import { Showcase } from "@/components/sections/showcase";
 import { HowItWorks } from "@/components/sections/how-it-works";
-import { Exploded } from "@/components/sections/exploded";
+import { FutureRigDynamic } from "@/components/future-rig/FutureRigDynamic";
 import { Products } from "@/components/sections/products";
 import { Proof } from "@/components/sections/proof";
 import { Cta } from "@/components/sections/cta";
@@ -20,7 +20,7 @@ export default function Home() {
         <Problem />
         <Showcase />
         <HowItWorks />
-        <Exploded />
+        <FutureRigDynamic />
         <Products />
         <Proof />
         <Cta />

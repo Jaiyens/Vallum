@@ -49,7 +49,7 @@ for (const width of WIDTHS) {
   // "pin:N": element top + N viewport-heights into its pin range
   const ANCHORS = [
     ["showcase", '[data-showcase="frame"]', "center"],
-    ["exploded", "#rig", "pin:1.4"],
+    ["future-rig", "#rig", "center"],
   ];
   for (const [name, selector, mode] of ANCHORS) {
     const found = await page.evaluate(([sel, m]) => {

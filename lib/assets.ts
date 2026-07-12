@@ -33,19 +33,5 @@ export const SHOWCASE_VIDEO = {
   },
 } satisfies Record<string, VideoAsset>;
 
-export type RigPart = {
-  id: string;
-  src: string;
-  label: string;
-  w: number;
-  h: number;
-};
-
-export const RIG_PARTS: readonly RigPart[] = [
-  { id: "hard-hat-mount", src: "/rig/hard-hat-mount.png", label: "Hard-hat mount", w: 640, h: 480 },
-  { id: "head-strap", src: "/rig/head-strap.png", label: "Head strap", w: 640, h: 480 },
-  { id: "iphone", src: "/rig/iphone.png", label: "iPhone 12 or newer", w: 640, h: 480 },
-  { id: "phone-clamp", src: "/rig/phone-clamp.png", label: "Phone clamp", w: 640, h: 480 },
-  { id: "cable", src: "/rig/cable.png", label: "Cable", w: 640, h: 480 },
-  { id: "chest-harness", src: "/rig/chest-harness.png", label: "Chest harness", w: 640, h: 480 },
-] as const;
+// The future rig section draws its schematic as inline SVG. Its geometry and
+// copy live in components/future-rig/callouts.ts.
