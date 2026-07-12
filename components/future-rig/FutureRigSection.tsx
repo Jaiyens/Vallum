@@ -13,29 +13,36 @@ import {
 } from "animejs";
 import { MaskedRise } from "@/components/motion/masked-rise";
 import { RigSchematic } from "./RigSchematic";
-import { CALLOUTS, CLUSTERS, SECTION_COPY, VIEWBOX, type Callout } from "./callouts";
+import {
+  CALLOUTS,
+  CLUSTERS,
+  MOVERS,
+  SECTION_COPY,
+  VIEWBOX,
+  type Callout,
+} from "./callouts";
 import { SECTION_IDS } from "@/lib/site";
 
 const pct = (y: number) => `${((y / VIEWBOX.h) * 100).toFixed(2)}%`;
 
 function LabelBlock({ c }: { c: Callout }) {
-  const side = c.label.side;
   return (
     <div
-      className={`rig-label absolute w-[21%] -translate-y-1/2 ${
-        side === "left" ? "left-0 pr-3 text-right" : "right-0 pl-3 text-left"
+      className={`rig-label absolute inset-x-0 -translate-y-1/2 ${
+        c.label.side === "left" ? "text-right" : "text-left"
       }`}
       data-cluster={c.cluster}
       style={{ top: pct(c.label.y) }}
     >
       <p className="text-sm leading-tight font-semibold text-paper">{c.name}</p>
-      <p className="mt-1 text-xs leading-snug text-fog">{c.support}</p>
+      <p className="mt-1 text-[11px] leading-snug text-fog">{c.support}</p>
     </div>
   );
 }
 
 export function FutureRigSection() {
   const root = useRef<HTMLElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const scope = useRef<Scope | null>(null);
 
@@ -54,36 +61,57 @@ export function FutureRigSection() {
       if (matches.reduceMotion) return;
 
       if (matches.isDesktop) {
-        // Scrubbed explode. Progress 0 when the section top meets the viewport
-        // bottom, progress 1 when the section center meets the viewport center.
-        // container is omitted on purpose: it defaults to the window scroll,
-        // which is what Lenis drives.
+        // Children of an anime timeline keep their natural (authored, final)
+        // state until their tween starts, so hide the reveal targets up
+        // front. utils.set registers with the scope and reverts cleanly.
+        const drawables = new Map(
+          CLUSTERS.map(({ key }) => [
+            key,
+            svg.createDrawable(`.leader-line[data-cluster="${key}"]`),
+          ]),
+        );
+        for (const [, d] of drawables) utils.set(d, { draw: "0 0" });
+        utils.set(".rig-label", { opacity: 0, translateY: "0.75rem" });
+        utils.set(".leader-dot", { opacity: 0 });
+        for (const m of MOVERS) {
+          utils.set(`#${m.id}`, {
+            translateX: `${m.from.x}px`,
+            translateY: `${m.from.y}px`,
+          });
+        }
+
+        // Scrubbed explode keyed to the canvas, not the tall section, so the
+        // whole assembled-to-exploded arc plays while the drawing is on
+        // screen. container is omitted on purpose: it defaults to the window
+        // scroll, which is what Lenis drives.
         const tl = createTimeline({
           defaults: { ease: "inOutQuad" },
           autoplay: onScroll({
-            target: root.current!,
+            target: canvasRef.current ?? root.current!,
             enter: "bottom top",
-            leave: "center center",
+            leave: "top top",
             sync: true,
           }),
         });
 
-        let pos = 0;
+        // hold the assembled unit while it rides into view; the explode
+        // starts once the canvas is nearly fully on screen
+        let pos = 1600;
         for (const { key } of CLUSTERS) {
-          const parts = CALLOUTS.filter((c) => c.cluster === key);
-          parts.forEach((c, i) => {
+          const movers = MOVERS.filter((m) => m.cluster === key);
+          movers.forEach((m, i) => {
             tl.add(
-              `#${c.id}`,
+              `#${m.id}`,
               {
-                translateX: [`${-c.explode.dx}px`, "0px"],
-                translateY: [`${-c.explode.dy}px`, "0px"],
+                translateX: [`${m.from.x}px`, "0px"],
+                translateY: [`${m.from.y}px`, "0px"],
                 duration: 600,
               },
               pos + i * 60,
             );
           });
           tl.add(
-            svg.createDrawable(`.leader-line[data-cluster="${key}"]`),
+            drawables.get(key)!,
             { draw: ["0 0", "0 1"], duration: 500, delay: stagger(60) },
             pos + 320,
           );
@@ -104,11 +132,6 @@ export function FutureRigSection() {
           );
           pos += 640;
         }
-        tl.add(
-          ".return-line",
-          { opacity: [0, 1], duration: 300, delay: stagger(30) },
-          pos - 200,
-        );
       } else {
         // Stacked layouts get a light staggered fade on enter. Set the hidden
         // state only now, so no JS or reduced motion always shows the list.
@@ -148,35 +171,39 @@ export function FutureRigSection() {
         <p className="mt-4 max-w-xl text-lg text-fog">{SECTION_COPY.subline}</p>
         <p className="mt-2 max-w-xl text-sm text-fog">{SECTION_COPY.bridge}</p>
 
-        {/* desktop: schematic canvas with overlaid label columns */}
-        <div className="relative mt-14 hidden aspect-[1200/680] lg:block">
-          <div className="absolute inset-0">
-            <RigSchematic />
+        {/* desktop: label column, schematic canvas, label column */}
+        <div className="mt-14 hidden lg:grid lg:grid-cols-[220px_minmax(0,1fr)_220px] lg:gap-6">
+          <div className="relative">
+            <p className="absolute inset-x-0 -top-7 text-right font-mono text-xs text-fog">
+              Sensing
+            </p>
+            {CALLOUTS.filter((c) => c.label.side === "left").map((c) => (
+              <LabelBlock key={c.id} c={c} />
+            ))}
           </div>
-          {/* cluster tags */}
-          <p className="absolute left-0 font-mono text-xs text-fog" style={{ top: pct(62) }}>
-            Sensing
-          </p>
-          <p className="absolute right-0 font-mono text-xs text-fog" style={{ top: pct(62) }}>
-            Trust
-          </p>
-          <p className="absolute right-0 font-mono text-xs text-fog" style={{ top: pct(382) }}>
-            Endurance
-          </p>
-          {CALLOUTS.map((c) => (
-            <LabelBlock key={c.id} c={c} />
-          ))}
-          <p
-            translate="no"
-            className="absolute bottom-1 left-1/2 -translate-x-1/2 font-mono text-[11px] text-fog/80"
-          >
-            {SECTION_COPY.caption}
-          </p>
+          <div ref={canvasRef} className="relative aspect-[1200/680]">
+            <RigSchematic />
+            <p
+              translate="no"
+              className="absolute bottom-1 left-1/2 -translate-x-1/2 font-mono text-[11px] text-fog/80"
+            >
+              {SECTION_COPY.caption}
+            </p>
+          </div>
+          <div className="relative">
+            <p className="absolute inset-x-0 -top-7 font-mono text-xs text-fog">Trust</p>
+            <p className="absolute inset-x-0 font-mono text-xs text-fog" style={{ top: pct(390) }}>
+              Endurance
+            </p>
+            {CALLOUTS.filter((c) => c.label.side === "right").map((c) => (
+              <LabelBlock key={c.id} c={c} />
+            ))}
+          </div>
         </div>
 
         {/* tablet and mobile: static exploded schematic, then a plain list */}
         <div className="mt-12 lg:hidden">
-          <div className="mx-auto aspect-[740/600] max-w-xl">
+          <div className="mx-auto aspect-[1130/600] max-w-xl">
             <RigSchematic compact />
           </div>
           <p
