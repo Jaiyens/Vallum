@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { CAL_COM_LINK, CONTACT_EMAIL, SECTION_IDS } from "@/lib/site";
 import { MaskedRise } from "@/components/motion/masked-rise";
+import { Badge } from "@/components/ui/badge";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -11,11 +12,19 @@ export function Cta() {
   return (
     <section
       id={SECTION_IDS.contact}
-      className="scroll-mt-14 border-t border-border py-section-sm md:py-section"
+      className="scroll-mt-14 py-section-sm md:py-section"
     >
       <div className="mx-auto max-w-site px-4 md:px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <p translate="no" className="mb-4 font-mono text-xs text-fog">section_06 / contact</p>
+          <div className="mb-4">
+            <Badge
+              variant="outline"
+              translate="no"
+              className="rounded-panel border-border bg-surface/40 font-mono font-normal text-fog"
+            >
+              section_06 / contact
+            </Badge>
+          </div>
           <MaskedRise className="mx-auto max-w-3xl font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
             If you are training robots for the physical world, let’s talk.
           </MaskedRise>

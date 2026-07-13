@@ -7,6 +7,8 @@ import { ShowcaseOverlay } from "@/components/sections/showcase-overlay";
 import { SHOWCASE_VIDEO } from "@/lib/assets";
 import { SECTION_IDS } from "@/lib/site";
 import { MaskedRise } from "@/components/motion/masked-rise";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Badge } from "@/components/ui/badge";
 
 export function Showcase() {
   const scope = useRef<HTMLElement>(null);
@@ -69,7 +71,15 @@ export function Showcase() {
       className="scroll-mt-14 py-section-sm md:py-section"
     >
       <div className="mx-auto max-w-site px-4 md:px-6">
-        <p translate="no" className="mb-4 font-mono text-xs text-signal">dataset_sample / ego4d_format</p>
+        <div className="mb-4">
+          <Badge
+            variant="outline"
+            translate="no"
+            className="rounded-panel border-signal/30 bg-signal/5 font-mono font-normal text-signal"
+          >
+            dataset_sample / ego4d_format
+          </Badge>
+        </div>
         <MaskedRise className="max-w-3xl font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
           This is what training data looks like.
         </MaskedRise>
@@ -77,17 +87,20 @@ export function Showcase() {
           First-person capture, action-labeled, consent-cleared.
         </p>
 
-        <div
-          data-showcase="frame"
-          translate="no"
-          className="relative mt-10 aspect-video overflow-hidden rounded-panel border border-border bg-surface md:mt-14"
-        >
-          <AutoPauseVideo
-            asset={SHOWCASE_VIDEO.farm}
-            className="absolute inset-0 h-full w-full object-cover"
-            aria-hidden="true"
-          />
-          <ShowcaseOverlay />
+        <div className="mt-10 md:mt-14">
+          <AspectRatio
+            ratio={16 / 9}
+            data-showcase="frame"
+            translate="no"
+            className="overflow-hidden rounded-panel border border-border bg-surface"
+          >
+            <AutoPauseVideo
+              asset={SHOWCASE_VIDEO.farm}
+              className="absolute inset-0 h-full w-full object-cover"
+              aria-hidden="true"
+            />
+            <ShowcaseOverlay />
+          </AspectRatio>
         </div>
         <p className="sr-only">
           Annotated first-person clip. Green boxes track both hands and the pruning shears,

@@ -9,6 +9,7 @@ import { Products } from "@/components/sections/products";
 import { Proof } from "@/components/sections/proof";
 import { Cta } from "@/components/sections/cta";
 import { Footer } from "@/components/sections/footer";
+import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
   return (
@@ -19,12 +20,17 @@ export default function Home() {
         <Marquee />
         <Problem />
         <Showcase />
+        <Separator />
         <HowItWorks />
         <FutureRigDynamic />
+        <Separator />
         <Products />
+        <Separator />
         <Proof />
+        <Separator />
         <Cta />
       </main>
+      <Separator />
       <Footer />
     </>
   );

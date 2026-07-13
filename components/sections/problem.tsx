@@ -2,6 +2,7 @@
 
 import { SECTION_IDS } from "@/lib/site";
 import { MaskedRise } from "@/components/motion/masked-rise";
+import { Badge } from "@/components/ui/badge";
 
 const LINES = [
   "Robotics foundation models lack real first-person data of physical outdoor labor.",
@@ -19,9 +20,15 @@ export function Problem() {
       <div className="mx-auto max-w-site px-4 md:px-6">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-6">
           <div className="md:col-span-5">
-            <p translate="no" className="mb-4 font-mono text-xs text-fog">
-              section_01 / problem
-            </p>
+            <div className="mb-4">
+              <Badge
+                variant="outline"
+                translate="no"
+                className="rounded-panel border-border bg-surface/40 font-mono font-normal text-fog"
+              >
+                section_01 / problem
+              </Badge>
+            </div>
             <MaskedRise className="font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
               Dangerous outdoor work is the last data desert.
             </MaskedRise>

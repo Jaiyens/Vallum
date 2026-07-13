@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SECTION_IDS } from "@/lib/site";
 import { MaskedRise } from "@/components/motion/masked-rise";
+import { Badge } from "@/components/ui/badge";
 
 const PRODUCTS = [
   {
@@ -29,10 +30,18 @@ export function Products() {
   return (
     <section
       id={SECTION_IDS.products}
-      className="scroll-mt-14 border-t border-border py-section-sm md:py-section"
+      className="scroll-mt-14 py-section-sm md:py-section"
     >
       <div className="mx-auto max-w-site px-4 md:px-6">
-        <p translate="no" className="mb-4 font-mono text-xs text-fog">section_04 / products</p>
+        <div className="mb-4">
+          <Badge
+            variant="outline"
+            translate="no"
+            className="rounded-panel border-border bg-surface/40 font-mono font-normal text-fog"
+          >
+            section_04 / products
+          </Badge>
+        </div>
         <MaskedRise className="max-w-3xl font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
           Data products
         </MaskedRise>

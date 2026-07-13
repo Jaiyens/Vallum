@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { SECTION_IDS } from "@/lib/site";
 import { MaskedRise } from "@/components/motion/masked-rise";
+import { Badge } from "@/components/ui/badge";
 
 const STEPS = [
   {
@@ -28,10 +29,18 @@ export function HowItWorks() {
   return (
     <section
       id={SECTION_IDS.howItWorks}
-      className="scroll-mt-14 border-t border-border py-section-sm md:py-section"
+      className="scroll-mt-14 py-section-sm md:py-section"
     >
       <div className="mx-auto max-w-site px-4 md:px-6">
-        <p translate="no" className="mb-4 font-mono text-xs text-fog">section_02 / process</p>
+        <div className="mb-4">
+          <Badge
+            variant="outline"
+            translate="no"
+            className="rounded-panel border-border bg-surface/40 font-mono font-normal text-fog"
+          >
+            section_02 / process
+          </Badge>
+        </div>
         <MaskedRise className="max-w-2xl font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
           How it works
         </MaskedRise>

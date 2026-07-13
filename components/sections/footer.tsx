@@ -5,6 +5,7 @@ import {
   SECTION_ANCHORS,
   X_URL,
 } from "@/lib/site";
+import { Badge } from "@/components/ui/badge";
 
 const ACTIONS = [
   { label: "Book a call", href: CAL_COM_LINK, external: true, accent: true },
@@ -15,9 +16,17 @@ const ACTIONS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-ink">
+    <footer className="bg-ink">
       <div className="mx-auto max-w-site px-4 py-section-sm md:px-6 md:py-section">
-        <p translate="no" className="mb-8 font-mono text-xs text-fog">vallum_labs / links</p>
+        <div className="mb-8">
+          <Badge
+            variant="outline"
+            translate="no"
+            className="rounded-panel border-border bg-surface/40 font-mono font-normal text-fog"
+          >
+            vallum_labs / links
+          </Badge>
+        </div>
 
         <nav aria-label="Footer">
           <ul className="grid grid-cols-2 border-t border-l border-border md:grid-cols-4">

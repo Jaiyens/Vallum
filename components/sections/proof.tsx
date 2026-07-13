@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { animate, motion, useInView, useReducedMotion } from "motion/react";
 import { SECTION_IDS } from "@/lib/site";
 import { MaskedRise } from "@/components/motion/masked-rise";
+import { Badge } from "@/components/ui/badge";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -33,10 +34,18 @@ export function Proof() {
   return (
     <section
       id={SECTION_IDS.proof}
-      className="scroll-mt-14 border-t border-border py-section-sm md:py-section"
+      className="scroll-mt-14 py-section-sm md:py-section"
     >
       <div className="mx-auto max-w-site px-4 md:px-6">
-        <p translate="no" className="mb-4 font-mono text-xs text-fog">section_05 / audience</p>
+        <div className="mb-4">
+          <Badge
+            variant="outline"
+            translate="no"
+            className="rounded-panel border-border bg-surface/40 font-mono font-normal text-fog"
+          >
+            section_05 / audience
+          </Badge>
+        </div>
         <MaskedRise className="max-w-3xl font-display text-3xl font-bold text-balance text-paper font-stretch-expanded md:text-5xl">
           Built for the labs teaching robots to work.
         </MaskedRise>
@@ -48,9 +57,13 @@ export function Proof() {
           transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
           className="mt-12"
         >
-          <p translate="no" className="font-mono text-xs text-fog">
+          <Badge
+            variant="outline"
+            translate="no"
+            className="rounded-panel border-border bg-surface/40 font-mono font-normal text-fog"
+          >
             intended_audience, not customers
-          </p>
+          </Badge>
           <p className="mt-2 max-w-2xl text-lg text-paper/85 md:text-xl">
             Designed for teams like{" "}
             <span translate="no">1X, Generalist AI, NVIDIA GEAR, Mecka, and Encord</span>.
