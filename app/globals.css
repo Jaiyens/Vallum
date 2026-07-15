@@ -130,6 +130,39 @@
   }
 }
 
+/* Hero entrance initial states. The bright wordmark layer starts hidden
+   only when motion is allowed; reduced motion and no JS both see resolved
+   bone-hi letters and no scan line. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-wordmark-hi] {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+[data-scan-line] {
+  opacity: 0;
+}
+
+/* Breathing scroll cue under the hero mono line. */
+@keyframes hero-cue-breathe {
+  from {
+    opacity: 0.25;
+    transform: translateX(-50%) scaleY(0.65);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateX(-50%) scaleY(1);
+  }
+}
+.hero-cue {
+  transform-origin: bottom;
+  animation: hero-cue-breathe 2.2s ease-in-out infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-cue {
+    animation: none;
+  }
+}
+
 /* Fades the rig frame's charcoal background into the page ink so the
    1280x720 rectangle never reads as a seam. Applied to every rig raster
    (poster, canvas, exploded still); overlaid dots and captions stay outside

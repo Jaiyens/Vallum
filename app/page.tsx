@@ -1,10 +1,12 @@
 import { FutureRigDynamic } from "@/components/future-rig/FutureRigDynamic";
+import { HeroExperience } from "@/components/hero/HeroExperience";
 import { TempClose } from "@/components/temp-close";
 
 export default function Home() {
   return (
     <main id="content" tabIndex={-1}>
       {/* HERO EXPERIENCE START */}
+      <HeroExperience />
       {/* HERO EXPERIENCE END */}
       {/* INSERTION POINT: problem section, spinning gallery, assets not ready */}
       {/* INSERTION POINT: dataset section, quarantined at _quarantine/dataset */}

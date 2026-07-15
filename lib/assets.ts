@@ -9,20 +9,19 @@ export type VideoAsset = {
   label: string;
 };
 
-export const HERO_VIDEO = {
-  human: {
-    mp4: "/video/hero-human.mp4",
-    webm: "/video/hero-human.webm",
-    poster: "/video/hero-human-poster.jpg",
-    label: "First-person view of a human doing outdoor manual work",
-  },
-  robot: {
-    mp4: "/video/hero-robot.mp4",
-    webm: "/video/hero-robot.webm",
-    poster: "/video/hero-robot-poster.jpg",
-    label: "First-person view of a robot doing the same work",
-  },
-} satisfies Record<string, VideoAsset>;
+// The hero film. hero.webm and hero.mp4 are a 1280x1440 vertical stack:
+// human timeline on the top half, robot timeline on the bottom half, one
+// decode for both layers. hero-mobile.mp4 is the human timeline alone at
+// 1280x720 for small viewports. Block timings live in
+// components/hero/readout-map.ts and mirror cutlist.json in the film
+// workspace. The retired placeholder files remain at /video/.
+export const HERO = {
+  stackWebm: "/hero/hero.webm",
+  stackMp4: "/hero/hero.mp4",
+  mobileMp4: "/hero/hero-mobile.mp4",
+  poster: "/hero/hero-poster.jpg",
+  label: "Field work film, human timeline above, robot timeline below",
+} as const;
 
 export const SHOWCASE_VIDEO = {
   farm: {
