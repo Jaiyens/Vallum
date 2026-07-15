@@ -54,15 +54,31 @@ for (const width of WIDTHS) {
     await page.screenshot({ path: `${OUT}/${tag}-hero-post-wipe.png` });
 
     // Cursor lens reveal: desktop, motion mode only. A real mouse move to
-    // viewport center must light the reveal layer and the lens ring.
+    // viewport center must light the reveal layer and the lens ring. The
+    // video pauses on a real block first (11.5s = LOAD-BEARING iron) so
+    // the human and robot halves are visibly different in the shot.
     if (width >= 1024 && !REDUCED) {
       await page.evaluate(() =>
         window.scrollTo({ top: 0, behavior: "instant" }),
       );
-      await page.waitForTimeout(400);
-      await page.mouse.move(width / 2, 400);
+      await page.evaluate(() => {
+        const v = document.querySelector("[data-hero-root] video");
+        if (v) {
+          v.pause();
+          v.currentTime = 11.5;
+        }
+      });
+      await page.waitForTimeout(500); // seek + repaint
+      // Aim at the beam crew upper left of center: at 11.5s the human
+      // and robot plates visibly differ there, so the reveal is provable
+      // in the screenshot.
+      await page.mouse.move(Math.round(width * 0.4), 240);
       await page.waitForTimeout(450); // quickTo settle
       await page.screenshot({ path: `${OUT}/${tag}-hero-lens.png` });
+      await page.evaluate(() => {
+        const v = document.querySelector("[data-hero-root] video");
+        if (v) v.play().catch(() => {});
+      });
     }
   }
 

@@ -142,6 +142,31 @@
   opacity: 0;
 }
 
+/* Robot reveal layer masks. The radial layer is the cursor lens; the
+   linear layer is the scroll wipe. Multiple mask layers union by default,
+   which is exactly the behavior both effects need. The canvas itself
+   never moves; only the variables animate. */
+[data-robot-canvas] {
+  -webkit-mask-image:
+    radial-gradient(
+      circle at var(--lx) var(--ly),
+      #000 0 90px,
+      transparent 90px
+    ),
+    linear-gradient(to bottom, #000 0, #000 var(--wipe), transparent var(--wipe));
+  mask-image:
+    radial-gradient(
+      circle at var(--lx) var(--ly),
+      #000 0 90px,
+      transparent 90px
+    ),
+    linear-gradient(to bottom, #000 0, #000 var(--wipe), transparent var(--wipe));
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  transform: translateZ(0);
+  will-change: mask-image;
+}
+
 /* Breathing scroll cue under the hero mono line. */
 @keyframes hero-cue-breathe {
   from {
