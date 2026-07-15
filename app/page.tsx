@@ -1,37 +1,17 @@
-import { Nav } from "@/components/sections/nav";
-import { Hero } from "@/components/sections/hero";
-import { Marquee } from "@/components/sections/marquee";
-import { Problem } from "@/components/sections/problem";
-import { Showcase } from "@/components/sections/showcase";
-import { HowItWorks } from "@/components/sections/how-it-works";
 import { FutureRigDynamic } from "@/components/future-rig/FutureRigDynamic";
-import { Products } from "@/components/sections/products";
-import { Proof } from "@/components/sections/proof";
-import { Cta } from "@/components/sections/cta";
-import { Footer } from "@/components/sections/footer";
-import { Separator } from "@/components/ui/separator";
+import { TempClose } from "@/components/temp-close";
 
 export default function Home() {
   return (
-    <>
-      <Nav />
-      <main id="content" tabIndex={-1}>
-        <Hero />
-        <Marquee />
-        <Problem />
-        <Showcase />
-        <Separator />
-        <HowItWorks />
-        <FutureRigDynamic />
-        <Separator />
-        <Products />
-        <Separator />
-        <Proof />
-        <Separator />
-        <Cta />
-      </main>
-      <Separator />
-      <Footer />
-    </>
+    <main id="content" tabIndex={-1}>
+      {/* HERO EXPERIENCE START */}
+      {/* HERO EXPERIENCE END */}
+      {/* INSERTION POINT: problem section, spinning gallery, assets not ready */}
+      {/* INSERTION POINT: dataset section, quarantined at _quarantine/dataset */}
+      <FutureRigDynamic />
+      {/* INSERTION POINT: founder message */}
+      {/* TEMPORARY CLOSE: mono contact line */}
+      <TempClose />
+    </main>
   );
 }

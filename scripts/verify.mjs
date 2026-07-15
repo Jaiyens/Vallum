@@ -7,7 +7,7 @@ import fs from "node:fs";
 const BASE = process.env.VERIFY_URL ?? "http://localhost:3000";
 const REDUCED = process.env.REDUCED === "1";
 const WIDTHS = [1280, 768, 360];
-const OUT = ".verify";
+const OUT = "verify-shots";
 fs.mkdirSync(OUT, { recursive: true });
 
 const summary = [];
@@ -29,49 +29,90 @@ for (const width of WIDTHS) {
   page.on("pageerror", (e) => pageErrors.push(String(e)));
 
   await page.goto(BASE, { waitUntil: "networkidle", timeout: 90_000 });
-  await page.waitForTimeout(1200); // fonts + load-in animations settle
+  await page.waitForTimeout(1600); // fonts + the 900ms wordmark entrance settle
 
-  await page.screenshot({ path: `${OUT}/${tag}-top.png` });
+  await page.screenshot({ path: `${OUT}/${tag}-load.png` });
 
-  // hero mid-scrub states
-  for (const [name, factor] of [["hero-mid", 0.6], ["hero-late", 1.4]]) {
-    await page.evaluate(
-      (f) => window.scrollTo({ top: window.innerHeight * f, behavior: "instant" }),
-      factor,
+  // Hero pin states. The hero pins for about 100vh from the top of the
+  // page, so viewport-height offsets from 0 land inside and past the pin.
+  // Selectors are defensive: every state skips cleanly while the hero is
+  // not built yet.
+  const hasHero = await page.evaluate(
+    () => !!document.querySelector("[data-hero-root]"),
+  );
+  if (hasHero) {
+    await page.evaluate(() =>
+      window.scrollTo({ top: window.innerHeight * 0.5, behavior: "instant" }),
     );
-    await page.waitForTimeout(500);
-    await page.screenshot({ path: `${OUT}/${tag}-${name}.png` });
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: `${OUT}/${tag}-hero-mid-pin.png` });
+
+    await page.evaluate(() =>
+      window.scrollTo({ top: window.innerHeight * 1.05, behavior: "instant" }),
+    );
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: `${OUT}/${tag}-hero-post-wipe.png` });
+
+    // Cursor lens reveal: desktop, motion mode only. A real mouse move to
+    // viewport center must light the reveal layer and the lens ring.
+    if (width >= 1024 && !REDUCED) {
+      await page.evaluate(() =>
+        window.scrollTo({ top: 0, behavior: "instant" }),
+      );
+      await page.waitForTimeout(400);
+      await page.mouse.move(width / 2, 400);
+      await page.waitForTimeout(450); // quickTo settle
+      await page.screenshot({ path: `${OUT}/${tag}-hero-lens.png` });
+    }
   }
 
-  // section states mid-scrub: scroll each anchor near the viewport bottom
-  // third so its ScrollTrigger sits at/near full progress, then screenshot
-  // "center": element mid-viewport (non-pinned scrub triggers)
-  // "pin:N": element top + N viewport-heights into its pin range
-  const ANCHORS = [
-    ["showcase", '[data-showcase="frame"]', "center"],
-    ["future-rig", "#rig", "center"],
-  ];
-  for (const [name, selector, mode] of ANCHORS) {
-    const found = await page.evaluate(([sel, m]) => {
-      const el = document.querySelector(sel);
+  // Rig states: mid-scrub and final frame. The pin block only exists on
+  // desktop motion mode; smaller widths render the static rig and skip.
+  const rig = await page.evaluate(() => {
+    const pin = document.querySelector(".rig-pin");
+    if (!pin) return null;
+    const rect = pin.getBoundingClientRect();
+    return { top: window.scrollY + rect.top, height: pin.offsetHeight };
+  });
+  if (rig) {
+    await page.evaluate(
+      (t) => window.scrollTo({ top: t, behavior: "instant" }),
+      rig.top + 800 * 1.2,
+    );
+    await page.waitForTimeout(900);
+    await page.screenshot({ path: `${OUT}/${tag}-rig-mid.png` });
+
+    await page.evaluate(
+      (t) => window.scrollTo({ top: t, behavior: "instant" }),
+      rig.top + rig.height - 800,
+    );
+    await page.waitForTimeout(900);
+    await page.screenshot({ path: `${OUT}/${tag}-rig-final.png` });
+  } else {
+    // Static rig fallback shot so every width still documents the section.
+    const found = await page.evaluate(() => {
+      const el = document.querySelector("#rig");
       if (!el) return false;
       const rect = el.getBoundingClientRect();
-      const top = window.scrollY + rect.top;
-      const target = m.startsWith("pin:")
-        ? top + window.innerHeight * parseFloat(m.slice(4))
-        : top - window.innerHeight * 0.38 + rect.height / 2;
-      window.scrollTo({ top: Math.max(target, 0), behavior: "instant" });
+      window.scrollTo({
+        top: Math.max(window.scrollY + rect.top - 100, 0),
+        behavior: "instant",
+      });
       return true;
-    }, [selector, mode]);
-    if (!found) continue;
-    await page.waitForTimeout(900); // let the scrubbed timeline catch up
-    await page.screenshot({ path: `${OUT}/${tag}-${name}.png` });
+    });
+    if (found) {
+      await page.waitForTimeout(900);
+      await page.screenshot({ path: `${OUT}/${tag}-rig-static.png` });
+    }
   }
 
-  // step-scroll the full page to fire every ScrollTrigger
+  // Step-scroll the full page to fire every ScrollTrigger.
   const total = await page.evaluate(() => document.body.scrollHeight);
   for (let y = 0; y <= total; y += 400) {
-    await page.evaluate((t) => window.scrollTo({ top: t, behavior: "instant" }), y);
+    await page.evaluate(
+      (t) => window.scrollTo({ top: t, behavior: "instant" }),
+      y,
+    );
     await page.waitForTimeout(90);
   }
   await page.screenshot({ path: `${OUT}/${tag}-bottom.png` });
@@ -103,14 +144,23 @@ await browser.close();
 fs.writeFileSync(`${OUT}/summary.json`, JSON.stringify(summary, null, 2));
 
 const bad = summary.filter(
-  (s) => s.pageErrors.length > 0 || s.overflow.hasOverflow || s.consoleMsgs.some((m) => m.type === "error"),
+  (s) =>
+    s.pageErrors.length > 0 ||
+    s.overflow.hasOverflow ||
+    s.consoleMsgs.some((m) => m.type === "error"),
 );
-console.log(JSON.stringify(summary.map(({ width, consoleMsgs, pageErrors, overflow }) => ({
-  width,
-  errors: consoleMsgs.filter((m) => m.type === "error").length,
-  warnings: consoleMsgs.filter((m) => m.type === "warning").length,
-  pageErrors: pageErrors.length,
-  hasOverflow: overflow.hasOverflow,
-})), null, 2));
+console.log(
+  JSON.stringify(
+    summary.map(({ width, consoleMsgs, pageErrors, overflow }) => ({
+      width,
+      errors: consoleMsgs.filter((m) => m.type === "error").length,
+      warnings: consoleMsgs.filter((m) => m.type === "warning").length,
+      pageErrors: pageErrors.length,
+      hasOverflow: overflow.hasOverflow,
+    })),
+    null,
+    2,
+  ),
+);
 console.log(bad.length ? "FAIL" : "PASS");
 process.exit(bad.length ? 1 : 0);

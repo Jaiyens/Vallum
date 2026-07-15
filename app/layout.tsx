@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { SmoothScroll } from "@/components/SmoothScroll";
-import { ScrollProgress } from "@/components/scroll-progress";
 import { ScrollRefresh } from "@/components/scroll-refresh";
 import "./globals.css";
 
@@ -26,7 +25,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#0A0C0B",
+  themeColor: "#0C0B09",
   colorScheme: "dark",
 };
 
@@ -54,7 +53,6 @@ export default function RootLayout({
         </noscript>
         <MotionProvider>{children}</MotionProvider>
         <SmoothScroll />
-        <ScrollProgress />
         <ScrollRefresh />
       </body>
     </html>

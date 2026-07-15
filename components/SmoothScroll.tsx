@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
+import { ScrollTrigger } from "@/lib/gsap";
 
 // Site-wide inertial scrolling. Lenis animates the real window scroll, so
 // position: sticky and every scroll-position observer keep working untouched.
@@ -22,6 +23,7 @@ export function SmoothScroll() {
       duration: 1.6,
       wheelMultiplier: 0.8,
     });
+    lenis.on("scroll", ScrollTrigger.update);
     return () => lenis.destroy();
   }, []);
 
