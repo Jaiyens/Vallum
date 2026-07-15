@@ -41,6 +41,26 @@ for (const width of WIDTHS) {
     () => !!document.querySelector("[data-hero-root]"),
   );
   if (hasHero) {
+    // Pause on a real block (11.5s = LOAD-BEARING iron) so the human and
+    // robot layers are visibly different in every pinned state shot.
+    if (!REDUCED) {
+      await page.evaluate(() => {
+        const v = document.querySelector("[data-hero-root] video");
+        if (v) {
+          v.pause();
+          v.currentTime = 11.5;
+        }
+      });
+      await page.waitForTimeout(500); // seek + repaint
+    }
+
+    // p=0.18: sweep line mid frame, beatOne centered.
+    await page.evaluate(() =>
+      window.scrollTo({ top: window.innerHeight * 0.18, behavior: "instant" }),
+    );
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: `${OUT}/${tag}-hero-wipe-mid.png` });
+
     await page.evaluate(() =>
       window.scrollTo({ top: window.innerHeight * 0.5, behavior: "instant" }),
     );

@@ -61,6 +61,18 @@ export function HeroCopy() {
       >
         {HERO_COPY.monoLine}
       </p>
+      <p
+        data-beat-one
+        className="hero-beat absolute top-1/2 left-1/2 w-[min(88vw,36rem)] -translate-x-1/2 -translate-y-1/2 text-center font-display text-2xl leading-tight font-bold text-bone-hi opacity-0 font-stretch-expanded sm:text-3xl lg:text-4xl"
+      >
+        {HERO_COPY.beatOne}
+      </p>
+      <p
+        data-beat-two
+        className="hero-beat absolute top-1/2 left-1/2 w-[min(88vw,40rem)] -translate-x-1/2 -translate-y-1/2 text-center font-display text-xl leading-tight font-bold text-bone-hi opacity-0 font-stretch-expanded sm:text-2xl lg:text-3xl"
+      >
+        {HERO_COPY.beatTwo}
+      </p>
       <span
         data-hero-cue
         aria-hidden="true"

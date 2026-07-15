@@ -167,6 +167,60 @@
   will-change: mask-image;
 }
 
+/* Treated robot state for viewports without the robot canvas. Under
+   motion on small viewports the wipe mask converts the frame to this
+   green-deep tint with a slight contrast lift, so the moment still
+   reads without a second video half. Under reduced motion it becomes a
+   full frame layer at every width and scroll drives only its opacity. */
+[data-hero-treat] {
+  background: rgb(11 61 42 / 0.18);
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-hero-treat] {
+    opacity: 1;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 0,
+      #000 var(--wipe),
+      transparent var(--wipe)
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      #000 0,
+      #000 var(--wipe),
+      transparent var(--wipe)
+    );
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-backdrop-filter: contrast(1.06);
+    backdrop-filter: contrast(1.06);
+  }
+}
+@media (prefers-reduced-motion: no-preference) and (min-width: 1024px) {
+  /* Desktop motion converts to the real robot canvas instead. */
+  [data-hero-treat] {
+    display: none;
+  }
+}
+
+/* Beat copy sits over live footage that swings from near black to bright
+   decking; the shadow keeps it readable on both without a scrim panel. */
+.hero-beat {
+  text-shadow:
+    0 1px 2px rgb(12 11 9 / 0.9),
+    0 2px 6px rgb(12 11 9 / 0.75),
+    0 0 32px rgb(12 11 9 / 0.7);
+}
+
+/* The 1px sweep line carries the wipe; a soft green glow keeps it
+   readable over bright frames without thickening the line itself. */
+[data-wipe-line] {
+  box-shadow:
+    0 0 12px 2px rgb(62 155 107 / 0.95),
+    0 0 36px 6px rgb(62 155 107 / 0.55);
+}
+
 /* Breathing scroll cue under the hero mono line. */
 @keyframes hero-cue-breathe {
   from {
