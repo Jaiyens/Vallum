@@ -1,5 +1,9 @@
 // Site-wide constants. Placeholders are marked; replace before launch.
 
+// PLACEHOLDER: swap for the production domain. Absolute open graph URLs
+// resolve against this.
+export const SITE_URL = "https://SITE_URL_PLACEHOLDER.vercel.app";
+
 // PLACEHOLDER: swap for the real cal.com booking URL.
 export const CAL_COM_LINK = "https://cal.com/CAL_COM_LINK_PLACEHOLDER";
 

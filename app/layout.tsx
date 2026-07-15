@@ -3,6 +3,7 @@ import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { ScrollRefresh } from "@/components/scroll-refresh";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -30,9 +31,16 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Vallum Labs: the physical internet for dangerous outdoor work",
+  metadataBase: new URL(SITE_URL),
+  title: "Vallum Labs: physical AI data for the outdoor economy",
   description:
-    "Vallum collects consent-cleared, action-labeled, first-person video of real dangerous outdoor work and licenses it to robotics foundation-model labs.",
+    "Vallum records the people who still do dangerous outdoor work and turns that footage into physical AI training data for robotics labs.",
+  openGraph: {
+    title: "Vallum Labs: physical AI data for the outdoor economy",
+    description:
+      "Vallum records the people who still do dangerous outdoor work and turns that footage into physical AI training data for robotics labs.",
+    images: [{ url: "/hero/hero-poster.jpg", width: 1280, height: 720 }],
+  },
 };
 
 export default function RootLayout({
