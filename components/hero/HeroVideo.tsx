@@ -63,6 +63,7 @@ export function HeroVideo({
         v.appendChild(el);
       }
       v.load();
+      v.playbackRate = 1;
       v.play().catch(() => {
         // Autoplay refusals leave the poster up, which is acceptable.
       });

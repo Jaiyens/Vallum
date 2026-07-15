@@ -9,4 +9,6 @@ export const HERO_COPY = {
   beatTwo:
     "We do not build them. We record the people who still do this, so they can learn it.",
   tempContact: "contact jay at [PLACEHOLDER, Jay fills it]",
+  stateTagHuman: "HUMAN CREW",
+  stateTagRobot: "ROBOT TWIN",
 } as const;

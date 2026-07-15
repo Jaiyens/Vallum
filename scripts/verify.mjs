@@ -21,6 +21,8 @@ for (const width of WIDTHS) {
   });
   const consoleMsgs = [];
   const pageErrors = [];
+  const checks = [];
+  const check = (name, pass, detail = "") => checks.push({ name, pass, detail });
   page.on("console", (m) => {
     if (m.type() === "error" || m.type() === "warning") {
       consoleMsgs.push({ type: m.type(), text: m.text().slice(0, 500) });
@@ -33,54 +35,61 @@ for (const width of WIDTHS) {
 
   await page.screenshot({ path: `${OUT}/${tag}-load.png` });
 
-  // Hero pin states. The hero pins for about 100vh from the top of the
-  // page, so viewport-height offsets from 0 land inside and past the pin.
-  // Selectors are defensive: every state skips cleanly while the hero is
-  // not built yet.
+  // Hero pin states. The hero pins for 250% of the viewport height, so
+  // pin progress p maps to scrollY = p * 2.5 * vh. Selectors are
+  // defensive: every state skips cleanly if the hero is absent.
   const hasHero = await page.evaluate(
     () => !!document.querySelector("[data-hero-root]"),
   );
   if (hasHero) {
-    // Pause on a real block (11.5s = LOAD-BEARING iron) so the human and
-    // robot layers are visibly different in every pinned state shot.
-    if (!REDUCED) {
+    const scrollToP = async (p) => {
+      await page.evaluate(
+        (top) => window.scrollTo({ top, behavior: "instant" }),
+        Math.round(800 * 2.5 * p),
+      );
+    };
+
+    if (!REDUCED && width >= 1024) {
+      // Slow-mo engage: play inside the LOAD-BEARING iron block and hover
+      // the beam crew. The film must ease into slow motion and the lens
+      // must show the robot twin.
       await page.evaluate(() => {
         const v = document.querySelector("[data-hero-root] video");
         if (v) {
-          v.pause();
-          v.currentTime = 11.5;
+          v.currentTime = 10.6;
+          v.play().catch(() => {});
         }
       });
-      await page.waitForTimeout(500); // seek + repaint
+      await page.mouse.move(Math.round(width * 0.4), 240);
+      await page.waitForTimeout(900);
+      const engaged = await page.evaluate(() => {
+        const v = document.querySelector("[data-hero-root] video");
+        return v ? v.playbackRate : null;
+      });
+      check("slowmo-engaged", engaged !== null && engaged < 0.5, `rate=${engaged}`);
+      await page.screenshot({ path: `${OUT}/${tag}-hero-lens-slowmo.png` });
+
+      // Retirement: scrolling past the threshold must release slow motion
+      // and hide the ring.
+      await scrollToP(0.15);
+      await page.waitForTimeout(800);
+      const retired = await page.evaluate(() => {
+        const v = document.querySelector("[data-hero-root] video");
+        const ring = document.querySelector("[data-lens-ring]");
+        return {
+          rate: v ? v.playbackRate : null,
+          ringOpacity: ring ? getComputedStyle(ring).opacity : null,
+        };
+      });
+      check(
+        "lens-retired",
+        retired.rate !== null && retired.rate >= 0.95 && retired.ringOpacity === "0",
+        JSON.stringify(retired),
+      );
     }
 
-    // p=0.18: sweep line mid frame, beatOne centered.
-    await page.evaluate(() =>
-      window.scrollTo({ top: window.innerHeight * 0.18, behavior: "instant" }),
-    );
-    await page.waitForTimeout(600);
-    await page.screenshot({ path: `${OUT}/${tag}-hero-wipe-mid.png` });
-
-    await page.evaluate(() =>
-      window.scrollTo({ top: window.innerHeight * 0.5, behavior: "instant" }),
-    );
-    await page.waitForTimeout(600);
-    await page.screenshot({ path: `${OUT}/${tag}-hero-mid-pin.png` });
-
-    await page.evaluate(() =>
-      window.scrollTo({ top: window.innerHeight * 1.05, behavior: "instant" }),
-    );
-    await page.waitForTimeout(600);
-    await page.screenshot({ path: `${OUT}/${tag}-hero-post-wipe.png` });
-
-    // Cursor lens reveal: desktop, motion mode only. A real mouse move to
-    // viewport center must light the reveal layer and the lens ring. The
-    // video pauses on a real block first (11.5s = LOAD-BEARING iron) so
-    // the human and robot halves are visibly different in the shot.
-    if (width >= 1024 && !REDUCED) {
-      await page.evaluate(() =>
-        window.scrollTo({ top: 0, behavior: "instant" }),
-      );
+    if (!REDUCED) {
+      // Pause on the hold frame so beat shots are deterministic.
       await page.evaluate(() => {
         const v = document.querySelector("[data-hero-root] video");
         if (v) {
@@ -88,18 +97,84 @@ for (const width of WIDTHS) {
           v.currentTime = 11.5;
         }
       });
-      await page.waitForTimeout(500); // seek + repaint
-      // Aim at the beam crew upper left of center: at 11.5s the human
-      // and robot plates visibly differ there, so the reveal is provable
-      // in the screenshot.
-      await page.mouse.move(Math.round(width * 0.4), 240);
-      await page.waitForTimeout(450); // quickTo settle
-      await page.screenshot({ path: `${OUT}/${tag}-hero-lens.png` });
+      await page.waitForTimeout(500);
+    }
+
+    await scrollToP(0.28);
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: `${OUT}/${tag}-hero-beat-one.png` });
+
+    await scrollToP(0.54);
+    await page.waitForTimeout(700);
+    if (!REDUCED) {
+      const frozen = await page.evaluate(() => {
+        const v = document.querySelector("[data-hero-root] video");
+        return v ? { paused: v.paused, t: v.currentTime } : null;
+      });
+      check(
+        "switch-frozen",
+        frozen !== null && frozen.paused && Math.abs(frozen.t - 11.5) < 0.1,
+        JSON.stringify(frozen),
+      );
+    } else {
+      const treat = await page.evaluate(() => {
+        const el = document.querySelector("[data-hero-treat]");
+        return el ? parseFloat(getComputedStyle(el).opacity) : null;
+      });
+      check(
+        "reduced-treat-mid",
+        treat !== null && treat > 0.2 && treat < 0.8,
+        `opacity=${treat}`,
+      );
+    }
+    await page.screenshot({ path: `${OUT}/${tag}-hero-switch-frozen.png` });
+
+    await scrollToP(0.75);
+    await page.waitForTimeout(700);
+    if (!REDUCED) {
+      const post = await page.evaluate(() => {
+        const v = document.querySelector("[data-hero-root] video");
+        const ring = document.querySelector("[data-lens-ring]");
+        return {
+          paused: v ? v.paused : null,
+          rate: v ? v.playbackRate : null,
+          ringOpacity: ring ? getComputedStyle(ring).opacity : "0",
+        };
+      });
+      check(
+        "post-switch-playing",
+        post.paused === false && post.rate === 1 && post.ringOpacity === "0",
+        JSON.stringify(post),
+      );
+      // Freeze the frame again for a deterministic screenshot.
+      await page.evaluate(() => {
+        const v = document.querySelector("[data-hero-root] video");
+        if (v) v.pause();
+      });
+    } else {
+      const tagState = await page.evaluate(() => {
+        const robot = document.querySelector("[data-tag-robot]");
+        return robot ? parseFloat(getComputedStyle(robot).opacity) : null;
+      });
+      check(
+        "reduced-robot-tag",
+        tagState !== null && tagState > 0.9,
+        `opacity=${tagState}`,
+      );
+    }
+    await page.screenshot({ path: `${OUT}/${tag}-hero-post-switch.png` });
+    if (!REDUCED) {
       await page.evaluate(() => {
         const v = document.querySelector("[data-hero-root] video");
         if (v) v.play().catch(() => {});
       });
     }
+
+    await page.evaluate(() =>
+      window.scrollTo({ top: Math.round(800 * 2.6), behavior: "instant" }),
+    );
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: `${OUT}/${tag}-hero-post-pin.png` });
   }
 
   // Rig states: mid-scrub and final frame. The pin block only exists on
@@ -172,7 +247,14 @@ for (const width of WIDTHS) {
   });
 
   await page.screenshot({ path: `${OUT}/${tag}-full.png`, fullPage: true });
-  summary.push({ width, reduced: REDUCED, consoleMsgs, pageErrors, overflow });
+  summary.push({
+    width,
+    reduced: REDUCED,
+    consoleMsgs,
+    pageErrors,
+    overflow,
+    checks,
+  });
   await page.close();
 }
 
@@ -183,16 +265,18 @@ const bad = summary.filter(
   (s) =>
     s.pageErrors.length > 0 ||
     s.overflow.hasOverflow ||
-    s.consoleMsgs.some((m) => m.type === "error"),
+    s.consoleMsgs.some((m) => m.type === "error") ||
+    s.checks.some((c) => !c.pass),
 );
 console.log(
   JSON.stringify(
-    summary.map(({ width, consoleMsgs, pageErrors, overflow }) => ({
+    summary.map(({ width, consoleMsgs, pageErrors, overflow, checks }) => ({
       width,
       errors: consoleMsgs.filter((m) => m.type === "error").length,
       warnings: consoleMsgs.filter((m) => m.type === "warning").length,
       pageErrors: pageErrors.length,
       hasOverflow: overflow.hasOverflow,
+      checks: checks.map((c) => `${c.pass ? "ok" : "FAIL"}:${c.name}${c.pass ? "" : ` ${c.detail}`}`),
     })),
     null,
     2,

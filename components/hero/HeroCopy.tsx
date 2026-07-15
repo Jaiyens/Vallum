@@ -78,6 +78,21 @@ export function HeroCopy() {
         aria-hidden="true"
         className="hero-cue absolute bottom-3 left-1/2 h-6 w-px -translate-x-1/2 bg-bone/40"
       />
+      <div
+        data-state-tag
+        aria-hidden="true"
+        className="absolute bottom-8 left-6 font-mono text-[11px] tracking-wider whitespace-nowrap uppercase opacity-0 lg:left-10"
+      >
+        <span data-tag-human className="block text-mono-anno">
+          {HERO_COPY.stateTagHuman}
+        </span>
+        <span
+          data-tag-robot
+          className="absolute inset-0 text-mono-anno opacity-0"
+        >
+          {HERO_COPY.stateTagRobot}
+        </span>
+      </div>
     </div>
   );
 }

@@ -142,25 +142,38 @@
   opacity: 0;
 }
 
-/* Robot reveal layer masks. The radial layer is the cursor lens; the
-   linear layer is the scroll wipe. Multiple mask layers union by default,
-   which is exactly the behavior both effects need. The canvas itself
-   never moves; only the variables animate. */
+/* Robot reveal layer masks. The radial layer is the cursor lens (radius
+   --lr so the ring and the hole share one size source); the linear layer
+   is the freeze-compare wipe with a soft feathered edge. --wipe runs from
+   -3% to 103% so the feather fully clears both edges. Percent-only math:
+   a px feather leaks a sliver on short viewports. Multiple mask layers
+   union by default, which is exactly the behavior both effects need. The
+   canvas itself never moves; only the variables animate. */
 [data-robot-canvas] {
   -webkit-mask-image:
     radial-gradient(
       circle at var(--lx) var(--ly),
-      #000 0 90px,
-      transparent 90px
+      #000 0 var(--lr, 90px),
+      transparent var(--lr, 90px)
     ),
-    linear-gradient(to bottom, #000 0, #000 var(--wipe), transparent var(--wipe));
+    linear-gradient(
+      to bottom,
+      #000 0,
+      #000 calc(var(--wipe) - 3%),
+      transparent calc(var(--wipe) + 3%)
+    );
   mask-image:
     radial-gradient(
       circle at var(--lx) var(--ly),
-      #000 0 90px,
-      transparent 90px
+      #000 0 var(--lr, 90px),
+      transparent var(--lr, 90px)
     ),
-    linear-gradient(to bottom, #000 0, #000 var(--wipe), transparent var(--wipe));
+    linear-gradient(
+      to bottom,
+      #000 0,
+      #000 calc(var(--wipe) - 3%),
+      transparent calc(var(--wipe) + 3%)
+    );
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   transform: translateZ(0);
@@ -173,7 +186,7 @@
    reads without a second video half. Under reduced motion it becomes a
    full frame layer at every width and scroll drives only its opacity. */
 [data-hero-treat] {
-  background: rgb(11 61 42 / 0.18);
+  background: rgb(11 61 42 / 0.3);
   opacity: 0;
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -182,14 +195,14 @@
     -webkit-mask-image: linear-gradient(
       to bottom,
       #000 0,
-      #000 var(--wipe),
-      transparent var(--wipe)
+      #000 calc(var(--wipe) - 3%),
+      transparent calc(var(--wipe) + 3%)
     );
     mask-image: linear-gradient(
       to bottom,
       #000 0,
-      #000 var(--wipe),
-      transparent var(--wipe)
+      #000 calc(var(--wipe) - 3%),
+      transparent calc(var(--wipe) + 3%)
     );
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
@@ -211,14 +224,6 @@
     0 1px 2px rgb(12 11 9 / 0.9),
     0 2px 6px rgb(12 11 9 / 0.75),
     0 0 32px rgb(12 11 9 / 0.7);
-}
-
-/* The 1px sweep line carries the wipe; a soft green glow keeps it
-   readable over bright frames without thickening the line itself. */
-[data-wipe-line] {
-  box-shadow:
-    0 0 12px 2px rgb(62 155 107 / 0.95),
-    0 0 36px 6px rgb(62 155 107 / 0.55);
 }
 
 /* Breathing scroll cue under the hero mono line. */
