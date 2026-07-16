@@ -7,8 +7,7 @@ export const HERO_COPY = {
   monoLine: "physical ai data for the outdoor economy",
   beatOne: "This is the work humans were never meant to do.",
   beatTwo:
-    "We do not build them. We record the people who still do this, so they can learn it.",
-  tempContact: "contact jay at [PLACEHOLDER, Jay fills it]",
+    "Machines learn this work by watching it done. We film the people who still do it, so the machines can learn.",
   stateTagHuman: "HUMAN CREW",
   stateTagRobot: "ROBOT TWIN",
 } as const;

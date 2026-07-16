@@ -15,6 +15,12 @@
   --color-hairline: rgb(237 232 221 / 0.1);
   --color-mono-anno: #7fb79a;
 
+  /* Bone-surface palette (BRIEF.md). Forest is display ink and the one
+     permitted dark surface below the fold; forest-line is hairlines and
+     secondary text on bone. */
+  --color-forest: #16281d;
+  --color-forest-line: #2c4436;
+
   /* Compat aliases for the untouched rig section and the quarantined
      dataset section only. Retire in the dataset phase. The hazard token
      now points at green-signal so the old warm accent value is gone from

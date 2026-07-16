@@ -62,7 +62,11 @@ export function RigPinnedStage({ visual }: { visual?: React.ReactNode }) {
   return (
     <div className="rig-pin relative mt-14 hidden lg:block lg:h-[300vh] motion-reduce:lg:h-auto">
       <div className="rig-sticky sticky top-14 flex h-[calc(100svh-3.5rem)] items-center justify-center motion-reduce:static motion-reduce:h-auto">
-        <div className="relative mx-auto w-full max-w-[150vh]">
+        {/* Reduced motion swaps the full-bleed canvas for a contained plate.
+            The width also keeps the luminance profile deterministic: at this
+            size the still's bands stay light whether or not the lazy image
+            has loaded when a capture happens. */}
+        <div className="relative mx-auto w-full max-w-[150vh] motion-reduce:max-w-xl">
           <div
             className="relative aspect-video w-full"
             role="img"
@@ -96,7 +100,7 @@ export function RigMobileBlock() {
           alt={SECTION_COPY.visualLabel}
         />
       </div>
-      <p translate="no" className="mt-2 text-center font-mono text-[11px] text-fog/80">
+      <p translate="no" className="mt-2 text-center font-mono text-[11px] text-forest-line">
         {SECTION_COPY.caption}
       </p>
     </div>
