@@ -33,7 +33,7 @@ export function RobotRevealCanvas({
     let rafId = 0;
     let vfcId = 0;
 
-    const paint = () => {
+    const paint = (opaque = false) => {
       if (v.readyState < 2 || v.videoHeight === 0) return;
       const W = canvas.clientWidth;
       const H = canvas.clientHeight;
@@ -42,7 +42,13 @@ export function RobotRevealCanvas({
       const s = Math.max(W / sw, H / sh);
       const dw = sw * s;
       const dh = sh * s;
+      // Frame-echo motion blur under slow motion: each new frame
+      // dissolves through the previous composite instead of stepping,
+      // the canvas equivalent of shutter blur. Full speed and seeks
+      // paint opaque.
+      ctx.globalAlpha = !opaque && v.playbackRate < 0.95 ? 0.5 : 1;
       ctx.drawImage(v, 0, sh, sw, sh, (W - dw) / 2, (H - dh) / 2, dw, dh);
+      ctx.globalAlpha = 1;
     };
 
     const hasVfc = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
@@ -62,7 +68,9 @@ export function RobotRevealCanvas({
       canvas.width = Math.round(canvas.clientWidth * dpr);
       canvas.height = Math.round(canvas.clientHeight * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      paint();
+      // The resize wipes the canvas, so repaint opaque: an echo pass
+      // over a blank canvas would leave the layer half transparent.
+      paint(true);
     };
 
     const ro = new ResizeObserver(resize);
@@ -70,15 +78,17 @@ export function RobotRevealCanvas({
     resize();
 
     // Paused seeks still repaint, which keeps scrubbed verification and
-    // any future paused states honest.
-    v.addEventListener("seeked", paint);
+    // any future paused states honest. Seek paints are opaque so no echo
+    // of an unrelated frame survives the jump.
+    const onSeeked = () => paint(true);
+    v.addEventListener("seeked", onSeeked);
     loop();
 
     return () => {
       stop = true;
       if (hasVfc && vfcId) v.cancelVideoFrameCallback(vfcId);
       if (rafId) cancelAnimationFrame(rafId);
-      v.removeEventListener("seeked", paint);
+      v.removeEventListener("seeked", onSeeked);
       ro.disconnect();
     };
   }, [videoRef]);

@@ -41,18 +41,20 @@ const LENS_RESTORE = 0.04;
 const BAND_IN = 0.34;
 const BAND_OUT = 0.6;
 const EPS = 0.015;
-const RATE_SLOW = 0.35;
+// 0.5x is the floor of acceptability on a 24fps source: below that the
+// held frames read as stutter no matter the dressing (research verified).
+const RATE_SLOW = 0.5;
 const ENGAGE_DUR = 0.35;
 const RELEASE_DUR = 0.55;
 const RATE_CONVERT = 0.5;
 // Hit circle radius is constant so the hit area never feeds back from the
 // animating --lr; the release boundary is the rect expanded by the margin.
-const LR_HIT = 90;
+const LR_HIT = 60;
 const HYST_MARGIN = 24;
 const RING = {
-  passive: { r: 68, alpha: 0.6 },
-  armed: { r: 90, alpha: 1 },
-  engaged: { r: 102, alpha: 1 },
+  passive: { r: 44, alpha: 0.6 },
+  armed: { r: 60, alpha: 1 },
+  engaged: { r: 68, alpha: 1 },
 } as const;
 const RING_R_DUR = 0.35;
 const RING_ALPHA_DUR = 0.25;
@@ -139,7 +141,12 @@ export function HeroExperience() {
           let coverR = 0;
           let lastP = 0;
 
+          const veil = el("[data-focus-veil]");
+
           // ---- slow motion, eased both ways, never snapping ----
+          // The focus veil rides the same clock as the rate: the state
+          // change reads through the grade shift even while the source
+          // holds frames.
           const engageSlowmo = () => {
             slowmo = true;
             gsap.to(video, {
@@ -149,6 +156,14 @@ export function HeroExperience() {
               overwrite: "auto",
               onComplete: syncLens,
             });
+            if (veil) {
+              gsap.to(veil, {
+                autoAlpha: 1,
+                duration: ENGAGE_DUR,
+                ease: "power2.out",
+                overwrite: "auto",
+              });
+            }
           };
           // Never calls play(): a paused video must stay paused.
           const releaseSlowmo = () => {
@@ -163,11 +178,23 @@ export function HeroExperience() {
                 syncLens();
               },
             });
+            if (veil) {
+              gsap.to(veil, {
+                autoAlpha: 0,
+                duration: RELEASE_DUR,
+                ease: "power2.inOut",
+                overwrite: "auto",
+              });
+            }
           };
           const releaseSlowmoInstant = () => {
             slowmo = false;
             gsap.killTweensOf(video, "playbackRate");
             video.playbackRate = 1;
+            if (veil) {
+              gsap.killTweensOf(veil);
+              gsap.set(veil, { autoAlpha: 0 });
+            }
           };
 
           // Single writer for the ring and the shared radius variable.
@@ -552,7 +579,7 @@ export function HeroExperience() {
           {
             "--lx": "-9999px",
             "--ly": "-9999px",
-            "--lr": "90px",
+            "--lr": "60px",
           } as CSSProperties
         }
       >
@@ -562,6 +589,11 @@ export function HeroExperience() {
           data-hero-treat
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
+        />
+        <div
+          data-focus-veil
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-0"
         />
         <HeroCopy />
         <LensRing />

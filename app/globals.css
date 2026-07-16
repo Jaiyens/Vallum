@@ -167,6 +167,29 @@
   will-change: mask-image;
 }
 
+/* Focus veil: while slow motion is engaged, everything outside the lens
+   drops back with a soft blur, desaturation, and a vignette centered on
+   the lens. Inside the circle stays sharp. This narrows attention the
+   way game focus states do and hides frame stepping in the periphery,
+   where it is most visible. Desktop motion only; alpha is gsap-driven. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 1024px) {
+  [data-focus-veil] {
+    -webkit-mask-image: var(--lens-mask-inv);
+    mask-image: var(--lens-mask-inv);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-backdrop-filter: blur(3px) saturate(0.65) brightness(0.88);
+    backdrop-filter: blur(3px) saturate(0.65) brightness(0.88);
+    background: radial-gradient(
+      circle at var(--lx) var(--ly),
+      transparent 25%,
+      rgb(12 11 9 / 0.4) 100%
+    );
+    transform: translateZ(0);
+    will-change: mask-image, opacity;
+  }
+}
+
 /* Conversion band: the ring rides the expanding edge as a bare stroke.
    The interior tint would wash the whole revealed frame at cover radius
    and the ticks and readout are lens-scale UI, so both drop out. */

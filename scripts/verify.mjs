@@ -114,8 +114,8 @@ for (const width of WIDTHS) {
         v.rate >= 0.95 &&
           r.opacity > 0.45 &&
           r.opacity < 0.75 &&
-          r.lr > 62 &&
-          r.lr < 74,
+          r.lr > 38 &&
+          r.lr < 50,
         JSON.stringify({ rate: v.rate, ...r }),
       );
       const lensWord = await page.evaluate(() => {
@@ -132,30 +132,49 @@ for (const width of WIDTHS) {
       );
       await page.screenshot({ path: `${OUT}/${tag}-hero-lens-word.png` });
 
-      // Slow motion engages ONLY over a worker figure.
+      // Slow motion engages ONLY over a worker figure. Rate target is
+      // 0.5x and the focus veil must be up while engaged.
       await seekPlay(10.8);
       await page.mouse.move(IRON_HOT.x, IRON_HOT.y);
       await page.waitForTimeout(900);
       v = await video();
       r = await ringState();
+      const veilOn = await page.evaluate(() => {
+        const el = document.querySelector("[data-focus-veil]");
+        return el ? parseFloat(getComputedStyle(el).opacity) : null;
+      });
       check(
         "hotspot-engaged",
-        v.rate < 0.5 && r.lr > 96 && r.lr < 108,
-        JSON.stringify({ rate: v.rate, lr: r.lr }),
+        v.rate >= 0.4 &&
+          v.rate <= 0.6 &&
+          r.lr > 62 &&
+          r.lr < 74 &&
+          veilOn !== null &&
+          veilOn > 0.8,
+        JSON.stringify({ rate: v.rate, lr: r.lr, veil: veilOn }),
       );
       await page.screenshot({ path: `${OUT}/${tag}-hero-lens-slowmo.png` });
 
       // THE regression: moving the circle off the figure, still on the
       // film during a worker block, must release the slow motion while
-      // the ring stays armed.
+      // the ring stays armed and the veil drops.
       await page.mouse.move(COLD.x, COLD.y);
       await page.waitForTimeout(1000);
       v = await video();
       r = await ringState();
+      const veilOff = await page.evaluate(() => {
+        const el = document.querySelector("[data-focus-veil]");
+        return el ? parseFloat(getComputedStyle(el).opacity) : null;
+      });
       check(
         "off-figure-release",
-        v.rate >= 0.95 && r.opacity >= 0.9 && r.lr > 84 && r.lr < 96,
-        JSON.stringify({ rate: v.rate, ...r }),
+        v.rate >= 0.95 &&
+          r.opacity >= 0.9 &&
+          r.lr > 54 &&
+          r.lr < 66 &&
+          veilOff !== null &&
+          veilOff < 0.1,
+        JSON.stringify({ rate: v.rate, ...r, veil: veilOff }),
       );
 
       // A block change under a stationary cursor must release too.
@@ -250,7 +269,7 @@ for (const width of WIDTHS) {
         `opacity=${treat}`,
       );
       const r = await ringState();
-      check("reduced-lr-static", r.lr === 90, `lr=${r.lr}`);
+      check("reduced-lr-static", r.lr === 60, `lr=${r.lr}`);
     }
     await page.screenshot({ path: `${OUT}/${tag}-hero-conversion-mid.png` });
 
