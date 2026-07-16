@@ -8,7 +8,6 @@ import { AutoPauseVideo } from "@/components/media/auto-pause-video";
 import { GALLERY_VIDEO } from "@/lib/assets";
 import {
   type GalleryPanelContent,
-  isStatPanel,
   panelLabel,
 } from "@/src/content/gallery";
 import {
@@ -65,9 +64,11 @@ export function StatTakeover({
   const closingRef = useRef(false);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
 
-  const stat = isStatPanel(panel);
-  const primaryText = stat ? panel.stat : panel.description;
-  const sourceText = stat ? panel.source : null;
+  // Every panel carries a statistic now; the takeover always renders the full
+  // stat, its source, and (for logging) a secondary cited figure.
+  const primaryText = panel.stat;
+  const sourceText = panel.source;
+  const secondary = panel.secondary ?? null;
 
   // Scroll lock. lenis.stop() halts the inertial glide; the overflow lock
   // covers keyboard scrolling and reduced motion where Lenis never mounted.
@@ -297,9 +298,7 @@ export function StatTakeover({
     />
   );
 
-  const primarySize = stat
-    ? { fontSize: "clamp(30px, 5.2vw, 60px)", lineHeight: 1.08 }
-    : { fontSize: "clamp(22px, 3vw, 34px)", lineHeight: 1.25 };
+  const primarySize = { fontSize: "clamp(30px, 5.2vw, 60px)", lineHeight: 1.08 };
 
   return createPortal(
     <div
@@ -321,6 +320,12 @@ export function StatTakeover({
       <div className="sr-only">
         <p>{primaryText}</p>
         {sourceText ? <p>{sourceText}</p> : null}
+        {secondary ? (
+          <>
+            <p>{secondary.stat}</p>
+            <p>{secondary.source}</p>
+          </>
+        ) : null}
       </div>
       <div className="pointer-events-none relative z-10 mx-auto flex h-full w-full max-w-site flex-col justify-center gap-6 px-4 md:flex-row md:items-center md:gap-12 md:px-6">
         <div
@@ -358,7 +363,7 @@ export function StatTakeover({
             </p>
             <p
               aria-hidden="true"
-              className={`absolute inset-0 whitespace-pre-wrap text-left font-display ${stat ? "text-bone-hi" : "text-bone"}`}
+              className="absolute inset-0 whitespace-pre-wrap text-left font-display text-bone-hi"
               style={primarySize}
             >
               <span ref={primarySpanRef}>{instant ? primaryText : null}</span>
@@ -376,6 +381,20 @@ export function StatTakeover({
               >
                 <span ref={sourceSpanRef}>{instant ? sourceText : null}</span>
                 {caret(caretSourceRef)}
+              </p>
+            </div>
+          ) : null}
+          {secondary ? (
+            <div className="mt-6 border-t border-hairline pt-4">
+              <p
+                aria-hidden="true"
+                className="font-display text-bone"
+                style={{ fontSize: "clamp(16px, 1.8vw, 20px)", lineHeight: 1.2 }}
+              >
+                {secondary.stat}
+              </p>
+              <p aria-hidden="true" className="mt-2 font-mono text-sm text-bone-dim">
+                {secondary.source}
               </p>
             </div>
           ) : null}

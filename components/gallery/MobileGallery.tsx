@@ -44,8 +44,22 @@ export function MobileGallery({ onOpen }: { onOpen: (index: number) => void }) {
                 loading="lazy"
                 className="absolute inset-0 h-full w-full object-cover"
               />
-              <span className="absolute bottom-2 left-2 text-sm text-bone">
-                {panel.industry}
+              {/* Recipe A stat band, same mechanism as the orbiting panels. */}
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 bottom-0 rounded-b-panel px-3 pb-2.5 pt-2 text-left"
+                style={{
+                  backgroundColor: "rgba(12,11,9,0.62)",
+                  WebkitBackdropFilter: "blur(20px) saturate(50%)",
+                  backdropFilter: "blur(20px) saturate(50%)",
+                }}
+              >
+                <span className="block font-mono text-[10px] leading-none tracking-wide text-bone-dim">
+                  {panel.industry}
+                </span>
+                <span className="mt-1.5 block font-display text-[15px] font-medium leading-tight text-bone">
+                  {panel.headline}
+                </span>
               </span>
             </button>
           );

@@ -2,7 +2,17 @@
 // assets-src/new-rig-silent.mp4 at 10fps, 1280px wide, webp q70, with
 // near-identical head frames trimmed (SSIM >= 0.99 against neighbors).
 // Frame 000 is the true closed unit; the last frame is the true exploded
-// state and matches /rig/rig-exploded.png exactly.
+// state and matches /rig/rig-exploded-forest.png exactly.
+//
+// F-0421 (founder correction): the baked charcoal backdrop read off-palette
+// and the render's amber/orange connector accents are a banned hue site-wide.
+// frames-forest/ is a per-pixel graded pass of the same 56 frames: the
+// backdrop is recast into the forest family (targeting forest #16281D at its
+// darkest, keeping the original radial falloff), device blacks/gunmetal are
+// preserved by tapering the tint off at the lightness band where the metal
+// highlights read as lit, and the amber accents are desaturated toward
+// neutral/forest. Originals stay at frames/frame-*.webp untouched; do not
+// repoint this manifest back without re-checking the founder's palette call.
 
 export const FRAME_COUNT = 56;
 
@@ -10,13 +20,13 @@ export const FRAME_WIDTH = 1280;
 export const FRAME_HEIGHT = 720;
 
 export function framePath(i: number) {
-  return `/rig/frames/frame-${String(i).padStart(3, "0")}.webp`;
+  return `/rig/frames-forest/frame-${String(i).padStart(3, "0")}.webp`;
 }
 
 // The closed webp is a byte-for-byte copy of frame 000, so the poster and
 // the canvas's first drawn frame decode to identical pixels. Same deal for
 // the exploded webp and the last frame.
 export const RIG_STILLS = {
-  closed: { webp: "/rig/rig-closed.webp", png: "/rig/rig-closed.png" },
-  exploded: { webp: "/rig/rig-exploded.webp", png: "/rig/rig-exploded.png" },
+  closed: { webp: "/rig/rig-closed-forest.webp", png: "/rig/rig-closed-forest.png" },
+  exploded: { webp: "/rig/rig-exploded-forest.webp", png: "/rig/rig-exploded-forest.png" },
 } as const;

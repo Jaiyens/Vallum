@@ -32,9 +32,11 @@ export const SHOWCASE_VIDEO = {
   },
 } satisfies Record<string, VideoAsset>;
 
-// Problem section gallery loops. Real panels (p1, p2, p5, p8) are conform
-// passes over finished human clips in the shift workspace; AI panels (p3,
-// p4, p6, p7) are generated unpopulated environments.
+// Problem section gallery loops. Real panels (p1, p2, p8) are conform passes
+// over finished human clips in the shift workspace; AI panels (p3, p4, p5, p6,
+// p7) are generated unpopulated environments. p5 and p6 point at the delivered
+// heat and air plates (2026-07-16); every AI plate is people-free by the
+// provenance law.
 export const GALLERY_VIDEO = {
   p1: {
     mp4: "/gallery/p1.mp4",
@@ -57,14 +59,14 @@ export const GALLERY_VIDEO = {
     label: "Wooden fishing canoes beached on a grey shore",
   },
   p5: {
-    mp4: "/gallery/p5.mp4",
-    poster: "/gallery/p5.webp",
-    label: "Crew installing solar panels on a steep roof",
+    mp4: "/gallery/p-heat.mp4",
+    poster: "/gallery/p-heat.webp",
+    label: "Parched, cracked earth in a drought-struck olive grove under a hot hazy sky, no people in frame",
   },
   p6: {
-    mp4: "/gallery/p6.mp4",
-    poster: "/gallery/p6.webp",
-    label: "Industrial yard in thick haze, cranes as silhouettes",
+    mp4: "/gallery/p-air.mp4",
+    poster: "/gallery/p-air.webp",
+    label: "Dust and haze drifting through an empty cement plant of silos and conveyors, no people in frame",
   },
   p7: {
     mp4: "/gallery/p7.mp4",

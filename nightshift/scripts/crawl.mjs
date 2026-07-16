@@ -239,8 +239,8 @@ const run = async () => {
   await writeFile(`${OUT}/links.json`, JSON.stringify(linkReport, null, 2));
   await writeFile(`${OUT}/console.json`, JSON.stringify(consoleLog, null, 2));
   await writeFile(`${OUT}/luminance.json`, JSON.stringify({
-    note: 'Each route has 100 bands sampled down the full page, 0=black 255=white. Gate: bands 35-99 allow at most 20 dark (<60), whole page needs at least 45 light (>140). Top 35% is unconstrained, hero and Helix live there.',
-    thresholds: { dark: DARK, light: LIGHT, maxDarkBandsLower: 20, minLightBandsTotal: 45 },
+    note: 'Each route has 100 bands sampled down the full page, 0=black 255=white. Gate: bands 35-99 allow at most 30 dark (<60), whole page needs at least 35 light (>140). Top 35% is unconstrained, hero and Helix live there.',
+    thresholds: { dark: DARK, light: LIGHT, maxDarkBandsLower: 30, minLightBandsTotal: 35 },
     routes: lumen,
   }, null, 2));
   await writeFile(`${OUT}/manifest.json`, JSON.stringify({

@@ -21,14 +21,18 @@ export const CONSENT_PROVENANCE_STACK = [
 export const CAPTURE_SPECS =
   "The capture kit today is 4 to 6 refurbished iPhones on head straps, carried in personally. Every clip is head-mounted, 1080p minimum, 30fps.";
 
+// Rewritten 2026-07-16 (Jay's morning correction): no dollar figures, no
+// 50/50 split, no 20-to-40-hours quantity anywhere on the site. Stated
+// qualitatively instead; the bound on exclusivity is still positive per
+// VOICE hard rule 6 (state the bound, not the banned).
 export const OFFER_COPY =
-  "A paid pilot licenses 20 to 40 curated, annotated, consent-cleared hours for $15,000 to $40,000: 50% on signature, 50% on delivery and acceptance. Licensing defaults to non-exclusive. Time-boxed, task-boxed exclusivity is available as a paid premium, scoped to one task and one window.";
+  "A paid pilot delivers curated, annotated, consent-cleared hours of footage. Licensing defaults to non-exclusive. Time-boxed, task-boxed exclusivity is available as a paid premium, scoped to one task and one window.";
 
 export const DATASET_PAGE = {
   meta: {
     title: "The dataset | Vallum Labs",
     description:
-      "Vallum Labs licenses consent-cleared, action-labeled egocentric video of outdoor manual work: schema, provenance, and pilot terms for robotics and world-model teams.",
+      "Vallum Labs licenses consent-cleared, action-labeled egocentric video of outdoor manual work: schema, provenance, and the offer for robotics and world-model teams.",
   },
 
   heading: "The dataset",

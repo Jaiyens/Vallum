@@ -13,19 +13,19 @@ export const WORDMARK_CLASS =
   "absolute left-1/2 bottom-14 lg:bottom-10 -translate-x-1/2 font-display text-[8vw] leading-none font-bold tracking-[0.06em] whitespace-nowrap uppercase select-none font-stretch-expanded";
 
 // The overgrown wordmark revealed inside the lens: the letters wrapped in
-// vines and gears, cut out from the key art. Sized so the image LETTER
-// ink matches the text letter ink, not the box: the text caps measure
-// 68.4% of the em (5.47vw at the 8vw font, re-derived from the F-0902
-// two-word fix; was 9.24vw at 13.5vw), the asset's letters 73.6% of its
-// height, so 36.7vw (was 62vw) puts the two ink heights equal. Both
-// containers share the bottom anchor, and the asset's own padding below
-// its letters (3.79% of width) lands within a pixel of the text descent
-// gap at that scale, so the baselines align with no nudge. Re-derive both
-// numbers if the asset or the wordmark typography changes. NOTE: the
-// asset itself is still the bare "VALLUM" key art (no "Labs"); this only
-// re-matches its scale to the corrected text, it does not fix the
-// content mismatch, that needs a new render of the key art (see F-0902).
-export const LENS_WORDMARK_SRC = "/hero/wordmark-vines.webp";
+// vines and gears, cut out from the key art. Now the full two-word "VALLUM
+// LABS" key art (F-0902 resolved 2026-07-16), so the lens swap reads the same
+// words as the typed wordmark. Same canvas as the old art (2978x603), but the
+// two words make the letter caps shorter: measured cap height is 52.24% of the
+// image height (was 74.3% for the one-word art). Matching the text caps
+// (5.52vw at the 8vw font) therefore needs width 52vw (was 36.7vw). The word
+// aspect of the art (8.54) matches the text wordmark, so that one width lines
+// up both the letter height and the letter width. The art also carries more
+// empty canvas below its letters (letters end at 69.7% vs 80.9% before), so a
+// 1.8vw downward nudge drops the letter baseline onto the text baseline that
+// the shared bottom anchor otherwise leaves 1.8vw high. Re-derive all three
+// numbers (width, aspect, nudge) if the art or the wordmark typography changes.
+export const LENS_WORDMARK_SRC = "/hero/wordmark-vines-labs.webp";
 
 // Entrance art direction. The wordmark types on letter by letter: each
 // char lands whole, no fade, at a slow deliberate cadence. Total read is
@@ -37,10 +37,12 @@ const ENTRANCE = {
   fallbackFade: 1.2,
 } as const;
 
-// Wordmark, mono line, cue, beats, and state tags. The entrance fires on
-// load only, never on scroll. The CSS initial state hides the wordmark
-// only when motion is allowed, so reduced motion and no-JS render the
-// resolved letters instantly with no flash.
+// Wordmark, cue, beats, and state tags. The bottom mono line is gone (Jay's
+// 2026-07-16 correction); its element is removed rather than rendered empty,
+// and HeroExperience's monoline setter degrades to a no-op when the node is
+// absent. The entrance fires on load only, never on scroll. The CSS initial
+// state hides the wordmark only when motion is allowed, so reduced motion and
+// no-JS render the resolved letters instantly with no flash.
 export function HeroCopy() {
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -105,12 +107,6 @@ export function HeroCopy() {
         </h1>
       </div>
       <p
-        data-hero-monoline
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 font-mono text-xs whitespace-nowrap text-bone-dim sm:text-sm"
-      >
-        {HERO_COPY.monoLine}
-      </p>
-      <p
         data-beat-one
         className="hero-beat absolute top-1/2 left-1/2 w-[min(88vw,36rem)] -translate-x-1/2 -translate-y-1/2 text-center font-display text-2xl leading-tight font-bold text-bone-hi opacity-0 font-stretch-expanded sm:text-3xl lg:text-4xl"
       >
@@ -157,7 +153,7 @@ export function HeroCopy() {
             draggable={false}
             loading="lazy"
             decoding="async"
-            className="h-auto w-[36.7vw] max-w-none select-none"
+            className="h-auto w-[52vw] max-w-none translate-y-[1.8vw] select-none"
           />
         </div>
       </div>

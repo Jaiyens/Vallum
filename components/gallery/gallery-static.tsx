@@ -1,8 +1,6 @@
 import {
   GALLERY_CENTERPIECE,
   GALLERY_PANELS,
-  LEDGER_STATS,
-  isStatPanel,
   panelLabel,
 } from "@/src/content/gallery";
 import { GALLERY_VIDEO } from "@/lib/assets";
@@ -31,22 +29,24 @@ export function StaticCenterLine({ className = "" }: { className?: string }) {
   );
 }
 
-// The two ledgered statistics as always-visible caption text (F-0501). The
-// argument of beat 2 lands here for a reader who never orbits: two cited
-// numbers at their real size, stated once, unornamented.
-export function GalleryLedger({ className = "" }: { className?: string }) {
+// A visually hidden roll-up of every panel's industry, statistic, and source.
+// The bottom ledger strip is gone (Jay's 2026-07-16 correction), so this is
+// where a screen reader still gets all eight cited numbers as a single list,
+// mounted once on the section for every mode.
+export function StatsSummary() {
   return (
-    <dl
-      className={`mx-auto grid max-w-2xl gap-6 sm:grid-cols-2 ${className}`}
-      aria-label="Verified fatality rates for this work"
-    >
-      {LEDGER_STATS.map((panel) => (
+    <dl className="sr-only" aria-label="Verified fatality figures for this work">
+      {GALLERY_PANELS.map((panel) => (
         <div key={panel.id}>
-          <dt className="text-sm text-bone">{panel.industry}</dt>
-          <dd className="mt-2 text-[15px] leading-relaxed text-bone">
-            {panel.stat}
+          <dt>{panel.industry}</dt>
+          <dd>
+            {panel.stat} Source: {panel.source}.
           </dd>
-          <dd className="mt-1 font-mono text-xs text-bone-dim">{panel.source}</dd>
+          {panel.secondary ? (
+            <dd>
+              {panel.secondary.stat} Source: {panel.secondary.source}.
+            </dd>
+          ) : null}
         </div>
       ))}
     </dl>
@@ -59,9 +59,13 @@ export function GalleryLedger({ className = "" }: { className?: string }) {
 export function PosterGrid({
   onOpen,
   withNoJsCopy = false,
+  showStat = false,
 }: {
   onOpen?: (panelId: string) => void;
   withNoJsCopy?: boolean;
+  // Reduced motion renders the full statistic and source under every card, so
+  // all eight cited numbers read statically with no orbit and no click.
+  showStat?: boolean;
 }) {
   return (
     <ul className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -76,6 +80,26 @@ export function PosterGrid({
               loading="lazy"
               className="absolute inset-0 h-full w-full object-cover"
             />
+            {/* The stat band, mirrored from the orbiting panel so the reduced
+                motion and fallback grids carry the number on the card too. */}
+            <span
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-0 rounded-b-panel px-2.5 pb-2 pt-1.5 text-left"
+              style={{
+                backgroundColor: "rgba(12,11,9,0.62)",
+                WebkitBackdropFilter: "blur(16px) saturate(50%)",
+                backdropFilter: "blur(16px) saturate(50%)",
+              }}
+            >
+              <span className="block font-mono text-[10px] leading-none tracking-wide text-bone-dim">
+                {panel.industry}
+              </span>
+              <span
+                className="mt-1 block font-display text-[13px] font-medium leading-tight text-bone"
+              >
+                {panel.headline}
+              </span>
+            </span>
           </span>
         );
         return (
@@ -92,19 +116,30 @@ export function PosterGrid({
             ) : (
               image
             )}
-            <p className="mt-2 text-sm text-bone-dim">{panel.industry}</p>
-            {withNoJsCopy ? (
-              <span className="gallery-nojs-copy mt-1 text-sm text-bone">
-                {isStatPanel(panel) ? (
+            {showStat ? (
+              <div className="mt-2">
+                <p className="text-sm leading-snug text-bone">{panel.stat}</p>
+                <p className="mt-1 font-mono text-xs text-bone-dim">
+                  {panel.source}
+                </p>
+                {panel.secondary ? (
                   <>
-                    {panel.stat}{" "}
-                    <span className="font-mono text-xs text-bone-dim">
-                      {panel.source}
-                    </span>
+                    <p className="mt-2 text-sm leading-snug text-bone">
+                      {panel.secondary.stat}
+                    </p>
+                    <p className="mt-1 font-mono text-xs text-bone-dim">
+                      {panel.secondary.source}
+                    </p>
                   </>
-                ) : (
-                  panel.description
-                )}
+                ) : null}
+              </div>
+            ) : null}
+            {withNoJsCopy ? (
+              <span className="gallery-nojs-copy mt-2 text-sm text-bone">
+                {panel.stat}{" "}
+                <span className="font-mono text-xs text-bone-dim">
+                  {panel.source}
+                </span>
               </span>
             ) : null}
           </li>

@@ -11,6 +11,7 @@ export function ReducedGallery({ onOpen }: { onOpen: (index: number) => void }) 
     <div>
       <StaticCenterLine className="mb-10" />
       <PosterGrid
+        showStat
         onOpen={(panelId) =>
           onOpen(GALLERY_PANELS.findIndex((p) => p.id === panelId))
         }

@@ -38,8 +38,10 @@ export const ETHOS_COPY = {
   // offer, no invented email or URL. Nav labels point at real routes only.
   footer: {
     entityLine: "Vallum Labs Inc. Cape Town, South Africa.",
-    askEcho:
-      "A paid pilot is open: $15,000 to $40,000 for 20 to 40 curated hours.",
+    // Rewritten 2026-07-16: price line removed (Jay's morning correction).
+    // States the pilot is open and points at the existing "Meet Jay" route
+    // above; no invented email or URL.
+    askEcho: "A paid pilot is open. Reach Jay to start one.",
     homeLabel: "Home",
     datasetLabel: "Dataset",
   },

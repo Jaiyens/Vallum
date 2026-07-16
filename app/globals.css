@@ -375,3 +375,59 @@
   display: none;
 }
 
+/* ---- day-op (build-sections, 2026-07-16): cream/forest seam bridges ----
+   Founder correction: the page must mix cream to dark green much more, and
+   every cream-to-forest boundary needs a bridge, never a hard undecorated
+   edge on both sides (research/ui-refs-green.md sections 1-2). Add-only:
+   no existing token value is touched, these are new utilities only.
+
+   Composability: both seams start fully transparent on the side that
+   overlaps the neighboring element and resolve to solid forest on the side
+   that meets this element's own forest fill. A transparent start reveals
+   whatever the adjacent surface actually painted (bone, forest-tint, or
+   forest), so the same class works regardless of what the other agent's
+   section renders on its side of the boundary. Each seam is absolutely
+   positioned and pushed fully outside its own box with translateY, so it
+   overlaps the neighboring section's edge instead of only decorating its
+   own; the parent that hosts one of these needs position:relative. */
+.seam-into-forest {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: clamp(120px, 14vw, 200px);
+  transform: translateY(-100%);
+  background: linear-gradient(to bottom, transparent, var(--color-forest));
+  pointer-events: none;
+}
+.seam-into-bone {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: clamp(120px, 14vw, 200px);
+  transform: translateY(100%);
+  background: linear-gradient(to bottom, var(--color-forest), transparent);
+  pointer-events: none;
+}
+
+/* Forest-tinted bone: a warm, barely-there green step off pure bone, for
+   section alternation in the turn-to-method run so the middle of the page
+   does not read as one unbroken cream slab. Still light enough that black
+   body copy needs no color change; this is a surface variant, not a wash
+   behind text (the taste rule reserves gradients for seams only). */
+.surface-bone-forest-tint {
+  background: color-mix(in srgb, var(--color-bone) 88%, var(--color-forest) 12%);
+}
+
+/* Shared scroll-reveal hidden state. Only opacity is pre-set, never
+   transform: the GSAP tween drives both opacity and the y-offset from JS,
+   so there is nothing to keep in sync between this file and a component's
+   tween values. Gated to motion-safe only, so reduced motion and no-JS
+   both render the final, static state with no hidden step at all. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    opacity: 0;
+  }
+}
+

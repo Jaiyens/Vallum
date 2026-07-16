@@ -113,6 +113,35 @@ const restoreText = (page) =>
       .forEach((c) => (c.style.visibility = ""));
   });
 
+// The panel bands: each orbiting panel carries its industry label and headline
+// number on a Recipe A glass band. The controller stamps data-focused on the
+// front-facing panel, so at every angle we measure the band that faces the
+// viewer. Blank its label and headline, screenshot the band, and measure bone
+// against what sits behind the glyphs, exactly as for the centerpiece.
+const blankPanelText = (page) =>
+  page.evaluate(() => {
+    const band = document.querySelector(
+      "[data-panel][data-focused] [data-panel-band]",
+    );
+    if (!band) return;
+    band.querySelectorAll("span").forEach((s) => {
+      s.setAttribute("data-band-vis", s.style.visibility || "");
+      s.style.visibility = "hidden";
+    });
+  });
+const restorePanelText = (page) =>
+  page.evaluate(() => {
+    const band = document.querySelector(
+      "[data-panel][data-focused] [data-panel-band]",
+    );
+    if (!band) return;
+    band.querySelectorAll("span").forEach((s) => {
+      const v = s.getAttribute("data-band-vis");
+      s.style.visibility = v || "";
+      s.removeAttribute("data-band-vis");
+    });
+  });
+
 async function desktop(browser, report) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await ctx.newPage();
@@ -161,6 +190,31 @@ async function desktop(browser, report) {
     await sharp(bandBuf).toFile(`${OUT}/band-${String(i).padStart(2, "0")}.png`);
     const band = await bandStats(bandBuf);
     const text = await bandStats(textBuf);
+
+    // Front-facing panel band.
+    const pbox = await page
+      .$eval("[data-panel][data-focused] [data-panel-band]", (el) => {
+        const r = el.getBoundingClientRect();
+        return { x: r.x, y: r.y, w: r.width, h: r.height };
+      })
+      .catch(() => null);
+    let panelBand = null;
+    let frontPanelIndex = null;
+    if (pbox && pbox.w > 2 && pbox.h > 2) {
+      frontPanelIndex = await page.evaluate(() => {
+        const p = document.querySelector("[data-panel][data-focused]");
+        return p ? Number(p.getAttribute("data-panel-index")) : null;
+      });
+      await blankPanelText(page);
+      await page.waitForTimeout(80);
+      const pbandBuf = await page.screenshot({ clip: toClip(pbox) });
+      await restorePanelText(page);
+      await sharp(pbandBuf).toFile(
+        `${OUT}/panelband-${String(i).padStart(2, "0")}.png`,
+      );
+      panelBand = await bandStats(pbandBuf);
+    }
+
     report.angles.push({
       deg,
       meanRGB: band.meanRGB,
@@ -169,6 +223,9 @@ async function desktop(browser, report) {
       worstContrast: band.worstContrast,
       textMeanContrast: text.meanContrast,
       textWorstContrast: text.worstContrast,
+      frontPanelIndex,
+      panelBandMeanContrast: panelBand ? panelBand.meanContrast : null,
+      panelBandWorstContrast: panelBand ? panelBand.worstContrast : null,
     });
   }
 
@@ -355,6 +412,20 @@ async function main() {
   report.allAnglesPassTextWorst =
     report.angles.length === 12 && report.angles.every((a) => a.textWorstContrast >= 4.5);
 
+  const panelMeasured = report.angles.filter(
+    (a) => a.panelBandMeanContrast != null,
+  );
+  report.minPanelBandMeanContrast = panelMeasured.length
+    ? Math.min(...panelMeasured.map((a) => a.panelBandMeanContrast))
+    : null;
+  report.minPanelBandWorstContrast = panelMeasured.length
+    ? Math.min(...panelMeasured.map((a) => a.panelBandWorstContrast))
+    : null;
+  report.allAnglesPassPanelBand =
+    panelMeasured.length === report.angles.length &&
+    panelMeasured.length > 0 &&
+    panelMeasured.every((a) => a.panelBandMeanContrast >= 4.5);
+
   console.log("\n=== Helix contrast (bone text vs band behind it) ===");
   console.log("  angle | full-band mean | behind-text mean | behind-text worst");
   for (const a of report.angles)
@@ -366,6 +437,16 @@ async function main() {
   console.log(`  min behind-text worst: ${report.minTextWorstContrast}:1`);
   console.log(`  all 12 clear 4.5 (charter mean metric): ${report.allAnglesPassMean}`);
   console.log(`  all 12 clear 4.5 (behind-text worst)  : ${report.allAnglesPassTextWorst}`);
+
+  console.log("\n=== Front-facing panel band (bone text vs band behind it) ===");
+  console.log("  angle | front panel | band mean | band worst-column");
+  for (const a of report.angles)
+    console.log(
+      `  ${String(a.deg).padStart(3)}deg |     p${a.frontPanelIndex ?? "?"}      |    ${String(a.panelBandMeanContrast ?? "n/a").padStart(6)}:1 |     ${String(a.panelBandWorstContrast ?? "n/a").padStart(6)}:1`,
+    );
+  console.log(`  min panel-band mean        : ${report.minPanelBandMeanContrast}:1  (charter panel metric)`);
+  console.log(`  min panel-band worst-column: ${report.minPanelBandWorstContrast}:1`);
+  console.log(`  all angles clear 4.5 (panel band mean): ${report.allAnglesPassPanelBand}`);
   console.log("\n=== Frame time ===");
   console.log(`  desktop auto-rotate : ${report.beforeFocusFPS} fps`);
   console.log(`  desktop focus blur  : ${report.focusFPS} fps`);

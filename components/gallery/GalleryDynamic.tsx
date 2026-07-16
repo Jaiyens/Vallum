@@ -32,7 +32,7 @@ function GalleryFallback() {
           <StaticCenterLine className="mb-8" />
           <div className="-mx-4 flex gap-4 overflow-hidden px-4 pb-4">
             {GALLERY_PANELS.map((panel) => {
-              const asset = GALLERY_VIDEO[panel.id];
+              const asset = GALLERY_VIDEO[panel.id as keyof typeof GALLERY_VIDEO];
               return (
                 <div
                   key={panel.id}

@@ -85,3 +85,16 @@ set in the morning and reverses what he wants.
 - [build-rig] rig heading now renders unconditionally (MaskedRise dropped for parity with sibling static sections); Newsreader loaded locally for the rig heading pending sitewide --font-display migration.
 - [fix-f0409] reduced-motion crossfade replaced with unconditional gsap.set; mobile fade now fromTo with explicit bounds; close path instant under reduced motion.
 - [foreman] iteration 2 ran without a rebuttal round (schedule cut per KICKOFF rule: independence is never cut, cross-talk is the first cut).
+
+## Day-op 2026-07-16 15:29 UTC (foreman)
+- [foreman] Jay morning corrections: luminance gate loosened (dark cap 20 to 30, light floor 45 to 35) to allow the cream-to-forest mixture he asked for; pilot pricing becomes a warden-blocked category everywhere; all 8 original helix stats restored verbatim with citations per Jay explicit override of the FACTS 2-stat cap (needs-fact carries the ledger request); hero verdict line authorized by Jay.
+
+## Day-op wrap (foreman digest, 2026-07-16 afternoon)
+- [build-copy] hero beatOne is Jay's line verbatim; new beatTwo "Someone still has to be there. So are we."; collect/license line relocated to the turn lead; all pricing removed qualitatively; home schema heading is now "The record".
+- [build-hero] 8 stats restored verbatim with citations; per-panel Recipe-A glass band (industry + headline number), all 12 orbit angles clear 4.5:1 (min 6.15:1); ledger strip removed with sr-only summary preserved; monoline removed; VALLUM LABS vines art wired with re-derived lens sizing (52vw, 1.8vw baseline nudge).
+- [build-dataset] /dataset rhythm forest/bone/forest/bone with numbered mono plates; home dataset section is a full forest band with the same plate language.
+- [build-sections] turn stat set-piece (54% and 3,670 as display numerals in a forest band), method as three hairline rows with METHOD_AERIAL at ~40% column, gradient seam utilities added; luminance landed at 27/30 dark lower and exactly 35/35 light on /.
+- [asset-grade] rig backdrop regraded charcoal-to-forest across 56 frames + stills via per-pixel HSL remap; amber connector accents desaturated; originals kept alongside; manifest repointed.
+- [dreamer] 37 of 260 capped credits: VALLUM LABS vines wordmark (2978x603), heat + air unpopulated clips + posters, forest texture. One misspelled-wordmark attempt and one false NSFW flag caught on review, not shipped.
+- [warden] day-op pass, zero blocks; all three founder overrides verified implemented with citations rendered and pricing absent from the DOM.
+- [foreman] Known cosmetic risks left for Jay's review: the new vines art is opaque-on-black (original had alpha), so the lens hover may show a dark plate edge over bright film frames (fix is a one-command black-to-alpha key); GALLERY_VIDEO.p1 orchard footage carries a warm sky grade from the original film pipeline (Jay's own footage, not UI); home dataset forest band sits adjacent to the forest ethos section (two consecutive dark bands, a rhythm call for the morning); the light-band floor sits at exactly 35/35 on /.

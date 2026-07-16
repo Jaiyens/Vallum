@@ -14,7 +14,10 @@ export default function Home() {
       <HeroExperience />
       {/* HERO EXPERIENCE END */}
       <GalleryDynamic />
-      {/* The page turns light here and stays light. BRIEF.md, beats 3-5. */}
+      {/* The page turns light here (BRIEF.md, beats 3-5), with the turn's
+          own stat set-piece and the method's tinted surface mixing forest
+          back in so the middle of the page is not an unbroken cream run
+          (research/ui-refs-green.md). */}
       <TurnSection />
       <MethodSection />
       {/* The rig sits in the method beat, not the closing position

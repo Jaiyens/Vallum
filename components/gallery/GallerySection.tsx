@@ -9,7 +9,7 @@ import { HelixStage } from "./HelixStage";
 import { MobileGallery } from "./MobileGallery";
 import { ReducedGallery } from "./ReducedGallery";
 import { StatTakeover } from "./StatTakeover";
-import { GalleryLedger } from "./gallery-static";
+import { StatsSummary } from "./gallery-static";
 import { ROTATE_TO_FRONT_S, STEP_DEG } from "./gallery-config";
 
 type Mode = "helix" | "mobile" | "reduced";
@@ -24,8 +24,8 @@ function computeMode(): Mode {
 
 // The problem section (beat 2). The centerpiece is its only display heading;
 // there is no eyebrow. Renders one of three modes and owns the takeover state.
-// The two ledgered statistics render below the canvas as always-visible
-// caption text, so the section's argument lands for a reader who never orbits.
+// Every panel carries its statistic on its own glass band, and a visually
+// hidden StatsSummary rolls the eight cited figures up for a screen reader.
 export function GallerySection() {
   const [mode, setMode] = useState<Mode>(computeMode);
   const [openPanel, setOpenPanel] = useState<{
@@ -150,9 +150,10 @@ export function GallerySection() {
           )}
         </div>
       )}
-      <div className="mx-auto max-w-site px-4 md:px-6">
-        <GalleryLedger className={mode === "helix" ? "mt-16" : "mt-12"} />
-      </div>
+      {/* The bottom ledger strip is gone (Jay's 2026-07-16 correction). The
+          cited numbers still reach a screen reader through this summary and
+          through each panel's aria-label. */}
+      <StatsSummary />
       {openPanel !== null ? (
         <StatTakeover
           panel={GALLERY_PANELS[openPanel.index]}
