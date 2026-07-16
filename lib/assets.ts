@@ -34,9 +34,7 @@ export const SHOWCASE_VIDEO = {
 
 // Problem section gallery loops. Real panels (p1, p2, p5, p8) are conform
 // passes over finished human clips in the shift workspace; AI panels (p3,
-// p4, p6, p7) are generated unpopulated environments. p3 and p4 video
-// files are pending generation approval; their posters come from the
-// approved keyframes, which are the exact start frames of those clips.
+// p4, p6, p7) are generated unpopulated environments.
 export const GALLERY_VIDEO = {
   p1: {
     mp4: "/gallery/p1.mp4",

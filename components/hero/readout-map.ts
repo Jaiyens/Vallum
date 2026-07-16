@@ -1,6 +1,6 @@
 // Block time ranges for the lens readout, copied from cutlist.json in the
 // film workspace (~/Desktop/shift/cutlist.json). in and out are seconds on
-// the shipped 26.5s hero timeline at 24fps. The final half second is the
+// the shipped 29.5s hero timeline at 24fps. The final half second is the
 // generated black tail and carries no label.
 //
 // kind drives the lens: real and twin blocks are worker footage and engage
@@ -22,9 +22,10 @@ export const CUTLIST_BLOCKS: ReadoutBlock[] = [
   { in: 10, out: 13, label: "LOAD-BEARING / 04:00", kind: "real" },
   { in: 13, out: 16, label: "GRID-REF", kind: "est" },
   { in: 16, out: 19, label: "FIELD-SCAN", kind: "real" },
-  { in: 19, out: 22, label: "HIGH-SIDE", kind: "real" },
-  { in: 22, out: 26, label: "LAST-SHIFT", kind: "real" },
-  { in: 26, out: 26.5, label: "", kind: "black" },
+  { in: 19, out: 22, label: "GRID-REF", kind: "est" },
+  { in: 22, out: 25, label: "HIGH-SIDE", kind: "real" },
+  { in: 25, out: 29, label: "LAST-SHIFT", kind: "real" },
+  { in: 29, out: 29.5, label: "", kind: "black" },
 ];
 
 const FALLBACK: { label: string; kind: BlockKind } = {

@@ -95,29 +95,30 @@ export const HOTSPOT_BLOCKS: HotspotBlock[] = [
     ],
   },
   {
-    // 19-22 HIGH-SIDE. Rope-access climber on the blade, near static.
-    in: 19,
-    out: 22,
+    // 22-25 HIGH-SIDE. Rope-access climber on the blade, near static.
+    // Shifted +3s for the turbine establisher cut in at 19-22.
+    in: 22,
+    out: 25,
     keys: [
-      { t: 19, rects: [{ u: 0.52, v: 0.16, w: 0.1, h: 0.28 }] },
-      { t: 22, rects: [{ u: 0.52, v: 0.15, w: 0.1, h: 0.29 }] },
+      { t: 22, rects: [{ u: 0.52, v: 0.16, w: 0.1, h: 0.28 }] },
+      { t: 25, rects: [{ u: 0.52, v: 0.15, w: 0.1, h: 0.29 }] },
     ],
   },
   {
-    // 22-26 LAST-SHIFT. Foreground picker bottom left plus the central
+    // 25-29 LAST-SHIFT. Foreground picker bottom left plus the central
     // crew cluster, both hugged to the figures.
-    in: 22,
-    out: 26,
+    in: 25,
+    out: 29,
     keys: [
       {
-        t: 22,
+        t: 25,
         rects: [
           { u: 0.04, v: 0.64, w: 0.16, h: 0.3 },
           { u: 0.42, v: 0.56, w: 0.22, h: 0.24 },
         ],
       },
       {
-        t: 26,
+        t: 29,
         rects: [
           { u: 0.05, v: 0.66, w: 0.16, h: 0.28 },
           { u: 0.43, v: 0.57, w: 0.22, h: 0.23 },

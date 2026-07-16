@@ -324,7 +324,7 @@ for (const width of WIDTHS) {
         const v = document.querySelector("[data-hero-root] video");
         if (v) {
           v.pause();
-          v.currentTime = 24.0;
+          v.currentTime = 27.0; // orchard block, 25-29 on the 29.5s cut
         }
       });
       await page.waitForTimeout(500);
