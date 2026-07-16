@@ -59,6 +59,9 @@ const RING = {
 const RING_R_DUR = 0.35;
 const RING_ALPHA_DUR = 0.25;
 const RING_FLIP_DUR = 0.2;
+// Magnification inside the lens while engaged: reads as optics, small
+// enough that the parallax against the base layer stays comfortable.
+const MAG_ENGAGED = 1.08;
 // Feather constants must move together with --lens-mask in globals.css.
 const FEATHER_IN = 6;
 const COVER_PAD = FEATHER_IN + 2;
@@ -164,6 +167,12 @@ export function HeroExperience() {
                 overwrite: "auto",
               });
             }
+            gsap.to(stage, {
+              "--mag": MAG_ENGAGED,
+              duration: ENGAGE_DUR,
+              ease: "power2.out",
+              overwrite: "auto",
+            });
           };
           // Never calls play(): a paused video must stay paused.
           const releaseSlowmo = () => {
@@ -186,6 +195,12 @@ export function HeroExperience() {
                 overwrite: "auto",
               });
             }
+            gsap.to(stage, {
+              "--mag": 1,
+              duration: RELEASE_DUR,
+              ease: "power2.inOut",
+              overwrite: "auto",
+            });
           };
           const releaseSlowmoInstant = () => {
             slowmo = false;
@@ -195,6 +210,8 @@ export function HeroExperience() {
               gsap.killTweensOf(veil);
               gsap.set(veil, { autoAlpha: 0 });
             }
+            gsap.killTweensOf(stage, "--mag");
+            gsap.set(stage, { "--mag": 1 });
           };
 
           // Single writer for the ring and the shared radius variable.
@@ -219,6 +236,8 @@ export function HeroExperience() {
                   gsap.set(stage, {
                     "--lx": "-9999px",
                     "--ly": "-9999px",
+                    "--rx": "-9999px",
+                    "--ry": "-9999px",
                     "--lr": `${RING.armed.r}px`,
                   });
                 },
@@ -231,8 +250,10 @@ export function HeroExperience() {
               (prev === "armed" && state === "passive");
             gsap.to(stage, {
               "--lr": `${r}px`,
-              duration: RING_R_DUR,
-              ease: "power2.out",
+              duration: prev === "hidden" ? 0.45 : RING_R_DUR,
+              // Arrival pops in with a slight overshoot; state changes
+              // settle without one.
+              ease: prev === "hidden" ? "back.out(1.6)" : "power2.out",
               overwrite: "auto",
             });
             gsap.to(ring, {
@@ -321,7 +342,12 @@ export function HeroExperience() {
               gsap.set(ring, { visibility: "inherit" });
             }
             measureBand();
-            gsap.set(stage, { "--lx": `${ox}px`, "--ly": `${oy}px` });
+            gsap.set(stage, {
+              "--lx": `${ox}px`,
+              "--ly": `${oy}px`,
+              "--rx": `${ox}px`,
+              "--ry": `${oy}px`,
+            });
             seekToWorkerBlock();
             gsap.to(video, {
               playbackRate: RATE_CONVERT,
@@ -344,6 +370,8 @@ export function HeroExperience() {
               gsap.set(stage, {
                 "--lx": "-9999px",
                 "--ly": "-9999px",
+                "--rx": "-9999px",
+                "--ry": "-9999px",
                 "--lr": `${RING.armed.r}px`,
               });
             }
@@ -352,7 +380,12 @@ export function HeroExperience() {
           const onResize = () => {
             if (lastP < BAND_IN && !converting) return;
             measureBand();
-            gsap.set(stage, { "--lx": `${ox}px`, "--ly": `${oy}px` });
+            gsap.set(stage, {
+              "--lx": `${ox}px`,
+              "--ly": `${oy}px`,
+              "--rx": `${ox}px`,
+              "--ry": `${oy}px`,
+            });
             setLr(
               Math.round(bandEase(ramp(lastP, BAND_IN, BAND_OUT)) * coverR * 2) /
                 2,
@@ -405,6 +438,8 @@ export function HeroExperience() {
                     gsap.set(stage, {
                       "--lx": `${lastX}px`,
                       "--ly": `${lastY}px`,
+                      "--rx": `${lastX}px`,
+                      "--ry": `${lastY}px`,
                     });
                     syncLens();
                   }
@@ -461,6 +496,17 @@ export function HeroExperience() {
               duration: 0.35,
               ease: "power3",
             });
+            // The ring chrome lags a touch more than the mask: the glass
+            // feels heavier than the light, which is what makes the lens
+            // read as a physical instrument.
+            const rxTo = gsap.quickTo(stage, "--rx", {
+              duration: 0.5,
+              ease: "power3",
+            });
+            const ryTo = gsap.quickTo(stage, "--ry", {
+              duration: 0.5,
+              ease: "power3",
+            });
 
             const updateReadout = () => {
               if (readout) readout.textContent = readoutFor(video.currentTime);
@@ -471,6 +517,14 @@ export function HeroExperience() {
               const r = stage.getBoundingClientRect();
               return { x: e.clientX - r.left, y: e.clientY - r.top };
             };
+            const place = (x: number, y: number) => {
+              gsap.set(stage, {
+                "--lx": `${x}px`,
+                "--ly": `${y}px`,
+                "--rx": `${x}px`,
+                "--ry": `${y}px`,
+              });
+            };
             const onEnter = (e: PointerEvent) => {
               const { x, y } = toLocal(e);
               lastX = x;
@@ -478,7 +532,7 @@ export function HeroExperience() {
               pointerInside = true;
               everHovered = true;
               if (!lensEligible || converting) return;
-              gsap.set(stage, { "--lx": `${x}px`, "--ly": `${y}px` });
+              place(x, y);
               syncLens();
             };
             const onMove = (e: PointerEvent) => {
@@ -492,12 +546,14 @@ export function HeroExperience() {
               pointerInside = true;
               if (!lensEligible || converting) return;
               if (!wasInside) {
-                gsap.set(stage, { "--lx": `${x}px`, "--ly": `${y}px` });
+                place(x, y);
                 syncLens();
                 return;
               }
               lxTo(x);
               lyTo(y);
+              rxTo(x);
+              ryTo(y);
               syncLens();
             };
             const onLeave = () => {
@@ -579,7 +635,10 @@ export function HeroExperience() {
           {
             "--lx": "-9999px",
             "--ly": "-9999px",
+            "--rx": "-9999px",
+            "--ry": "-9999px",
             "--lr": "60px",
+            "--mag": "1",
           } as CSSProperties
         }
       >

@@ -94,11 +94,16 @@ export function RobotRevealCanvas({
   }, [videoRef]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      data-robot-canvas
+    <div
+      data-robot-reveal
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 hidden h-full w-full lg:block"
-    />
+      className="pointer-events-none absolute inset-0 hidden lg:block"
+    >
+      <canvas
+        ref={canvasRef}
+        data-robot-canvas
+        className="absolute inset-0 h-full w-full"
+      />
+    </div>
   );
 }
