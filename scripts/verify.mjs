@@ -13,12 +13,12 @@ fs.mkdirSync(OUT, { recursive: true });
 // Hotspot probe points at the 1280x800 viewport, derived from the seed
 // rects in components/hero/hotspots.ts via the cover math (s=1.111,
 // dw=1422, ox=-71, oy=0). Re-derive if the rects are re-tuned.
-//   iron beam crew rect {u:.32,v:.14,w:.32,h:.28} -> x 384..839, y 112..336
-//   cold point (150,650) is >200px clear of both iron rects
-//   orchard crew band {u:.36,v:.52,w:.34,h:.34} -> center ~(683,552)
-const IRON_HOT = { x: 620, y: 220 };
+//   iron beam worker A {u:.36,v:.20,w:.08,h:.18} -> x 441..555, y 160..304
+//   cold point (150,650) is far outside every iron rect plus margins
+//   orchard crew cluster {u:.42,v:.56,w:.22,h:.24} -> center ~(683,544)
+const IRON_HOT = { x: 500, y: 230 };
 const COLD = { x: 150, y: 650 };
-const ORCHARD_HOT = { x: 683, y: 552 };
+const ORCHARD_HOT = { x: 683, y: 544 };
 const WORDMARK_CENTER = { x: 640, y: 496 }; // 62svh optical center
 
 const summary = [];
@@ -155,9 +155,26 @@ for (const width of WIDTHS) {
       );
       await page.screenshot({ path: `${OUT}/${tag}-hero-lens-slowmo.png` });
 
+      // Near miss: a point just past the figure's edge, where the old
+      // generous geometry kept slow motion engaged. It must release.
+      await page.mouse.move(610, 230);
+      await page.waitForTimeout(1000);
+      v = await video();
+      const veilNear = await page.evaluate(() => {
+        const el = document.querySelector("[data-focus-veil]");
+        return el ? parseFloat(getComputedStyle(el).opacity) : null;
+      });
+      check(
+        "near-miss-releases",
+        v.rate >= 0.95 && veilNear !== null && veilNear < 0.1,
+        JSON.stringify({ rate: v.rate, veil: veilNear }),
+      );
+
       // THE regression: moving the circle off the figure, still on the
       // film during a worker block, must release the slow motion while
-      // the ring stays armed and the veil drops.
+      // the ring stays armed and the veil drops. Re-seek first: the
+      // near-miss step consumed most of the iron block's runtime.
+      await seekPlay(10.8);
       await page.mouse.move(COLD.x, COLD.y);
       await page.waitForTimeout(1000);
       v = await video();

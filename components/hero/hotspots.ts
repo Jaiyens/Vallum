@@ -23,6 +23,9 @@ export type HotspotBlock = { in: number; out: number; keys: HotspotKeyframe[] };
 export const FRAME_W = 1280;
 export const FRAME_H = 720;
 
+// Rects hug the figures tightly: engagement should mean the lens is ON
+// the person, not near them. The client rejected the earlier generous
+// zones as "the sphere around the person is too big."
 export const HOTSPOT_BLOCKS: HotspotBlock[] = [
   {
     // 4-7 UNIT-07 / SPLICE. Close shot: two roughnecks at the drill pipe.
@@ -32,37 +35,39 @@ export const HOTSPOT_BLOCKS: HotspotBlock[] = [
       {
         t: 4,
         rects: [
-          { u: 0.12, v: 0.25, w: 0.24, h: 0.7 },
-          { u: 0.44, v: 0.3, w: 0.28, h: 0.6 },
+          { u: 0.14, v: 0.3, w: 0.19, h: 0.6 },
+          { u: 0.46, v: 0.34, w: 0.22, h: 0.52 },
         ],
       },
       {
         t: 7,
         rects: [
-          { u: 0.12, v: 0.28, w: 0.23, h: 0.67 },
-          { u: 0.42, v: 0.35, w: 0.3, h: 0.58 },
+          { u: 0.14, v: 0.32, w: 0.18, h: 0.58 },
+          { u: 0.44, v: 0.38, w: 0.24, h: 0.5 },
         ],
       },
     ],
   },
   {
-    // 10-13 LOAD-BEARING. Beam crew band upper center plus the deck
-    // worker bottom center.
+    // 10-13 LOAD-BEARING. Two beam workers plus the deck worker, each
+    // as its own tight figure rect.
     in: 10,
     out: 13,
     keys: [
       {
         t: 10,
         rects: [
-          { u: 0.32, v: 0.14, w: 0.32, h: 0.28 },
-          { u: 0.43, v: 0.68, w: 0.14, h: 0.32 },
+          { u: 0.36, v: 0.2, w: 0.08, h: 0.18 },
+          { u: 0.52, v: 0.22, w: 0.07, h: 0.16 },
+          { u: 0.45, v: 0.72, w: 0.06, h: 0.22 },
         ],
       },
       {
         t: 13,
         rects: [
-          { u: 0.33, v: 0.16, w: 0.32, h: 0.28 },
-          { u: 0.44, v: 0.7, w: 0.14, h: 0.3 },
+          { u: 0.37, v: 0.21, w: 0.08, h: 0.18 },
+          { u: 0.53, v: 0.23, w: 0.07, h: 0.16 },
+          { u: 0.46, v: 0.73, w: 0.06, h: 0.21 },
         ],
       },
     ],
@@ -76,15 +81,15 @@ export const HOTSPOT_BLOCKS: HotspotBlock[] = [
       {
         t: 16,
         rects: [
-          { u: 0.11, v: 0.03, w: 0.16, h: 0.26 },
-          { u: 0.15, v: 0.3, w: 0.17, h: 0.34 },
+          { u: 0.13, v: 0.05, w: 0.1, h: 0.2 },
+          { u: 0.17, v: 0.32, w: 0.11, h: 0.26 },
         ],
       },
       {
         t: 19,
         rects: [
-          { u: 0.13, v: 0.22, w: 0.15, h: 0.36 },
-          { u: 0.38, v: 0.26, w: 0.16, h: 0.28 },
+          { u: 0.14, v: 0.24, w: 0.1, h: 0.26 },
+          { u: 0.4, v: 0.28, w: 0.11, h: 0.22 },
         ],
       },
     ],
@@ -94,28 +99,28 @@ export const HOTSPOT_BLOCKS: HotspotBlock[] = [
     in: 19,
     out: 22,
     keys: [
-      { t: 19, rects: [{ u: 0.5, v: 0.14, w: 0.16, h: 0.34 }] },
-      { t: 22, rects: [{ u: 0.5, v: 0.13, w: 0.17, h: 0.35 }] },
+      { t: 19, rects: [{ u: 0.52, v: 0.16, w: 0.1, h: 0.28 }] },
+      { t: 22, rects: [{ u: 0.52, v: 0.15, w: 0.1, h: 0.29 }] },
     ],
   },
   {
-    // 22-26 LAST-SHIFT. Foreground pickers bottom left plus the central
-    // crew band through the rows.
+    // 22-26 LAST-SHIFT. Foreground picker bottom left plus the central
+    // crew cluster, both hugged to the figures.
     in: 22,
     out: 26,
     keys: [
       {
         t: 22,
         rects: [
-          { u: 0.02, v: 0.6, w: 0.3, h: 0.38 },
-          { u: 0.36, v: 0.52, w: 0.34, h: 0.34 },
+          { u: 0.04, v: 0.64, w: 0.16, h: 0.3 },
+          { u: 0.42, v: 0.56, w: 0.22, h: 0.24 },
         ],
       },
       {
         t: 26,
         rects: [
-          { u: 0.02, v: 0.62, w: 0.3, h: 0.36 },
-          { u: 0.36, v: 0.54, w: 0.34, h: 0.32 },
+          { u: 0.05, v: 0.66, w: 0.16, h: 0.28 },
+          { u: 0.43, v: 0.57, w: 0.22, h: 0.23 },
         ],
       },
     ],

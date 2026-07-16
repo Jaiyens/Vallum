@@ -47,10 +47,13 @@ const RATE_SLOW = 0.5;
 const ENGAGE_DUR = 0.35;
 const RELEASE_DUR = 0.55;
 const RATE_CONVERT = 0.5;
-// Hit circle radius is constant so the hit area never feeds back from the
-// animating --lr; the release boundary is the rect expanded by the margin.
-const LR_HIT = 60;
-const HYST_MARGIN = 24;
+// The hit test uses a small center probe, deliberately much smaller than
+// the visible ring: engagement means the lens is centered ON a figure,
+// not grazing its neighborhood. Constant so the hit area never feeds
+// back from the animating --lr; the release boundary is the rect
+// expanded by the margin.
+const LR_HIT = 16;
+const HYST_MARGIN = 20;
 const RING = {
   passive: { r: 44, alpha: 0.6 },
   armed: { r: 60, alpha: 1 },
