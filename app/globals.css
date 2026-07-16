@@ -325,3 +325,55 @@
   );
 }
 
+/* Problem section: helix gallery. Geometry tokens live on the stage so the
+   spiral collapses to a flat ring with one edit: --helix-rise: 0px. */
+[data-helix-stage] {
+  --helix-radius: min(42vw, 560px);
+  --helix-rise: 24px;
+}
+
+/* Typewriter block caret: 530ms visible, 530ms dark, no fade. data-done
+   parks it solid after the last takeover line; data-hidden retires it. The
+   caret is aria-hidden decoration, so opacity here breaks no 3D law and no
+   typing rule. */
+@keyframes gallery-caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+.gallery-caret {
+  animation: gallery-caret-blink 1060ms steps(1) infinite;
+}
+.gallery-caret[data-done] {
+  animation: none;
+  opacity: 1;
+}
+.gallery-caret[data-hidden] {
+  animation: none;
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-caret {
+    animation: none;
+  }
+}
+
+/* The mobile snap row scrolls horizontally without showing a scrollbar. */
+.gallery-row {
+  scrollbar-width: none;
+}
+.gallery-row::-webkit-scrollbar {
+  display: none;
+}
+
+/* No-JS fallback: the helix never mounts, so the poster grid keeps its
+   static stats visible and the reserved-height box unlocks. */
+.gallery-nojs-copy {
+  display: none;
+}
+

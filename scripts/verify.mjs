@@ -383,6 +383,237 @@ for (const width of WIDTHS) {
     }
   }
 
+  // ---- Problem section: helix gallery ----
+  const gallery = await page.evaluate(() => {
+    const el = document.querySelector("#problem");
+    if (!el) return null;
+    const rect = el.getBoundingClientRect();
+    window.scrollTo({
+      top: Math.max(window.scrollY + rect.top - 60, 0),
+      behavior: "instant",
+    });
+    return true;
+  });
+  if (gallery) {
+    await page.waitForTimeout(1200);
+
+    if (!REDUCED && width >= 1024) {
+      const helix = () => page.evaluate(() => window.__helix?.rotation ?? null);
+      const playingCount = () =>
+        page.evaluate(
+          () =>
+            [...document.querySelectorAll("#problem video")].filter((v) => !v.paused)
+              .length,
+        );
+
+      await page.screenshot({ path: `${OUT}/${tag}-gallery-rest.png` });
+
+      // Autorotate: 360deg over 90s is 4deg/s.
+      const r0 = await helix();
+      await page.waitForTimeout(1200);
+      const r1 = await helix();
+      check(
+        "gallery-autorotate",
+        r0 !== null && r1 !== null && r1 - r0 > 2 && r1 - r0 < 9,
+        `delta=${r1 - r0}`,
+      );
+
+      // Focus and playback budget at rest.
+      const focusState = await page.evaluate(() => {
+        const focused = document.querySelectorAll("#problem [data-panel][data-focused]");
+        return { focused: focused.length };
+      });
+      const playing0 = await playingCount();
+      check(
+        "gallery-focus-budget",
+        focusState.focused === 1 && playing0 >= 0 && playing0 <= 2,
+        JSON.stringify({ ...focusState, playing: playing0 }),
+      );
+
+      // Centerpiece box must not move while the machine types.
+      const cpBox = () =>
+        page.evaluate(() => {
+          const el = document.querySelector("[data-centerpiece]");
+          if (!el) return null;
+          const r = el.getBoundingClientRect();
+          return { x: r.x, y: r.y, w: r.width, h: r.height };
+        });
+      const b0 = await cpBox();
+      await page.waitForTimeout(600);
+      await page.screenshot({ path: `${OUT}/${tag}-gallery-mid-type.png` });
+      const b1 = await cpBox();
+      await page.waitForTimeout(900);
+      const b2 = await cpBox();
+      const stable =
+        b0 &&
+        b1 &&
+        b2 &&
+        [b1, b2].every(
+          (b) =>
+            Math.abs(b.x - b0.x) < 1 &&
+            Math.abs(b.w - b0.w) < 1 &&
+            Math.abs(b.h - b0.h) < 1,
+        );
+      check("gallery-centerpiece-stable", !!stable, JSON.stringify({ b0, b1, b2 }));
+
+      // Drag spin: press on the stage, pull left, release. Inertia keeps
+      // the ring moving after the pointer lifts.
+      const stageBox = await page.evaluate(() => {
+        const el = document.querySelector("[data-helix-stage]");
+        const r = el.getBoundingClientRect();
+        return { x: r.x, y: r.y, w: r.width, h: r.height };
+      });
+      const dragY = stageBox.y + stageBox.h * 0.5;
+      const rd0 = await helix();
+      await page.mouse.move(stageBox.x + stageBox.w * 0.72, dragY);
+      await page.mouse.down();
+      for (let i = 1; i <= 8; i++) {
+        await page.mouse.move(stageBox.x + stageBox.w * 0.72 - i * 42, dragY, {
+          steps: 2,
+        });
+        if (i === 5) {
+          await page.screenshot({ path: `${OUT}/${tag}-gallery-mid-spin.png` });
+        }
+      }
+      await page.mouse.up();
+      const rd1 = await helix();
+      check("gallery-drag", Math.abs(rd1 - rd0) > 10, `delta=${rd1 - rd0}`);
+      await page.waitForTimeout(500);
+      const rd2 = await helix();
+      check("gallery-inertia", Math.abs(rd2 - rd1) > 1.5, `coast=${rd2 - rd1}`);
+      // Let the throw settle so it cannot fight the poses below.
+      await page.waitForTimeout(2200);
+
+      // Occlusion: force a panel across the centerpiece and confirm by eye.
+      await page.evaluate(() => window.__helix.setRotation(10));
+      await page.waitForTimeout(400);
+      await page.screenshot({ path: `${OUT}/${tag}-gallery-occlusion.png` });
+      await page.evaluate(() => window.__helix.setRotation(22.5));
+      await page.waitForTimeout(400);
+      await page.screenshot({ path: `${OUT}/${tag}-gallery-edge-pose.png` });
+      await page.evaluate(() => window.__helix.setRotation(0));
+      await page.waitForTimeout(600);
+
+      // Takeover: click the focused panel, morph, teletype, close.
+      const panelCenter = await page.evaluate(() => {
+        const el = document.querySelector("#problem [data-panel][data-focused] button");
+        const r = el.getBoundingClientRect();
+        return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+      });
+      await page.mouse.click(panelCenter.x, panelCenter.y);
+      await page.waitForTimeout(1100); // fronting + flip + first typed chars
+      const takeoverMid = await page.evaluate(() => {
+        const el = document.querySelector("[data-takeover]");
+        if (!el) return null;
+        return {
+          fixed: getComputedStyle(el).position === "fixed",
+          locked: document.documentElement.style.overflow === "hidden",
+          typedSoFar:
+            el.querySelector("[data-takeover-copy] p[aria-hidden='true'] span")
+              ?.textContent?.length ?? 0,
+        };
+      });
+      await page.screenshot({ path: `${OUT}/${tag}-gallery-takeover-mid.png` });
+      check(
+        "gallery-takeover-open",
+        takeoverMid !== null && takeoverMid.fixed && takeoverMid.locked,
+        JSON.stringify(takeoverMid),
+      );
+      await page.waitForTimeout(2600);
+      await page.screenshot({ path: `${OUT}/${tag}-gallery-takeover-done.png` });
+      const playingOpen = await playingCount();
+      check("gallery-takeover-budget", playingOpen <= 2, `playing=${playingOpen}`);
+
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(1000);
+      const closed = await page.evaluate(() => ({
+        takeover: !!document.querySelector("[data-takeover]"),
+        locked: document.documentElement.style.overflow === "hidden",
+        leafHome: !!document.querySelector(
+          "#problem [data-panel][data-focused] [data-panel-leaf] video",
+        ),
+      }));
+      check(
+        "gallery-takeover-close",
+        !closed.takeover && !closed.locked && closed.leafHome,
+        JSON.stringify(closed),
+      );
+      const ra0 = await helix();
+      await page.waitForTimeout(2200);
+      const ra1 = await helix();
+      check("gallery-auto-resumes", ra1 - ra0 > 1, `delta=${ra1 - ra0}`);
+    }
+
+    if (!REDUCED && width < 1024) {
+      const row = await page.evaluate(() => {
+        const el = document.querySelector("#problem .gallery-row");
+        if (!el) return null;
+        return {
+          scrollable: el.scrollWidth > el.clientWidth,
+          cards: el.querySelectorAll("button").length,
+          videos: document.querySelectorAll("#problem video").length,
+        };
+      });
+      check(
+        "gallery-mobile-row",
+        row !== null && row.scrollable && row.cards === 8 && row.videos === 0,
+        JSON.stringify(row),
+      );
+      await page.screenshot({ path: `${OUT}/${tag}-gallery-mobile-row.png` });
+    }
+
+    if (REDUCED) {
+      const reducedState = await page.evaluate(() => {
+        const stage = document.querySelector("[data-helix-stage]");
+        const grid = document.querySelectorAll("#problem ul button");
+        const line = document.querySelector("#problem p[aria-label] span");
+        return {
+          helix: !!stage,
+          buttons: grid.length,
+          videos: document.querySelectorAll("#problem video").length,
+          line: line?.textContent ?? "",
+        };
+      });
+      check(
+        "gallery-reduced-grid",
+        !reducedState.helix &&
+          reducedState.buttons === 8 &&
+          reducedState.videos === 0 &&
+          reducedState.line === "the work that kills.",
+        JSON.stringify(reducedState),
+      );
+      await page.screenshot({ path: `${OUT}/${tag}-gallery-reduced-grid.png` });
+
+      if (width >= 1024) {
+        // Keyboard opens the takeover; copy is instant, no typing.
+        await page.evaluate(() => {
+          const btn = document.querySelector("#problem ul button");
+          btn?.focus();
+        });
+        await page.keyboard.press("Enter");
+        await page.waitForTimeout(500);
+        const instant = await page.evaluate(() => {
+          const el = document.querySelector("[data-takeover]");
+          if (!el) return null;
+          const spans = [
+            ...el.querySelectorAll("[data-takeover-copy] p:not(.invisible) span"),
+          ];
+          return {
+            text: spans.map((s) => s.textContent ?? "").join(""),
+          };
+        });
+        check(
+          "gallery-reduced-instant",
+          instant !== null && instant.text.length > 40,
+          JSON.stringify(instant),
+        );
+        await page.screenshot({ path: `${OUT}/${tag}-gallery-reduced-takeover.png` });
+        await page.keyboard.press("Escape");
+        await page.waitForTimeout(400);
+      }
+    }
+  }
+
   // Step-scroll the full page to fire every ScrollTrigger.
   const total = await page.evaluate(() => document.body.scrollHeight);
   for (let y = 0; y <= total; y += 400) {

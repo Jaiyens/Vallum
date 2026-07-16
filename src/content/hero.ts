@@ -1,6 +1,6 @@
 // UI copy for the hero experience. Every string ships verbatim. Never
-// paraphrase here or at a call site. This is the only file under src/ by
-// design; the rest of the app lives at the repo root.
+// paraphrase here or at a call site. Content copy lives under src/content
+// by design; the rest of the app lives at the repo root.
 
 export const HERO_COPY = {
   wordmark: "VALLUM",

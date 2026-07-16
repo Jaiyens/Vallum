@@ -1,4 +1,5 @@
 import { FutureRigDynamic } from "@/components/future-rig/FutureRigDynamic";
+import { GalleryDynamic } from "@/components/gallery/GalleryDynamic";
 import { HeroExperience } from "@/components/hero/HeroExperience";
 import { TempClose } from "@/components/temp-close";
 
@@ -8,7 +9,7 @@ export default function Home() {
       {/* HERO EXPERIENCE START */}
       <HeroExperience />
       {/* HERO EXPERIENCE END */}
-      {/* INSERTION POINT: problem section, spinning gallery, assets not ready */}
+      <GalleryDynamic />
       {/* INSERTION POINT: dataset section, quarantined at _quarantine/dataset */}
       <FutureRigDynamic />
       {/* INSERTION POINT: founder message */}

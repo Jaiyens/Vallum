@@ -32,6 +32,54 @@ export const SHOWCASE_VIDEO = {
   },
 } satisfies Record<string, VideoAsset>;
 
+// Problem section gallery loops. Real panels (p1, p2, p5, p8) are conform
+// passes over finished human clips in the shift workspace; AI panels (p3,
+// p4, p6, p7) are generated unpopulated environments. p3 and p4 video
+// files are pending generation approval; their posters come from the
+// approved keyframes, which are the exact start frames of those clips.
+export const GALLERY_VIDEO = {
+  p1: {
+    mp4: "/gallery/p1.mp4",
+    poster: "/gallery/p1.webp",
+    label: "Farm crew picking a pepper field by hand",
+  },
+  p2: {
+    mp4: "/gallery/p2.mp4",
+    poster: "/gallery/p2.webp",
+    label: "Ironworkers walking steel beams on a high structure",
+  },
+  p3: {
+    mp4: "/gallery/p3.mp4",
+    poster: "/gallery/p3.webp",
+    label: "Empty trawler deck in heavy grey seas",
+  },
+  p4: {
+    mp4: "/gallery/p4.mp4",
+    poster: "/gallery/p4.webp",
+    label: "Wooden fishing canoes beached on a grey shore",
+  },
+  p5: {
+    mp4: "/gallery/p5.mp4",
+    poster: "/gallery/p5.webp",
+    label: "Crew installing solar panels on a steep roof",
+  },
+  p6: {
+    mp4: "/gallery/p6.mp4",
+    poster: "/gallery/p6.webp",
+    label: "Industrial yard in thick haze, cranes as silhouettes",
+  },
+  p7: {
+    mp4: "/gallery/p7.mp4",
+    poster: "/gallery/p7.webp",
+    label: "Logging cut block with felled timber in fog",
+  },
+  p8: {
+    mp4: "/gallery/p8.mp4",
+    poster: "/gallery/p8.webp",
+    label: "Roughnecks wrestling pipe on a drilling rig floor",
+  },
+} satisfies Record<string, VideoAsset>;
+
 // The future rig section scrubs a webp frame sequence at /rig/frames,
 // generated from assets-src/new-rig-silent.mp4 (never shipped to the
 // client). Frame paths live in components/future-rig/frames-manifest.ts;
