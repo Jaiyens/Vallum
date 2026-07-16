@@ -45,3 +45,8 @@ next-env.d.ts
 
 # verification artifacts
 verify-shots/
+
+# nightshift
+artifacts/
+.nightshift/
+.claude/worktrees/
