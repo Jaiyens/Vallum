@@ -4,21 +4,26 @@ import { useRef } from "react";
 import { gsap, SplitText, useGSAP } from "@/lib/gsap";
 import { HERO_COPY } from "@/src/content/hero";
 
-// Shared wordmark geometry. The real wordmark and the robotic lens
+// Shared wordmark geometry. The real wordmark and the overgrown lens
 // variant must never drift apart, so both render from this one constant.
 export const WORDMARK_CLASS =
-  "absolute left-1/2 top-[62svh] -translate-x-1/2 -translate-y-1/2 font-display text-[13.5vw] leading-none font-bold tracking-[0.06em] whitespace-nowrap uppercase select-none font-stretch-expanded";
+  "absolute left-1/2 top-[72svh] -translate-x-1/2 -translate-y-1/2 font-display text-[13.5vw] leading-none font-bold tracking-[0.06em] whitespace-nowrap uppercase select-none font-stretch-expanded";
 
-// Entrance art direction. The wordmark resolves letter by letter in a
-// woven, tactile way: soft blur, small drift, long random stagger. Total
-// read is about two seconds. Client will refine against a reference.
+// The overgrown wordmark revealed inside the lens: the letters wrapped in
+// vines and gears, cut out from the key art. The letterforms occupy 92.4%
+// of the asset width, centered 0.67% left of the asset box (the vine
+// overhang differs per side). The text renders at 76.9vw, so the image
+// goes to 83.3vw (76.9 / 0.924) with a 0.56vw nudge to put the letter
+// centers, not the box centers, in register.
+export const LENS_WORDMARK_SRC = "/hero/wordmark-vines.webp";
+
+// Entrance art direction. The wordmark types on letter by letter: each
+// char lands whole, no fade, at a slow deliberate cadence. Total read is
+// about two seconds. Client direction 2026-07-15: slow type preferred
+// over the woven blur resolve.
 const ENTRANCE = {
-  charDuration: 1.6,
-  charStagger: 0.09,
-  staggerFrom: "random" as const,
-  blurPx: 8,
-  driftPx: 6,
-  ease: "power2.out",
+  charStagger: 0.26,
+  startDelay: 0.4,
   fallbackFade: 1.2,
 } as const;
 
@@ -46,26 +51,17 @@ export function HeroCopy() {
           if (cancelled) return;
           try {
             split = new SplitText(target, { type: "chars", aria: "auto" });
+            // Typewriter: near-zero duration so each char lands whole;
+            // the stagger alone carries the rhythm.
             tween = gsap.fromTo(
               split.chars,
-              {
-                autoAlpha: 0,
-                filter: `blur(${ENTRANCE.blurPx}px)`,
-                y: ENTRANCE.driftPx,
-              },
+              { autoAlpha: 0 },
               {
                 autoAlpha: 1,
-                filter: "blur(0px)",
-                y: 0,
-                duration: ENTRANCE.charDuration,
-                ease: ENTRANCE.ease,
-                stagger: {
-                  each: ENTRANCE.charStagger,
-                  from: ENTRANCE.staggerFrom,
-                },
-                onComplete: () => {
-                  if (split) gsap.set(split.chars, { clearProps: "filter,transform" });
-                },
+                duration: 0.01,
+                ease: "none",
+                delay: ENTRANCE.startDelay,
+                stagger: { each: ENTRANCE.charStagger, from: "start" },
               },
             );
             // After the chars carry the hidden state, the container can
@@ -141,8 +137,18 @@ export function HeroCopy() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 hidden lg:motion-safe:block"
       >
-        <div data-lens-word-text className={WORDMARK_CLASS}>
-          {HERO_COPY.wordmark}
+        <div className={WORDMARK_CLASS}>
+          {/* lazy: skipped entirely where the container is display:none
+              (mobile, reduced motion); in-viewport on desktop, so it
+              still fetches ahead of the first hover. */}
+          <img
+            src={LENS_WORDMARK_SRC}
+            alt=""
+            draggable={false}
+            loading="lazy"
+            decoding="async"
+            className="h-auto w-[83.3vw] max-w-none translate-x-[0.56vw] select-none"
+          />
         </div>
       </div>
     </div>

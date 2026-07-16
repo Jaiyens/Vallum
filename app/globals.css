@@ -228,10 +228,11 @@
   display: none;
 }
 
-/* Robotic wordmark variant, visible only inside the lens circle. The
-   real wordmark wrapper carries the inverse mask on desktop motion, so
-   inside the circle the solid letters drop out and only the green
-   stroked variant shows: a true swap, not an overlay. */
+/* Overgrown wordmark variant (the vine-and-gear letters key art),
+   visible only inside the lens circle. The real wordmark wrapper carries
+   the inverse mask on desktop motion, so inside the circle the typed
+   letters drop out and the overgrown letters show: a true swap, not an
+   overlay. */
 [data-lens-word] {
   -webkit-mask-image: var(--lens-mask);
   mask-image: var(--lens-mask);
@@ -239,10 +240,6 @@
   mask-repeat: no-repeat;
   transform: translateZ(0);
   will-change: mask-image;
-}
-[data-lens-word-text] {
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--color-green-signal);
 }
 @media (prefers-reduced-motion: no-preference) and (min-width: 1024px) {
   [data-word-mask] {
