@@ -2,7 +2,7 @@
 
 import { AutoPauseVideo } from "@/components/media/auto-pause-video";
 import { GALLERY_VIDEO } from "@/lib/assets";
-import type { GalleryPanelContent } from "@/src/content/gallery";
+import { type GalleryPanelContent, panelLabel } from "@/src/content/gallery";
 import { STEP_DEG } from "./gallery-config";
 
 // One helix slot. The slot div carries the static spiral transform; the
@@ -33,9 +33,9 @@ export function GalleryPanel({
     >
       <button
         type="button"
-        aria-label={`${panel.industry}. ${panel.stat}`}
+        aria-label={panelLabel(panel)}
         onClick={() => onOpen(index)}
-        className="relative block aspect-[3/4] w-full"
+        className="relative block aspect-[3/4] w-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bone"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img

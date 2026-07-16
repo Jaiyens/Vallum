@@ -78,6 +78,19 @@ export const GALLERY_VIDEO = {
   },
 } satisfies Record<string, VideoAsset>;
 
+// The method section aerial. western-cape-aerial.jpg is an AI generated,
+// unpopulated environment plate of Western Cape vineyard rows in winter,
+// with no people, vehicles, or equipment anywhere in frame. It exists to
+// obey the provenance law, which forbids showing a person at work, so the
+// only imagery that law permits is empty ground. Graded cold and matte
+// into bone, ink, and forest, with no amber or golden warmth. 21:9, 2400
+// by 1018. Not captured footage: it reads as environment, never as data.
+export const METHOD_AERIAL = {
+  src: "/method/western-cape-aerial.jpg",
+  label:
+    "Aerial of dormant Western Cape vineyard rows in winter, no people or vehicles in frame",
+} as const;
+
 // The future rig section scrubs a webp frame sequence at /rig/frames,
 // generated from assets-src/new-rig-silent.mp4 (never shipped to the
 // client). Frame paths live in components/future-rig/frames-manifest.ts;

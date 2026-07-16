@@ -2,9 +2,10 @@ import { FutureRigDynamic } from "@/components/future-rig/FutureRigDynamic";
 import { GalleryDynamic } from "@/components/gallery/GalleryDynamic";
 import { HeroExperience } from "@/components/hero/HeroExperience";
 import { DatasetSection } from "@/components/sections/dataset";
+import { EthosFounderSection } from "@/components/sections/ethos";
+import { SiteFooter } from "@/components/sections/footer";
 import { MethodSection } from "@/components/sections/method";
 import { TurnSection } from "@/components/sections/turn";
-import { TempClose } from "@/components/temp-close";
 
 export default function Home() {
   return (
@@ -16,11 +17,15 @@ export default function Home() {
       {/* The page turns light here and stays light. BRIEF.md, beats 3-5. */}
       <TurnSection />
       <MethodSection />
-      <DatasetSection />
+      {/* The rig sits in the method beat, not the closing position
+          (F-0301): a running method implies its kit, and the page still
+          has to close on the person, not on unbuilt hardware. */}
       <FutureRigDynamic />
-      {/* INSERTION POINT: founder message */}
-      {/* TEMPORARY CLOSE: mono contact line */}
-      <TempClose />
+      <DatasetSection />
+      {/* Beat 6, the ethos and the founder passage (F-0015, F-0402). */}
+      <EthosFounderSection />
+      {/* Beat 7, the wordmark, and the closing forest strip (F-0016). */}
+      <SiteFooter />
     </main>
   );
 }

@@ -10,17 +10,21 @@ import { HERO_COPY } from "@/src/content/hero";
 // lives at bottom-10); the extra offset below lg keeps the two from
 // touching where the descent gap shrinks with the vw font size.
 export const WORDMARK_CLASS =
-  "absolute left-1/2 bottom-14 lg:bottom-10 -translate-x-1/2 font-display text-[13.5vw] leading-none font-bold tracking-[0.06em] whitespace-nowrap uppercase select-none font-stretch-expanded";
+  "absolute left-1/2 bottom-14 lg:bottom-10 -translate-x-1/2 font-display text-[8vw] leading-none font-bold tracking-[0.06em] whitespace-nowrap uppercase select-none font-stretch-expanded";
 
 // The overgrown wordmark revealed inside the lens: the letters wrapped in
 // vines and gears, cut out from the key art. Sized so the image LETTER
 // ink matches the text letter ink, not the box: the text caps measure
-// 68.4% of the em (9.24vw at the 13.5vw font), the asset's letters 73.6%
-// of its height, so 62vw puts the two ink heights equal. Both containers
-// share the bottom anchor, and the asset's own padding below its letters
-// (3.79% of width) lands within a pixel of the text descent gap at that
-// scale, so the baselines align with no nudge. Re-derive both numbers if
-// the asset or the wordmark typography changes.
+// 68.4% of the em (5.47vw at the 8vw font, re-derived from the F-0902
+// two-word fix; was 9.24vw at 13.5vw), the asset's letters 73.6% of its
+// height, so 36.7vw (was 62vw) puts the two ink heights equal. Both
+// containers share the bottom anchor, and the asset's own padding below
+// its letters (3.79% of width) lands within a pixel of the text descent
+// gap at that scale, so the baselines align with no nudge. Re-derive both
+// numbers if the asset or the wordmark typography changes. NOTE: the
+// asset itself is still the bare "VALLUM" key art (no "Labs"); this only
+// re-matches its scale to the corrected text, it does not fix the
+// content mismatch, that needs a new render of the key art (see F-0902).
 export const LENS_WORDMARK_SRC = "/hero/wordmark-vines.webp";
 
 // Entrance art direction. The wordmark types on letter by letter: each
@@ -128,12 +132,12 @@ export function HeroCopy() {
         aria-hidden="true"
         className="absolute bottom-8 left-6 font-mono text-[11px] tracking-wider whitespace-nowrap uppercase opacity-0 lg:left-10"
       >
-        <span data-tag-human className="block text-mono-anno">
+        <span data-tag-human className="block text-bone-hi">
           {HERO_COPY.stateTagHuman}
         </span>
         <span
           data-tag-robot
-          className="absolute inset-0 text-mono-anno opacity-0"
+          className="absolute inset-0 text-bone-hi opacity-0"
         >
           {HERO_COPY.stateTagRobot}
         </span>
@@ -153,7 +157,7 @@ export function HeroCopy() {
             draggable={false}
             loading="lazy"
             decoding="async"
-            className="h-auto w-[62vw] max-w-none select-none"
+            className="h-auto w-[36.7vw] max-w-none select-none"
           />
         </div>
       </div>

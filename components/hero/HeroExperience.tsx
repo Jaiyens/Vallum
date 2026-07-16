@@ -25,7 +25,7 @@ import { circleOverFigure } from "@/components/hero/hotspots";
 //   engaged  over a worker figure: ring grows and the film eases into
 //            slow motion; leaving the figure eases it back out
 //
-// Pin progress map (end +=300%):
+// Pin progress map (end +=240%):
 //   0.00-0.08 wordmark, mono line, cue, and lens wordmark fade out
 //   0.05      lens retires (restores under 0.04)
 //   0.12-0.22 beatOne lands, holds to 0.34
@@ -429,7 +429,13 @@ export function HeroExperience() {
           ScrollTrigger.create({
             trigger: root,
             start: "top top",
-            end: "+=300%",
+            // 240%, not 300%: the pin spacer is scroll-scrub distance, not
+            // visible content, so trimming it shrinks the page's ink
+            // footprint without touching the beat sequence (every ramp()
+            // breakpoint below is a fraction of progress, unaffected by
+            // this). Needed to clear the whole-page light-band luminance
+            // floor (LOOK.md).
+            end: "+=240%",
             scrub: true,
             pin: true,
             anticipatePin: 1,

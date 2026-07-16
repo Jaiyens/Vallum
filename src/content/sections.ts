@@ -10,15 +10,18 @@ export const TURN_COPY = {
   indoor:
     "Nearly all of that footage was shot under a roof: kitchens, warehouses, homes, factory floors. Ego4D, the reference corpus, spans 3,670 hours from 931 camera wearers across 74 locations in 9 countries.",
   indoorSource: "Source: Ego4D",
-  turn: "Outdoor manual work is missing from the record. Vines in the rain, a roof pitched at 40 degrees, a deck in weather. The environments are hostile, access runs on trust, and consent has to survive a buyer's legal review. That is why nobody collects it, and it is exactly what Vallum Labs collects.",
+  turn: "Outdoor manual work is missing from the record: vines in the rain, a roof pitched at 40 degrees, a deck in weather. The environments are hostile, access runs on trust, and consent has to survive a buyer's legal review. That is why nobody collects it, and it is exactly what Vallum Labs collects.",
 } as const;
 
 export const METHOD_COPY = {
   heading: "Consent first, camera second",
+  // Consent facts are stated here at framing level only; the itemized
+  // six-item stack (exact language list, blur, POPIA, C2PA) lives once in
+  // DATASET_COPY.stack and on /dataset, per F-0303.
   people:
-    "Every capture starts with the people in it: a written release in English, Afrikaans, and isiXhosa, signed before recording, and site-owner authorization for every location. Faces are blurred before anything leaves the pipeline. Participants are paid.",
+    "Every capture starts with a signed release in the person's own language, before a camera turns on. The site owner authorizes it, and faces blur before any clip leaves the pipeline.",
   window:
-    "The first collection window is the Western Cape harvest season, July 2026 to approximately January 2027, agriculture first. Construction, rooftop solar, offshore rigs, wind turbines, and high-rise ironwork are stated direction, not current operations.",
+    "The first collection window is the Western Cape harvest season, July 2026 to approximately January 2027, agriculture first. Construction, rooftop solar, offshore rigs, wind turbines, and high-rise ironwork are the stated direction beyond agriculture.",
   kit: "The capture kit today is 4 to 6 refurbished iPhones on head straps, carried in personally. Every clip is head-mounted, 1080p minimum, 30fps.",
 } as const;
 
@@ -47,7 +50,7 @@ export const DATASET_COPY = {
   ],
   offerTitle: "The offer",
   offer:
-    "A paid pilot runs $15,000 to $40,000 for 20 to 40 curated, annotated, consent-cleared hours: 50% on signature, 50% on delivery and acceptance. Licensing is non-exclusive by default. Time-boxed, task-boxed exclusivity is available as a paid premium, never perpetual, never blanket.",
+    "A paid pilot runs $15,000 to $40,000 for 20 to 40 curated, annotated, consent-cleared hours: 50% on signature, 50% on delivery and acceptance. Licensing is non-exclusive by default. Time-boxed, task-boxed exclusivity is available as a paid premium.",
 } as const;
 
 export const CLOSE_COPY = {

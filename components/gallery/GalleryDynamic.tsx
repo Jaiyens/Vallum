@@ -45,7 +45,7 @@ function GalleryFallback() {
                     loading="lazy"
                     className="absolute inset-0 h-full w-full object-cover"
                   />
-                  <span className="absolute bottom-2 left-2 font-mono text-xs text-bone/90">
+                  <span className="absolute bottom-2 left-2 text-sm text-bone">
                     {panel.industry}
                   </span>
                 </div>

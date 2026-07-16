@@ -3,11 +3,15 @@
 // by design; the rest of the app lives at the repo root.
 
 export const HERO_COPY = {
-  wordmark: "VALLUM",
+  wordmark: "VALLUM LABS",
   monoLine: "physical ai data for the outdoor economy",
-  beatOne: "This is the work humans were never meant to do.",
+  // Beat 1 (STORY.md). Display line: 8 words or fewer, concrete, about the
+  // work itself, no verdict on the workers, no death. Sub line: 14 words or
+  // fewer, naming what the company collects and licenses and to whom, no
+  // temporal judgment on the people doing the work.
+  beatOne: "Outdoor work. At height, in the weather.",
   beatTwo:
-    "Machines learn this work by watching it done. We film the people who still do it, so the machines can learn.",
+    "We collect consent-cleared, action-labeled egocentric video and license it to robotics and world-model teams.",
   stateTagHuman: "HUMAN CREW",
   stateTagRobot: "ROBOT TWIN",
 } as const;

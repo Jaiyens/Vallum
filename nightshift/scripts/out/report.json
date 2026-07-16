@@ -1,0 +1,187 @@
+{
+  "base": "http://localhost:3001",
+  "boneLuminance": 0.8568,
+  "contrastFloor": 4.5,
+  "angles": [
+    {
+      "deg": 0,
+      "meanRGB": [
+        73,
+        65,
+        54
+      ],
+      "meanLum": 0.0542,
+      "meanContrast": 8.71,
+      "worstContrast": 1.8,
+      "textMeanContrast": 4.71,
+      "textWorstContrast": 1.77
+    },
+    {
+      "deg": 30,
+      "meanRGB": [
+        51,
+        49,
+        42
+      ],
+      "meanLum": 0.0304,
+      "meanContrast": 11.28,
+      "worstContrast": 3.41,
+      "textMeanContrast": 10.85,
+      "textWorstContrast": 3.66
+    },
+    {
+      "deg": 60,
+      "meanRGB": [
+        46,
+        49,
+        49
+      ],
+      "meanLum": 0.03,
+      "meanContrast": 11.34,
+      "worstContrast": 2.88,
+      "textMeanContrast": 10.28,
+      "textWorstContrast": 2.62
+    },
+    {
+      "deg": 90,
+      "meanRGB": [
+        62,
+        66,
+        68
+      ],
+      "meanLum": 0.053,
+      "meanContrast": 8.8,
+      "worstContrast": 1.96,
+      "textMeanContrast": 5.39,
+      "textWorstContrast": 1.56
+    },
+    {
+      "deg": 120,
+      "meanRGB": [
+        73,
+        78,
+        81
+      ],
+      "meanLum": 0.0745,
+      "meanContrast": 7.28,
+      "worstContrast": 1.2,
+      "textMeanContrast": 4.23,
+      "textWorstContrast": 1.14
+    },
+    {
+      "deg": 150,
+      "meanRGB": [
+        76,
+        83,
+        88
+      ],
+      "meanLum": 0.085,
+      "meanContrast": 6.72,
+      "worstContrast": 1.19,
+      "textMeanContrast": 3.45,
+      "textWorstContrast": 1.15
+    },
+    {
+      "deg": 180,
+      "meanRGB": [
+        66,
+        75,
+        81
+      ],
+      "meanLum": 0.0678,
+      "meanContrast": 7.7,
+      "worstContrast": 1.59,
+      "textMeanContrast": 5.89,
+      "textWorstContrast": 1.43
+    },
+    {
+      "deg": 210,
+      "meanRGB": [
+        55,
+        63,
+        69
+      ],
+      "meanLum": 0.0483,
+      "meanContrast": 9.23,
+      "worstContrast": 2.56,
+      "textMeanContrast": 7.03,
+      "textWorstContrast": 2.84
+    },
+    {
+      "deg": 240,
+      "meanRGB": [
+        47,
+        54,
+        59
+      ],
+      "meanLum": 0.0354,
+      "meanContrast": 10.62,
+      "worstContrast": 2.68,
+      "textMeanContrast": 8.38,
+      "textWorstContrast": 2.95
+    },
+    {
+      "deg": 270,
+      "meanRGB": [
+        44,
+        49,
+        55
+      ],
+      "meanLum": 0.0299,
+      "meanContrast": 11.35,
+      "worstContrast": 3.83,
+      "textMeanContrast": 9.58,
+      "textWorstContrast": 3.32
+    },
+    {
+      "deg": 300,
+      "meanRGB": [
+        38,
+        37,
+        44
+      ],
+      "meanLum": 0.0194,
+      "meanContrast": 13.06,
+      "worstContrast": 5.42,
+      "textMeanContrast": 10.83,
+      "textWorstContrast": 3.89
+    },
+    {
+      "deg": 330,
+      "meanRGB": [
+        47,
+        41,
+        40
+      ],
+      "meanLum": 0.0231,
+      "meanContrast": 12.41,
+      "worstContrast": 2.88,
+      "textMeanContrast": 11.61,
+      "textWorstContrast": 3
+    }
+  ],
+  "touch": {
+    "controlVertical": {
+      "pageScrolled": 211
+    },
+    "verticalStartInRow": {
+      "scrollBefore": 809,
+      "scrollAfter": 1070,
+      "pageScrolled": 261
+    },
+    "horizontalInRow": {
+      "rowScrolled": 0,
+      "pageMoved": 0,
+      "rowHorizontallyScrollable": true,
+      "scrollWidth": 2064,
+      "clientWidth": 375
+    }
+  },
+  "errors": [],
+  "beforeFocusFPS": 57,
+  "focusFPS": 58,
+  "mobileFPS": 61,
+  "minMeanContrast": 6.72,
+  "minWorstContrast": 1.19,
+  "allAnglesPassMean": true
+}

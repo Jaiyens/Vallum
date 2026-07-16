@@ -1,26 +1,39 @@
-// The rotation controller for the helix. Owns the single rotation value and
-// everything derived from it: ring transform, centerpiece counter-rotation,
-// per-frame focus, video budget, autorotate, and the drag physics. Lives
-// outside React so per-frame work structurally cannot touch React state.
+// The rotation controller for the helix. Owns two rotation values and
+// everything derived from them: ring azimuth, stage polar tilt, centerpiece
+// counter-rotation, per-frame focus, video budget, auto-rotate, and the drag
+// physics. Lives outside React so per-frame work structurally cannot touch
+// React state.
+//
+// There is no three.js in this repo, so the two-axis damped orbit is built by
+// hand: azimuth and tilt each ease toward a target every frame (the damping
+// equivalent), auto-rotate advances the azimuth target, a pointer drag takes
+// both targets, and the tilt is clamped to the polar range. Pointer input is
+// native pointer events with touch-action pan-y on the stage, so a single
+// finger orbits horizontally while a vertical swipe stays page scroll. That
+// replaces the old GSAP Draggable, which stamped touch-action none on every
+// descendant and had to be undone.
 
-import { Draggable, gsap } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
 import {
-  AUTOROTATE_SECONDS,
+  AUTO_RAD_PER_S,
+  AZ_GAIN_DEG_PER_PX,
+  DAMP_PER_FRAME,
   DIMMED_BRIGHTNESS,
-  DRAG_GAIN,
-  DRAG_RESISTANCE,
-  FOCUSED_SCALE,
+  DRAG_THRESHOLD_PX,
   FOCUS_HYSTERESIS_DEG,
   FOCUS_TWEEN_S,
+  FOCUSED_SCALE,
   MAX_PLAYING_VIDEOS,
   PANEL_COUNT,
-  RESUME_DELAY_S,
+  POLAR_MAX_DEG,
+  POLAR_MIN_DEG,
+  RESUME_IDLE_S,
+  REST_TILT_DEG,
   STEP_DEG,
+  TILT_GAIN_DEG_PER_PX,
 } from "./gallery-config";
 
-// Draggable's type declarations do not surface the rotation tracker that
-// type: "rotation" instances carry at runtime.
-type RotationDraggable = { rotation: number; tween?: gsap.core.Tween };
+const AUTO_DEG_PER_S = (AUTO_RAD_PER_S * 180) / Math.PI;
 
 export type HelixPanel = {
   root: HTMLElement;
@@ -50,45 +63,60 @@ const distToFront = (deg: number) => {
   const a = norm(deg);
   return Math.min(a, 360 - a);
 };
+const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 export function createHelixController(args: {
   stage: HTMLElement;
   ring: HTMLElement;
   centerpiece: HTMLElement;
-  proxy: HTMLElement;
   panels: HelixPanel[];
 }): HelixController {
-  const { stage, ring, centerpiece, proxy, panels } = args;
-  const state = { rotation: 0 };
+  const { stage, ring, centerpiece, panels } = args;
+  const state = {
+    az: 0,
+    azTarget: 0,
+    tilt: REST_TILT_DEG,
+    tiltTarget: REST_TILT_DEG,
+  };
   const videos = panels.map((p) => p.leaf.querySelector("video"));
+  // The poster sits beside the leaf so the slot never goes black while the leaf
+  // is borrowed by a takeover; it has to dim with the leaf or a paused back
+  // panel would glow through the glass band. Both are leaves, so filtering them
+  // never touches the 3D stage or ring.
+  const posters = panels.map((p) => p.root.querySelector("img"));
+
+  // Depth brightness: the front panel is lit, the rest recede into the ink so
+  // whatever crosses behind the centerpiece band arrives already dark. This is
+  // what holds bone text legible against every frame without a solid box, and
+  // it reads as atmosphere, not an effect.
+  const depthBright = (distDeg: number) => {
+    const t = (1 + Math.cos((distDeg * Math.PI) / 180)) / 2; // 1 front, 0 back
+    return 0.2 + 0.7 * Math.pow(t, 2.2);
+  };
+  const applyBrightness = (i: number, b: number) => {
+    const v = `brightness(${b.toFixed(3)})`;
+    panels[i].leaf.style.filter = v;
+    const img = posters[i];
+    if (img) img.style.filter = v;
+  };
   let focused = -1;
   let suspended = false;
+  let autoActive = true;
+  let onScreen = false;
   let resumeCall: gsap.core.Tween | null = null;
   let rotateTween: gsap.core.Tween | null = null;
 
-  // Centering lives on the element's CSS translate property, which
-  // composes before the transform GSAP owns, so the centerpiece is centered
-  // from first paint with no JS. Only rotationY is written per frame. The
-  // tiny z keeps Safari from z-fighting it against panels crossing the z=0
-  // plane.
-  gsap.set(centerpiece, {
-    transformOrigin: "50% 50%",
-    force3D: true,
-    z: 0.01,
-  });
+  gsap.set(ring, { transformOrigin: "50% 50%", force3D: true });
+  gsap.set(stage, { transformOrigin: "50% 50%", force3D: true });
+  // The tiny z keeps Safari from z-fighting the centerpiece against panels
+  // crossing the z=0 plane. Centering lives on the element's CSS translate,
+  // which composes before the GSAP-owned rotation.
+  gsap.set(centerpiece, { transformOrigin: "50% 50%", force3D: true, z: 0.01 });
   panels.forEach((p, i) => {
-    gsap.set(p.leaf, {
-      scale: 1,
-      filter: `brightness(${DIMMED_BRIGHTNESS})`,
-      transformOrigin: "50% 50%",
-    });
+    gsap.set(p.leaf, { scale: 1, transformOrigin: "50% 50%" });
     p.root.dataset.panelIndex = String(i);
+    applyBrightness(i, DIMMED_BRIGHTNESS);
   });
-
-  // No video may fetch or decode while the section is offscreen. The
-  // observer below flips this; playback requests made while hidden are
-  // re-issued for the focused panel when the section returns.
-  let onScreen = false;
 
   const playVideo = (i: number) => {
     const v = videos[i];
@@ -99,8 +127,6 @@ export function createHelixController(args: {
   const pauseVideo = (i: number) => {
     const v = videos[i];
     if (!v) return;
-    // Clearing the flag keeps the viewport observer in auto-pause-video
-    // from restarting an unfocused panel when it scrolls back on screen.
     delete v.dataset.started;
     v.pause();
   };
@@ -112,19 +138,15 @@ export function createHelixController(args: {
     if (prev >= 0) {
       const el = panels[prev];
       el.root.removeAttribute("data-focused");
-      gsap.to(el.leaf, {
-        scale: 1,
-        filter: `brightness(${DIMMED_BRIGHTNESS})`,
-        duration: FOCUS_TWEEN_S,
-        overwrite: "auto",
-      });
+      // Brightness is depth-driven every frame; focus animates the scale pop
+      // only, so the two never fight over the leaf's filter.
+      gsap.to(el.leaf, { scale: 1, duration: FOCUS_TWEEN_S, overwrite: "auto" });
       pauseVideo(prev);
     }
     const el = panels[next];
     el.root.setAttribute("data-focused", "");
     gsap.to(el.leaf, {
       scale: FOCUSED_SCALE,
-      filter: "brightness(1)",
       duration: FOCUS_TWEEN_S,
       overwrite: "auto",
     });
@@ -135,7 +157,7 @@ export function createHelixController(args: {
     let best = 0;
     let bestDist = Infinity;
     for (let i = 0; i < PANEL_COUNT; i++) {
-      const d = distToFront(i * STEP_DEG + state.rotation);
+      const d = distToFront(i * STEP_DEG + state.az);
       if (d < bestDist) {
         bestDist = d;
         best = i;
@@ -144,11 +166,9 @@ export function createHelixController(args: {
     if (focused === -1) {
       setFocused(best);
     } else if (best !== focused) {
-      const incumbent = distToFront(focused * STEP_DEG + state.rotation);
+      const incumbent = distToFront(focused * STEP_DEG + state.az);
       if (bestDist < incumbent - FOCUS_HYSTERESIS_DEG) setFocused(best);
     }
-    // Budget enforcement: nothing beyond the focused panel (and the panel a
-    // takeover borrowed) may decode. Cheap property reads, runs every frame.
     let playing = 0;
     for (let i = 0; i < videos.length; i++) {
       const v = videos[i];
@@ -159,20 +179,38 @@ export function createHelixController(args: {
   };
 
   const setRing = gsap.quickSetter(ring, "rotationY", "deg");
+  const setStageTilt = gsap.quickSetter(stage, "rotationX", "deg");
   const setCenter = gsap.quickSetter(centerpiece, "rotationY", "deg");
-  const apply = () => {
-    setRing(state.rotation);
-    setCenter(state.rotation * -1);
-    updateFocus();
-  };
-  gsap.ticker.add(apply);
 
-  const auto = gsap.to(state, {
-    rotation: "+=360",
-    duration: AUTOROTATE_SECONDS,
-    ease: "none",
-    repeat: -1,
-  });
+  const tick = (_time: number, deltaMs: number) => {
+    const dt = Math.min((deltaMs || 16.7) / 1000, 0.05);
+    // Frame-rate normalised follow fraction.
+    const f = 1 - Math.pow(1 - DAMP_PER_FRAME, dt * 60);
+
+    if (autoActive && !suspended && onScreen && !dragging && !rotateTween) {
+      state.azTarget += AUTO_DEG_PER_S * dt;
+    }
+    if (!rotateTween) {
+      state.az += (state.azTarget - state.az) * f;
+    }
+    state.tilt += (state.tiltTarget - state.tilt) * f;
+
+    setRing(state.az);
+    setStageTilt(state.tilt);
+    setCenter(state.az * -1);
+    updateFocus();
+
+    // Depth brightness, every frame, except while a takeover owns the front
+    // leaf. The focused panel is fully lit; everyone else falls off with the
+    // angular distance from front.
+    if (!suspended) {
+      for (let i = 0; i < PANEL_COUNT; i++) {
+        const b = i === focused ? 1 : depthBright(distToFront(i * STEP_DEG + state.az));
+        applyBrightness(i, b);
+      }
+    }
+  };
+  gsap.ticker.add(tick);
 
   const killResume = () => {
     resumeCall?.kill();
@@ -180,103 +218,109 @@ export function createHelixController(args: {
   };
   const scheduleResume = () => {
     killResume();
-    resumeCall = gsap.delayedCall(RESUME_DELAY_S, () => {
+    resumeCall = gsap.delayedCall(RESUME_IDLE_S, () => {
       resumeCall = null;
       if (suspended || !onScreen) return;
-      // A paused relative tween snaps back to stale recorded values on
-      // resume; invalidate re-resolves +=360 from the current rotation.
-      auto.invalidate();
-      auto.restart();
+      autoActive = true;
+      state.tiltTarget = REST_TILT_DEG; // ease the pose home, never snap
     });
   };
 
-  // Drag maps by delta, never by absolute value, so the proxy's accumulated
-  // rotation never has to agree with state.rotation and autorotate can move
-  // the ring while the proxy sits still.
-  let grabRing = 0;
-  let grabProxy = 0;
-  const drag = Draggable.create(proxy, {
-    type: "rotation",
-    trigger: stage,
-    inertia: true,
-    dragResistance: DRAG_RESISTANCE,
-    dragClickables: true,
-    allowNativeTouchScrolling: true,
-    cursor: "grab",
-    activeCursor: "grabbing",
-    onPress() {
-      if (suspended) return;
-      auto.pause();
-      killResume();
-      rotateTween?.kill();
-      rotateTween = null;
-      grabRing = state.rotation;
-      grabProxy = (this as unknown as RotationDraggable).rotation;
-    },
-    onDrag() {
-      if (suspended) return;
-      state.rotation =
-        grabRing + ((this as unknown as RotationDraggable).rotation - grabProxy) * DRAG_GAIN;
-    },
-    onThrowUpdate() {
-      if (suspended) return;
-      state.rotation =
-        grabRing + ((this as unknown as RotationDraggable).rotation - grabProxy) * DRAG_GAIN;
-    },
-    onThrowComplete() {
-      if (!suspended) scheduleResume();
-    },
-    onRelease() {
-      // A zero-velocity release never creates a throw tween, so
-      // onThrowComplete never fires; without this guard autorotate would
-      // stay paused forever.
-      const tween = (this as unknown as RotationDraggable).tween;
-      if (!suspended && (!tween || !tween.isActive())) scheduleResume();
-    },
-  })[0];
+  // Pointer input. A press below the drag threshold is left alone so a panel
+  // button click still fires; past the threshold it captures the pointer and
+  // orbits. Vertical touch never reaches us because the stage is pan-y, so a
+  // single finger orbits azimuth and the page keeps its vertical scroll.
+  let dragging = false;
+  let pending = false;
+  let startX = 0;
+  let startY = 0;
+  let startAz = 0;
+  let startTilt = 0;
+  let activePointer: number | null = null;
 
-  // Draggable's rotation type stamps inline touch-action: none on the
-  // trigger and recursively on every descendant, and force-disables
-  // allowNativeTouchScrolling. Undo all of it: pan-y on the stage lets the
-  // browser own vertical swipes natively (they never reach Draggable),
-  // while horizontal gestures still spin the ring. Descendants revert to
-  // auto and the stage's pan-y governs the whole chain.
+  const onPointerDown = (e: PointerEvent) => {
+    if (suspended || e.button !== 0) return;
+    pending = true;
+    dragging = false;
+    activePointer = e.pointerId;
+    startX = e.clientX;
+    startY = e.clientY;
+    startAz = state.azTarget;
+    startTilt = state.tiltTarget;
+    autoActive = false;
+    killResume();
+    rotateTween?.kill();
+    rotateTween = null;
+  };
+
+  const onPointerMove = (e: PointerEvent) => {
+    if (!pending || e.pointerId !== activePointer) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if (!dragging) {
+      if (Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
+      dragging = true;
+      stage.setPointerCapture(e.pointerId);
+      stage.style.cursor = "grabbing";
+    }
+    state.azTarget = startAz + dx * AZ_GAIN_DEG_PER_PX;
+    state.tiltTarget = clamp(
+      startTilt + dy * TILT_GAIN_DEG_PER_PX,
+      POLAR_MIN_DEG,
+      POLAR_MAX_DEG,
+    );
+  };
+
+  const endPointer = (e: PointerEvent) => {
+    if (e.pointerId !== activePointer) return;
+    const wasDragging = dragging;
+    pending = false;
+    dragging = false;
+    activePointer = null;
+    stage.style.cursor = "";
+    try {
+      stage.releasePointerCapture(e.pointerId);
+    } catch {
+      /* capture was never taken (a click, or a cancelled touch) */
+    }
+    if (!suspended) scheduleResume();
+    // A click (no drag) leaves the panel button's own handler to run.
+    void wasDragging;
+  };
+
+  stage.addEventListener("pointerdown", onPointerDown);
+  stage.addEventListener("pointermove", onPointerMove);
+  stage.addEventListener("pointerup", endPointer);
+  stage.addEventListener("pointercancel", endPointer);
   stage.style.touchAction = "pan-y";
-  stage.querySelectorAll<HTMLElement>("*").forEach((el) => {
-    el.style.touchAction = "";
-  });
+  stage.style.cursor = "grab";
 
-  // Offscreen gate: autorotate and video playback stop while the section
-  // is out of view, so nothing fetches or decodes below the fold.
+  // Offscreen gate: auto-rotate and video playback stop while the section is
+  // out of view, so nothing fetches or decodes below the fold.
   const io = new IntersectionObserver(
     ([entry]) => {
       onScreen = entry.isIntersecting;
-      const d = drag as unknown as { isPressed?: boolean; isThrowing?: () => boolean };
-      const throwing = typeof d.isThrowing === "function" ? d.isThrowing() : false;
       if (onScreen) {
         if (focused >= 0) playVideo(focused);
-        if (!suspended && !resumeCall && !d.isPressed && !throwing) {
-          auto.invalidate();
-          auto.restart();
-        }
-      } else {
-        if (focused >= 0) videos[focused]?.pause();
-        auto.pause();
+      } else if (focused >= 0) {
+        videos[focused]?.pause();
       }
     },
     { threshold: 0.1 },
   );
   io.observe(stage);
-  auto.pause();
 
   const hook: HelixTestHook = {
     get rotation() {
-      return state.rotation;
+      return state.az;
     },
     setRotation(deg: number) {
-      auto.pause();
+      autoActive = false;
       killResume();
-      state.rotation = deg;
+      rotateTween?.kill();
+      rotateTween = null;
+      state.az = deg;
+      state.azTarget = deg;
     },
     get focused() {
       return focused;
@@ -288,23 +332,26 @@ export function createHelixController(args: {
 
   return {
     rotateTo(deg, opts = {}) {
-      auto.pause();
+      autoActive = false;
       killResume();
       rotateTween?.kill();
       // Shortest signed arc to the requested pose.
-      let delta = (deg - state.rotation) % 360;
+      let delta = (deg - state.az) % 360;
       if (delta > 180) delta -= 360;
       if (delta < -180) delta += 360;
+      const target = state.az + delta;
+      state.azTarget = target;
       rotateTween = gsap.to(state, {
-        rotation: state.rotation + delta,
+        az: target,
         duration: opts.duration ?? 0.35,
         ease: "power2.inOut",
+        onUpdate: () => {
+          state.azTarget = state.az;
+        },
         onComplete: () => {
           rotateTween = null;
           opts.onComplete?.();
         },
-        // Fires when the tween is killed early, e.g. a press on the stage
-        // mid-fronting. Callers use it to unwind held state.
         onInterrupt: () => {
           rotateTween = null;
           opts.onInterrupt?.();
@@ -313,8 +360,10 @@ export function createHelixController(args: {
     },
     suspend() {
       suspended = true;
-      auto.pause();
+      autoActive = false;
       killResume();
+      rotateTween?.kill();
+      rotateTween = null;
     },
     release() {
       suspended = false;
@@ -325,9 +374,11 @@ export function createHelixController(args: {
     },
     destroy() {
       io.disconnect();
-      gsap.ticker.remove(apply);
-      drag.kill();
-      auto.kill();
+      gsap.ticker.remove(tick);
+      stage.removeEventListener("pointerdown", onPointerDown);
+      stage.removeEventListener("pointermove", onPointerMove);
+      stage.removeEventListener("pointerup", endPointer);
+      stage.removeEventListener("pointercancel", endPointer);
       rotateTween?.kill();
       killResume();
       delete (window as Window & { __helix?: HelixTestHook }).__helix;

@@ -73,27 +73,56 @@ async function captureStates(page, name) {
     shots.push(p);
   };
 
-  // 1. Canvas orbit sweep. Drives the real OrbitControls by dragging, then reads
-  //    the centerpiece text against every angle. This is the Helix contrast check.
-  const canvas = await page.$('canvas');
-  if (canvas) {
-    const box = await canvas.boundingBox();
-    if (box && box.width > 100) {
-      const cx = box.x + box.width / 2;
-      const cy = box.y + box.height / 2;
-      await page.mouse.move(cx, cy);
-      await page.mouse.down();
+  // 1. Rotation sweep. Prefers the Helix stage over a canvas: the gallery's
+  //    3D scene (components/gallery/HelixStage.tsx, GalleryPanel.tsx) is a
+  //    plain DOM tree with CSS 3D transforms, driven by a GSAP Draggable and
+  //    a window.__helix test hook (helix-rotation.ts). It never renders a
+  //    <canvas>. Grabbing the first canvas on the page always found the
+  //    hero's rig-scrub canvas instead, so the Helix (the section this sweep
+  //    exists to contrast-check, per LOOK.md's "every 30 degrees of ring
+  //    rotation, 12 samples" acceptance line) never showed up in a rotation
+  //    capture. Falls back to the first canvas when no Helix stage is on
+  //    this route, so canvas-driven routes keep their orbit capture.
+  try {
+    const helixStage = await page.$('[data-helix-stage]');
+    if (helixStage) {
+      await helixStage.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
       const STEPS = 12;
       for (let i = 0; i < STEPS; i++) {
-        const t = (i + 1) / STEPS;
-        await page.mouse.move(cx + t * box.width * 0.8, cy + Math.sin(t * Math.PI) * box.height * 0.25, { steps: 4 });
+        const deg = (i * 360) / STEPS;
+        const applied = await page.evaluate((d) => {
+          const hook = window.__helix;
+          if (!hook || typeof hook.setRotation !== 'function') return false;
+          hook.setRotation(d);
+          return true;
+        }, deg);
+        if (!applied) break; // hook absent (e.g. mobile/reduced mode); nothing to sweep
         await page.waitForTimeout(140);
         await shot(`rot-${String(i).padStart(2, '0')}`);
       }
-      await page.mouse.up();
-      await page.waitForTimeout(400);
+    } else {
+      const canvas = await page.$('canvas');
+      if (canvas) {
+        const box = await canvas.boundingBox();
+        if (box && box.width > 100) {
+          const cx = box.x + box.width / 2;
+          const cy = box.y + box.height / 2;
+          await page.mouse.move(cx, cy);
+          await page.mouse.down();
+          const STEPS = 12;
+          for (let i = 0; i < STEPS; i++) {
+            const t = (i + 1) / STEPS;
+            await page.mouse.move(cx + t * box.width * 0.8, cy + Math.sin(t * Math.PI) * box.height * 0.25, { steps: 4 });
+            await page.waitForTimeout(140);
+            await shot(`rot-${String(i).padStart(2, '0')}`);
+          }
+          await page.mouse.up();
+          await page.waitForTimeout(400);
+        }
+      }
     }
-  }
+  } catch { /* no orbitable element on this route, not a finding for the crawler */ }
 
   // 2. Open states. Click the first few things that look clickable and see what happens.
   const clickables = await page.$$('[role="button"], button, [data-panel], canvas + * [tabindex="0"]');
@@ -107,7 +136,28 @@ async function captureStates(page, name) {
     } catch { /* not clickable, not a finding for the crawler */ }
   }
 
-  // 3. Focus. Tab a few times and capture. Focus rings have to survive bone, ink, and canvas.
+  // 3. Gallery panel open state. Clicks an actual Helix/gallery panel button
+  //    (the same data-panel attribute MobileGallery and ReducedGallery reuse)
+  //    and waits for the takeover dialog itself (data-takeover, role dialog,
+  //    per StatTakeover.tsx) instead of guessing the flip and typewriter
+  //    timing with a fixed delay. force: true because scrolling the stage
+  //    into view resumes the Helix autorotate (helix-rotation.ts's
+  //    IntersectionObserver), so the panel keeps turning under the pointer
+  //    and never reads as "stable" to Playwright's actionability check.
+  try {
+    const panelButton = await page.$('[data-panel] button');
+    if (panelButton) {
+      await panelButton.scrollIntoViewIfNeeded();
+      await panelButton.click({ timeout: 3000, force: true });
+      await page.waitForSelector('[data-takeover]', { timeout: 3000 });
+      await page.waitForTimeout(700); // let the flip or crossfade settle
+      await shot('panel-open');
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(400);
+    }
+  } catch { /* no gallery panel on this route, not a finding for the crawler */ }
+
+  // 4. Focus. Tab a few times and capture. Focus rings have to survive bone, ink, and canvas.
   for (let i = 0; i < 4; i++) await page.keyboard.press('Tab');
   await shot('focus');
 

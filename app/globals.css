@@ -3,19 +3,20 @@
 @import "shadcn/tailwind.css";
 
 @theme {
-  /* Vallum hero palette. --color-black intentionally overrides Tailwind's
-     default black: the site's darkest value is #0C0B09, never #000. */
+  /* Vallum locked palette (LOOK.md). --color-black intentionally overrides
+     Tailwind's default black: the site's darkest value is #0C0B09, never
+     #000. */
   --color-black: #0c0b09;
-  --color-black-raise: #141210;
-  --color-bone: #ede8dd;
-  --color-bone-hi: #f5f2ea;
-  --color-bone-dim: #9a968c;
-  --color-green-deep: #0b3d2a;
-  --color-green-signal: #3e9b6b;
-  --color-hairline: rgb(237 232 221 / 0.1);
-  --color-mono-anno: #7fb79a;
+  --color-black-raise: #14120e;
+  --color-bone: #f2eee5;
+  --color-bone-hi: #f7f4ec;
+  --color-bone-dim: #96938d;
+  --color-green-deep: #16281d;
+  --color-green-signal: #2c4436;
+  --color-hairline: rgb(242 238 229 / 0.1);
+  --color-mono-anno: #2c4436;
 
-  /* Bone-surface palette (BRIEF.md). Forest is display ink and the one
+  /* Bone-surface palette (LOOK.md). Forest is display ink and the one
      permitted dark surface below the fold; forest-line is hairlines and
      secondary text on bone. */
   --color-forest: #16281d;
@@ -23,13 +24,13 @@
 
   /* Compat aliases for the untouched rig section and the quarantined
      dataset section only. Retire in the dataset phase. The hazard token
-     now points at green-signal so the old warm accent value is gone from
+     now points at forest-line so the old warm accent value is gone from
      code while the rig files stay byte identical. */
   --color-ink: #0c0b09;
-  --color-surface: #141210;
+  --color-surface: #14120e;
   --color-paper: #ede8dd;
   --color-fog: #9a968c;
-  --color-hazard: #3e9b6b;
+  --color-hazard: #2c4436;
 
   --spacing-section: 7.5rem; /* 120px desktop section padding */
   --spacing-section-sm: 4.5rem; /* 72px mobile section padding */
@@ -77,28 +78,28 @@
 /* Dark-only theme. Values live directly on :root; there is no light mode. */
 :root {
   --background: #0c0b09;
-  --foreground: #ede8dd;
-  --card: #141210;
-  --card-foreground: #ede8dd;
-  --popover: #141210;
-  --popover-foreground: #ede8dd;
-  --primary: #3e9b6b;
-  --primary-foreground: #0c0b09;
-  --secondary: #141210;
-  --secondary-foreground: #ede8dd;
-  --muted: #141210;
-  --muted-foreground: #9a968c;
-  --accent: #141210;
-  --accent-foreground: #ede8dd;
+  --foreground: #f2eee5;
+  --card: #14120e;
+  --card-foreground: #f2eee5;
+  --popover: #14120e;
+  --popover-foreground: #f2eee5;
+  --primary: #2c4436;
+  --primary-foreground: #f2eee5;
+  --secondary: #14120e;
+  --secondary-foreground: #f2eee5;
+  --muted: #14120e;
+  --muted-foreground: #96938d;
+  --accent: #14120e;
+  --accent-foreground: #f2eee5;
   --destructive: #e5484d;
-  --border: rgb(237 232 221 / 0.1);
-  --input: rgb(237 232 221 / 0.16);
-  --ring: #3e9b6b;
-  --chart-1: #3e9b6b;
-  --chart-2: #7fb79a;
-  --chart-3: #9a968c;
-  --chart-4: #ede8dd;
-  --chart-5: #141210;
+  --border: rgb(242 238 229 / 0.1);
+  --input: rgb(242 238 229 / 0.16);
+  --ring: #2c4436;
+  --chart-1: #2c4436;
+  --chart-2: #16281d;
+  --chart-3: #96938d;
+  --chart-4: #f2eee5;
+  --chart-5: #14120e;
   --radius: 0.375rem; /* slight radius, buttons only */
 }
 
@@ -115,7 +116,7 @@
   }
   ::selection {
     background: var(--color-green-signal);
-    color: var(--color-black);
+    color: var(--color-bone-hi);
   }
   :where(a, button, [role="button"], input, select, textarea, summary):focus-visible {
     outline: 2px solid var(--color-green-signal);
@@ -191,7 +192,7 @@
    a soft drop so the lens sits above the film. Pure box-shadow, no
    backdrop-filter cost. */
 .lens-glass {
-  background: rgb(11 61 42 / 0.06);
+  background: rgb(22 40 29 / 0.06);
   box-shadow:
     inset 0 1px 1px rgb(255 255 255 / 0.28),
     inset 2px 3px 8px rgb(190 255 215 / 0.12),
@@ -264,7 +265,7 @@
    reads without a second video half. Under reduced motion it becomes a
    full frame layer at every width and scroll drives only its opacity. */
 [data-hero-treat] {
-  background: rgb(11 61 42 / 0.3);
+  background: rgb(22 40 29 / 0.3);
   opacity: 0;
 }
 @media (prefers-reduced-motion: no-preference) {
