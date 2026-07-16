@@ -1,0 +1,74 @@
+{
+  "_comment": "Merge into .claude/settings.local.json. setup.sh does this for you. The allow list matters more than it looks: without it, background subagents stall on permission prompts at 3am with nobody to approve them, and you lose the night. The Higgsfield entries are what let dreamer generate assets unattended. Auth the MCP with /mcp BEFORE you sleep, the OAuth flow needs a human and there will not be one.",
+  "permissions": {
+    "allow": [
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(node:*)",
+      "Bash(pnpm:*)",
+      "Bash(curl:*)",
+      "Bash(date:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(sed:*)",
+      "Bash(bash nightshift/scripts/*)",
+      "Bash(ffmpeg:*)",
+      "Bash(ffprobe:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git worktree:*)",
+      "Bash(git push -u origin HEAD)",
+      "Bash(gh pr create:*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "WebSearch",
+      "WebFetch",
+      "Agent",
+      "mcp__higgsfield__balance",
+      "mcp__higgsfield__models_explore",
+      "mcp__higgsfield__generate_image",
+      "mcp__higgsfield__generate_video",
+      "mcp__higgsfield__job_display",
+      "mcp__higgsfield__media_import_url",
+      "mcp__higgsfield__show_generations",
+      "mcp__higgsfield__transactions"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push origin main:*)",
+      "Bash(git push origin master:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git checkout main:*)",
+      "Bash(rm -rf:*)",
+      "Bash(sudo:*)",
+      "Edit(nightshift/FACTS.md)",
+      "Write(nightshift/FACTS.md)",
+      "Edit(.env*)",
+      "Write(.env*)",
+      "Edit(nightshift/BRIEF.md)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash nightshift/scripts/stop-gate.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
