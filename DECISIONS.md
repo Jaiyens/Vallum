@@ -77,3 +77,11 @@ set in the morning and reverses what he wants.
 - [foreman] Build wave sequenced copy-first because three owners consume src/content exports; hero/page/fix/dreamer then run parallel on disjoint files.
 - [foreman] F-0202 and F-0502 were absent from every arbiter table (oversight). Disposition: F-0202 substantively mitigated by rank 1 (two stats, condition descriptions); its scale-implication remainder joins F-0101 on the morning list. F-0502 impact shrank because the anchor nav is not rendered; deep-link precision goes to the morning craft list. Both marked wontfix-tonight, honestly labeled.
 - [foreman] wordmark-vines.webp is bare VALLUM key art; lens hover shows the wrong word until the art is redone. Morning asset task, flagged in code comment.
+
+## Iteration 2 (foreman digest)
+
+- [arbiter] F-0709: film stands tonight; morning item number one; flip condition (provenance) checked and cleared.
+- [build-strings] dataset-page.ts is now the canonical source for consent stack, capture specs, offer; sections.ts imports; drift is structurally impossible.
+- [build-rig] rig heading now renders unconditionally (MaskedRise dropped for parity with sibling static sections); Newsreader loaded locally for the rig heading pending sitewide --font-display migration.
+- [fix-f0409] reduced-motion crossfade replaced with unconditional gsap.set; mobile fade now fromTo with explicit bounds; close path instant under reduced motion.
+- [foreman] iteration 2 ran without a rebuttal round (schedule cut per KICKOFF rule: independence is never cut, cross-talk is the first cut).
