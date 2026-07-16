@@ -2,6 +2,15 @@
 // close. Every string ships verbatim. Never paraphrase here or at a call
 // site. Factual claims trace to nightshift/FACTS.md; external facts render
 // with their attribution beside them.
+//
+// The consent-and-provenance stack, capture specs, and offer paragraph are
+// authored once in dataset-page.ts and imported here (F-0608, F-0609) so
+// / and /dataset render identical strings for the same facts.
+import {
+  CAPTURE_SPECS,
+  CONSENT_PROVENANCE_STACK,
+  OFFER_COPY,
+} from "@/src/content/dataset-page";
 
 export const TURN_COPY = {
   heading: "Machines are learning this work by watching",
@@ -16,13 +25,14 @@ export const TURN_COPY = {
 export const METHOD_COPY = {
   heading: "Consent first, camera second",
   // Consent facts are stated here at framing level only; the itemized
-  // six-item stack (exact language list, blur, POPIA, C2PA) lives once in
-  // DATASET_COPY.stack and on /dataset, per F-0303.
+  // six-item stack (exact language list, blur, POPIA, C2PA) is authored
+  // once in dataset-page.ts as CONSENT_PROVENANCE_STACK and imported by
+  // DATASET_COPY.stack below, per F-0303 and F-0608.
   people:
     "Every capture starts with a signed release in the person's own language, before a camera turns on. The site owner authorizes it, and faces blur before any clip leaves the pipeline.",
   window:
     "The first collection window is the Western Cape harvest season, July 2026 to approximately January 2027, agriculture first. Construction, rooftop solar, offshore rigs, wind turbines, and high-rise ironwork are the stated direction beyond agriculture.",
-  kit: "The capture kit today is 4 to 6 refurbished iPhones on head straps, carried in personally. Every clip is head-mounted, 1080p minimum, 30fps.",
+  kit: CAPTURE_SPECS,
 } as const;
 
 export const DATASET_COPY = {
@@ -40,17 +50,9 @@ export const DATASET_COPY = {
     "Consent and provenance ID linking the clip to a signed release",
   ],
   stackTitle: "Consent and provenance",
-  stack: [
-    "Written participant release in English, Afrikaans, and isiXhosa",
-    "Site-owner authorization for every location",
-    "Face blur applied before export",
-    "Per-clip provenance record: who, where, when, device, consent ID",
-    "POPIA compliant, including Section 57 on biometric data export",
-    "C2PA content-provenance signing where the pipeline supports it",
-  ],
+  stack: CONSENT_PROVENANCE_STACK,
   offerTitle: "The offer",
-  offer:
-    "A paid pilot runs $15,000 to $40,000 for 20 to 40 curated, annotated, consent-cleared hours: 50% on signature, 50% on delivery and acceptance. Licensing is non-exclusive by default. Time-boxed, task-boxed exclusivity is available as a paid premium.",
+  offer: OFFER_COPY,
 } as const;
 
 export const CLOSE_COPY = {

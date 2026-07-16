@@ -129,7 +129,7 @@ export function RigScrub({ ref }: { ref?: Ref<RigScrubHandle> }) {
       <canvas
         ref={canvasRef}
         aria-hidden="true"
-        className={`rig-edge-blend absolute inset-0 h-full w-full ${ready ? "" : "invisible"}`}
+        className={`absolute inset-0 h-full w-full ${ready ? "" : "invisible"}`}
       />
     </div>
   );

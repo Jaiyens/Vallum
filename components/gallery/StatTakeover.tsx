@@ -60,6 +60,7 @@ export function StatTakeover({
   const teletypesRef = useRef<Teletype[]>([]);
   const timersRef = useRef<number[]>([]);
   const flipAnimRef = useRef<gsap.core.Animation | null>(null);
+  const crossfadeAnimRef = useRef<gsap.core.Tween | null>(null);
   const leafHomeRef = useRef<HTMLElement | null>(null);
   const closingRef = useRef(false);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
@@ -170,13 +171,23 @@ export function StatTakeover({
       });
       // The teletype is the copy's entrance; no opacity tween on the band, so
       // it can never get stranded at zero under a StrictMode double-mount.
+    } else if (instant) {
+      // Reduced motion (and any other instant caller): no crossfade at all.
+      // gsap.from() here previously raced a StrictMode double-invoke of this
+      // effect (two untracked tweens fighting the same property), which left
+      // the whole dialog stranded at a near-zero opacity. An unconditional
+      // opacity: 1 has no tween to race, so it can never get stuck.
+      gsap.set(root, { opacity: 1 });
     } else {
-      gsap.from(root, {
-        opacity: 0,
-        duration: CROSSFADE_S,
-        ease: "none",
-        onComplete: startTyping,
-      });
+      // fromTo() (not from()) pins both ends explicitly, so a StrictMode
+      // double-invoke that kills the first tween and starts a second one
+      // still animates the correct 0 -> 1 range instead of capturing
+      // whatever partial value the first tween left behind.
+      crossfadeAnimRef.current = gsap.fromTo(
+        root,
+        { opacity: 0 },
+        { opacity: 1, duration: CROSSFADE_S, ease: "none", onComplete: startTyping },
+      );
     }
 
     return () => {
@@ -186,6 +197,8 @@ export function StatTakeover({
       timersRef.current = [];
       flipAnimRef.current?.kill();
       flipAnimRef.current = null;
+      crossfadeAnimRef.current?.kill();
+      crossfadeAnimRef.current = null;
       const home = leafHomeRef.current;
       if (mode === "flip" && leaf && home && leaf.parentElement !== home) {
         home.appendChild(leaf);
@@ -244,6 +257,9 @@ export function StatTakeover({
           onClosed();
         },
       });
+    } else if (instant) {
+      // Reduced motion closes at once, same as it opened.
+      onClosed();
     } else if (rootRef.current) {
       gsap.to(rootRef.current, {
         opacity: 0,

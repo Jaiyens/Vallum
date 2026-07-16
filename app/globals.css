@@ -317,17 +317,11 @@
   }
 }
 
-/* Fades the rig frame's charcoal background into the page ink so the
-   1280x720 rectangle never reads as a seam. Applied to every rig raster
-   (poster, canvas, exploded still); overlaid dots and captions stay outside
-   the masked elements so they never fade. */
-@utility rig-edge-blend {
-  mask-image: radial-gradient(
-    ellipse closest-side at 50% 50%,
-    black 72%,
-    transparent 100%
-  );
-}
+/* F-0413: rig-edge-blend used to feather the render's dark backdrop into
+   bone with a radial-gradient mask. That reads as exactly the glow/vignette
+   LOOK.md's Materials rules ban (no gradient exception for photography), so
+   the render now sits flush on bone with its own hard rectangular edge; see
+   components/future-rig/rig-static.tsx for the current treatment. */
 
 /* Problem section: helix gallery. Geometry tokens live on the stage so the
    spiral collapses to a flat ring with one edit: --helix-rise: 0px. */

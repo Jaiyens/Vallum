@@ -9,6 +9,14 @@ import { FRAME_HEIGHT, FRAME_WIDTH, RIG_STILLS } from "./frames-manifest";
 // - .rig-poster (closed still) shows by default, hides under reduced motion.
 // - The exploded still is hidden except under reduced motion; the loading
 //   fallback additionally unhides it from a <noscript> style block.
+//
+// F-0413: these used to carry a `rig-edge-blend` radial mask that feathered
+// the frame's dark backdrop into the page, reading as a glow/vignette
+// (banned by LOOK.md's Materials rules, no gradient exception for photography).
+// The render is itself a hard 1280x720 rectangle, so removing the mask
+// alone gives the flat-bone, hard-edge treatment the spec calls for; no
+// extra hairline rule around the figure was needed to keep it from reading
+// as raw.
 
 export function RigClosedPoster() {
   return (
@@ -21,7 +29,7 @@ export function RigClosedPoster() {
         alt=""
         aria-hidden="true"
         decoding="async"
-        className="rig-poster rig-edge-blend absolute inset-0 h-full w-full"
+        className="rig-poster absolute inset-0 h-full w-full"
       />
     </picture>
   );
@@ -47,7 +55,7 @@ export function RigExplodedStill({
         aria-hidden={alt === "" ? "true" : undefined}
         decoding="async"
         loading="lazy"
-        className={`rig-edge-blend ${imgClassName ?? ""}`}
+        className={imgClassName ?? ""}
       />
     </picture>
   );
@@ -77,13 +85,13 @@ export function RigPinnedStage({ visual }: { visual?: React.ReactNode }) {
               pictureClassName="rig-exploded-static hidden motion-reduce:block"
               imgClassName="absolute inset-0 h-full w-full"
             />
-            <p
-              translate="no"
-              className="absolute bottom-1 left-1/2 -translate-x-1/2 font-mono text-[11px] text-fog/80"
-            >
-              {SECTION_COPY.caption}
-            </p>
           </div>
+          {/* F-0413: caption sits below the render on flat bone, not overlaid
+              on the photo. Ink at 100%, the small step, per LOOK.md, not the
+              dim mono treatment it used to sit in. */}
+          <p translate="no" className="mt-2 text-center text-sm text-ink">
+            {SECTION_COPY.caption}
+          </p>
         </div>
       </div>
     </div>
@@ -100,7 +108,7 @@ export function RigMobileBlock() {
           alt={SECTION_COPY.visualLabel}
         />
       </div>
-      <p translate="no" className="mt-2 text-center font-mono text-[11px] text-forest-line">
+      <p translate="no" className="mt-2 text-center text-sm text-ink">
         {SECTION_COPY.caption}
       </p>
     </div>

@@ -1,8 +1,11 @@
+import Link from "next/link";
 import { SECTION_IDS } from "@/lib/site";
 import { DATASET_COPY } from "@/src/content/sections";
 
 // Beat 5, what ships. The dataset: schema, rights, and the offer. This is
 // where specificity does the positioning work. Bone surface, server-safe.
+// Closes with a quiet in-place link to /dataset (F-0306): the moment
+// interest in the schema and consent detail peaks, not a button.
 export function DatasetSection() {
   return (
     <section
@@ -55,6 +58,12 @@ export function DatasetSection() {
             {DATASET_COPY.offerTitle}
           </h3>
           <p className="mt-6 text-lg leading-relaxed">{DATASET_COPY.offer}</p>
+          <Link
+            href="/dataset"
+            className="mt-6 inline-block underline decoration-1 underline-offset-[3px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-line"
+          >
+            Read the full dataset record
+          </Link>
         </div>
       </div>
     </section>
