@@ -149,6 +149,27 @@ export function HeroExperience() {
 
           const veil = el("[data-focus-veil]");
 
+          // The wordmark box is carved out of the figure hit test: slow
+          // motion, the focus veil, and magnification belong to the
+          // worker figures only. Over the letters the lens still reveals
+          // the overgrown variant through the mask, but never engages.
+          // Measured after fonts load (Archivo expanded reflows) and on
+          // resize; stage-relative, so pinning does not skew it.
+          let wmBox: { l: number; t: number; r: number; b: number } | undefined;
+          const measureWordmark = () => {
+            if (!wordmark) return;
+            const s = stage.getBoundingClientRect();
+            const r = wordmark.getBoundingClientRect();
+            wmBox = {
+              l: r.left - s.left,
+              t: r.top - s.top,
+              r: r.right - s.left,
+              b: r.bottom - s.top,
+            };
+          };
+          measureWordmark();
+          document.fonts.ready.then(measureWordmark);
+
           // ---- slow motion, eased both ways, never snapping ----
           // The focus veil rides the same clock as the rate: the state
           // change reads through the grade shift even while the source
@@ -282,15 +303,23 @@ export function HeroExperience() {
               ringTo("passive");
               return;
             }
-            const over = circleOverFigure(
-              lastX,
-              lastY,
-              LR_HIT,
-              video.currentTime,
-              stage.clientWidth,
-              stage.clientHeight,
-              slowmo ? HYST_MARGIN : 0,
-            );
+            const overWordmark =
+              wmBox !== undefined &&
+              lastX >= wmBox.l &&
+              lastX <= wmBox.r &&
+              lastY >= wmBox.t &&
+              lastY <= wmBox.b;
+            const over =
+              !overWordmark &&
+              circleOverFigure(
+                lastX,
+                lastY,
+                LR_HIT,
+                video.currentTime,
+                stage.clientWidth,
+                stage.clientHeight,
+                slowmo ? HYST_MARGIN : 0,
+              );
             if (over && !slowmo) engageSlowmo();
             if (!over && slowmo) releaseSlowmo();
             ringTo(over ? "engaged" : "armed");
@@ -381,6 +410,7 @@ export function HeroExperience() {
           };
 
           const onResize = () => {
+            measureWordmark();
             if (lastP < BAND_IN && !converting) return;
             measureBand();
             gsap.set(stage, {
