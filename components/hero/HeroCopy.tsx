@@ -1,15 +1,31 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, SplitText, useGSAP } from "@/lib/gsap";
 import { HERO_COPY } from "@/src/content/hero";
 
-// Wordmark, mono line, and scroll cue. The one-time entrance fires on load
-// only, never on scroll: a thin green-signal line passes down the wordmark
-// in about 900ms while the letters resolve from bone-dim to bone-hi. The
-// hidden initial state of the bright layer lives in CSS behind a motion
-// media query, so reduced motion (and no JS) shows resolved letters with
-// no scan and there is no first-frame flash either way.
+// Shared wordmark geometry. The real wordmark and the robotic lens
+// variant must never drift apart, so both render from this one constant.
+export const WORDMARK_CLASS =
+  "absolute left-1/2 top-[62svh] -translate-x-1/2 -translate-y-1/2 font-display text-[13.5vw] leading-none font-bold tracking-[0.06em] whitespace-nowrap uppercase select-none font-stretch-expanded";
+
+// Entrance art direction. The wordmark resolves letter by letter in a
+// woven, tactile way: soft blur, small drift, long random stagger. Total
+// read is about two seconds. Client will refine against a reference.
+const ENTRANCE = {
+  charDuration: 1.6,
+  charStagger: 0.09,
+  staggerFrom: "random" as const,
+  blurPx: 8,
+  driftPx: 6,
+  ease: "power2.out",
+  fallbackFade: 1.2,
+} as const;
+
+// Wordmark, mono line, cue, beats, and state tags. The entrance fires on
+// load only, never on scroll. The CSS initial state hides the wordmark
+// only when motion is allowed, so reduced motion and no-JS render the
+// resolved letters instantly with no flash.
 export function HeroCopy() {
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -17,19 +33,57 @@ export function HeroCopy() {
     () => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
-        tl.fromTo(
-          "[data-scan-line]",
-          { top: "-6%", autoAlpha: 1 },
-          { top: "104%", duration: 0.9 },
-          0,
-        )
-          .to(
-            "[data-wordmark-hi]",
-            { clipPath: "inset(0% 0% 0% 0%)", duration: 0.9 },
-            0,
-          )
-          .to("[data-scan-line]", { autoAlpha: 0, duration: 0.2 }, 0.9);
+        const target = rootRef.current?.querySelector<HTMLElement>(
+          "[data-wordmark-text]",
+        );
+        if (!target) return;
+        let split: SplitText | undefined;
+        let tween: gsap.core.Tween | undefined;
+        let cancelled = false;
+        // Archivo expanded must be measured after fonts load or the char
+        // boxes come out wrong.
+        document.fonts.ready.then(() => {
+          if (cancelled) return;
+          try {
+            split = new SplitText(target, { type: "chars", aria: "auto" });
+            tween = gsap.fromTo(
+              split.chars,
+              {
+                autoAlpha: 0,
+                filter: `blur(${ENTRANCE.blurPx}px)`,
+                y: ENTRANCE.driftPx,
+              },
+              {
+                autoAlpha: 1,
+                filter: "blur(0px)",
+                y: 0,
+                duration: ENTRANCE.charDuration,
+                ease: ENTRANCE.ease,
+                stagger: {
+                  each: ENTRANCE.charStagger,
+                  from: ENTRANCE.staggerFrom,
+                },
+                onComplete: () => {
+                  if (split) gsap.set(split.chars, { clearProps: "filter,transform" });
+                },
+              },
+            );
+            // After the chars carry the hidden state, the container can
+            // show without a flash.
+            gsap.set(target, { opacity: 1 });
+          } catch {
+            tween = gsap.fromTo(
+              target,
+              { autoAlpha: 0 },
+              { autoAlpha: 1, duration: ENTRANCE.fallbackFade, ease: "power2.out" },
+            );
+          }
+        });
+        return () => {
+          cancelled = true;
+          tween?.kill();
+          split?.revert();
+        };
       });
     },
     { scope: rootRef },
@@ -37,24 +91,13 @@ export function HeroCopy() {
 
   return (
     <div ref={rootRef} data-hero-copy className="absolute inset-0">
-      <h1
-        data-wordmark
-        className="absolute left-1/2 top-[62svh] -translate-x-1/2 -translate-y-1/2 font-display text-[13.5vw] leading-none font-bold tracking-[0.06em] whitespace-nowrap uppercase select-none font-stretch-expanded"
-      >
-        <span className="text-bone-dim">{HERO_COPY.wordmark}</span>
-        <span
-          data-wordmark-hi
-          aria-hidden="true"
-          className="absolute inset-0 text-bone-hi"
-        >
-          {HERO_COPY.wordmark}
-        </span>
-        <span
-          data-scan-line
-          aria-hidden="true"
-          className="absolute -inset-x-[3%] top-0 h-px bg-green-signal"
-        />
-      </h1>
+      <div data-word-mask className="pointer-events-none absolute inset-0">
+        <h1 data-wordmark className={WORDMARK_CLASS}>
+          <span data-wordmark-text className="inline-block text-bone-hi">
+            {HERO_COPY.wordmark}
+          </span>
+        </h1>
+      </div>
       <p
         data-hero-monoline
         className="absolute bottom-10 left-1/2 -translate-x-1/2 font-mono text-xs whitespace-nowrap text-bone-dim sm:text-sm"
@@ -92,6 +135,15 @@ export function HeroCopy() {
         >
           {HERO_COPY.stateTagRobot}
         </span>
+      </div>
+      <div
+        data-lens-word
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 hidden lg:motion-safe:block"
+      >
+        <div data-lens-word-text className={WORDMARK_CLASS}>
+          {HERO_COPY.wordmark}
+        </div>
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ export const CUTLIST_BLOCKS: ReadoutBlock[] = [
   { in: 13, out: 16, label: "GRID-REF", kind: "est" },
   { in: 16, out: 19, label: "FIELD-SCAN", kind: "real" },
   { in: 19, out: 22, label: "HIGH-SIDE", kind: "real" },
-  { in: 22, out: 26, label: "LAST-SHIFT", kind: "twin" },
+  { in: 22, out: 26, label: "LAST-SHIFT", kind: "real" },
   { in: 26, out: 26.5, label: "", kind: "black" },
 ];
 

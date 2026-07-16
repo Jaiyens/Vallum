@@ -10,6 +10,17 @@ const WIDTHS = [1280, 768, 360];
 const OUT = "verify-shots";
 fs.mkdirSync(OUT, { recursive: true });
 
+// Hotspot probe points at the 1280x800 viewport, derived from the seed
+// rects in components/hero/hotspots.ts via the cover math (s=1.111,
+// dw=1422, ox=-71, oy=0). Re-derive if the rects are re-tuned.
+//   iron beam crew rect {u:.32,v:.14,w:.32,h:.28} -> x 384..839, y 112..336
+//   cold point (150,650) is >200px clear of both iron rects
+//   orchard crew band {u:.36,v:.52,w:.34,h:.34} -> center ~(683,552)
+const IRON_HOT = { x: 620, y: 220 };
+const COLD = { x: 150, y: 650 };
+const ORCHARD_HOT = { x: 683, y: 552 };
+const WORDMARK_CENTER = { x: 640, y: 496 }; // 62svh optical center
+
 const summary = [];
 const browser = await chromium.launch();
 
@@ -22,7 +33,8 @@ for (const width of WIDTHS) {
   const consoleMsgs = [];
   const pageErrors = [];
   const checks = [];
-  const check = (name, pass, detail = "") => checks.push({ name, pass, detail });
+  const check = (name, pass, detail = "") =>
+    checks.push({ name, pass, detail });
   page.on("console", (m) => {
     if (m.type() === "error" || m.type() === "warning") {
       consoleMsgs.push({ type: m.type(), text: m.text().slice(0, 500) });
@@ -30,92 +42,203 @@ for (const width of WIDTHS) {
   });
   page.on("pageerror", (e) => pageErrors.push(String(e)));
 
+  const video = () =>
+    page.evaluate(() => {
+      const v = document.querySelector("[data-hero-root] video");
+      return v ? { paused: v.paused, rate: v.playbackRate, t: v.currentTime } : null;
+    });
+  const ringState = () =>
+    page.evaluate(() => {
+      const ring = document.querySelector("[data-lens-ring]");
+      const stage = document.querySelector("[data-hero-stage]");
+      return {
+        opacity: ring ? parseFloat(getComputedStyle(ring).opacity) : null,
+        converting: ring ? ring.hasAttribute("data-converting") : null,
+        lr: stage
+          ? parseFloat(getComputedStyle(stage).getPropertyValue("--lr"))
+          : null,
+      };
+    });
+  const seekPlay = (t) =>
+    page.evaluate((time) => {
+      const v = document.querySelector("[data-hero-root] video");
+      if (v) {
+        v.currentTime = time;
+        v.play().catch(() => {});
+      }
+    }, t);
+
   await page.goto(BASE, { waitUntil: "networkidle", timeout: 90_000 });
-  await page.waitForTimeout(1600); // fonts + the 900ms wordmark entrance settle
+  await page.waitForTimeout(3000); // fonts + the ~2s wordmark entrance settle
 
   await page.screenshot({ path: `${OUT}/${tag}-load.png` });
 
-  // Hero pin states. The hero pins for 250% of the viewport height, so
-  // pin progress p maps to scrollY = p * 2.5 * vh. Selectors are
-  // defensive: every state skips cleanly if the hero is absent.
   const hasHero = await page.evaluate(
     () => !!document.querySelector("[data-hero-root]"),
   );
   if (hasHero) {
+    // The old entrance artifacts must not exist in any mode.
+    const noScan = await page.evaluate(
+      () =>
+        !document.querySelector("[data-scan-line]") &&
+        !document.querySelector("[data-wordmark-hi]"),
+    );
+    check("no-scan-line", noScan);
+
+    if (!REDUCED) {
+      const wm = await page.evaluate(() => {
+        const el = document.querySelector("[data-wordmark-text]");
+        return el ? parseFloat(getComputedStyle(el).opacity) : null;
+      });
+      check("wordmark-resolved", wm !== null && wm >= 0.99, `opacity=${wm}`);
+    }
+
+    // The hero pins for 300% of the viewport height: p -> scrollY = p*3*vh.
     const scrollToP = async (p) => {
       await page.evaluate(
         (top) => window.scrollTo({ top, behavior: "instant" }),
-        Math.round(800 * 2.5 * p),
+        Math.round(800 * 3 * p),
       );
     };
 
     if (!REDUCED && width >= 1024) {
-      // Slow-mo engage: play inside the LOAD-BEARING iron block and hover
-      // the beam crew. The film must ease into slow motion and the lens
-      // must show the robot twin.
-      await page.evaluate(() => {
-        const v = document.querySelector("[data-hero-root] video");
-        if (v) {
-          v.currentTime = 10.6;
-          v.play().catch(() => {});
-        }
-      });
-      await page.mouse.move(Math.round(width * 0.4), 240);
-      await page.waitForTimeout(900);
-      const engaged = await page.evaluate(() => {
-        const v = document.querySelector("[data-hero-root] video");
-        return v ? v.playbackRate : null;
-      });
-      check("slowmo-engaged", engaged !== null && engaged < 0.5, `rate=${engaged}`);
-      await page.screenshot({ path: `${OUT}/${tag}-hero-lens-slowmo.png` });
-
-      // Retirement: scrolling past the threshold must release slow motion
-      // and hide the ring.
-      await scrollToP(0.15);
-      await page.waitForTimeout(800);
-      const retired = await page.evaluate(() => {
-        const v = document.querySelector("[data-hero-root] video");
-        const ring = document.querySelector("[data-lens-ring]");
-        return {
-          rate: v ? v.playbackRate : null,
-          ringOpacity: ring ? getComputedStyle(ring).opacity : null,
-        };
+      // Passive lens over a drone establisher + the robotic wordmark
+      // variant visible inside the circle.
+      await seekPlay(8.0);
+      await page.mouse.move(WORDMARK_CENTER.x, WORDMARK_CENTER.y);
+      await page.waitForTimeout(700);
+      let v = await video();
+      let r = await ringState();
+      check(
+        "est-passive",
+        v.rate >= 0.95 &&
+          r.opacity > 0.45 &&
+          r.opacity < 0.75 &&
+          r.lr > 62 &&
+          r.lr < 74,
+        JSON.stringify({ rate: v.rate, ...r }),
+      );
+      const lensWord = await page.evaluate(() => {
+        const el = document.querySelector("[data-lens-word]");
+        if (!el) return null;
+        const cs = getComputedStyle(el);
+        const mask = cs.maskImage || cs.webkitMaskImage || "";
+        return { opacity: parseFloat(cs.opacity), radial: mask.includes("radial-gradient") };
       });
       check(
-        "lens-retired",
-        retired.rate !== null && retired.rate >= 0.95 && retired.ringOpacity === "0",
-        JSON.stringify(retired),
+        "lens-word-visible",
+        lensWord !== null && lensWord.opacity >= 0.99 && lensWord.radial,
+        JSON.stringify(lensWord),
       );
-    }
+      await page.screenshot({ path: `${OUT}/${tag}-hero-lens-word.png` });
 
-    if (!REDUCED) {
-      // Pause on the hold frame so beat shots are deterministic.
-      await page.evaluate(() => {
-        const v = document.querySelector("[data-hero-root] video");
-        if (v) {
-          v.pause();
-          v.currentTime = 11.5;
-        }
-      });
-      await page.waitForTimeout(500);
+      // Slow motion engages ONLY over a worker figure.
+      await seekPlay(10.8);
+      await page.mouse.move(IRON_HOT.x, IRON_HOT.y);
+      await page.waitForTimeout(900);
+      v = await video();
+      r = await ringState();
+      check(
+        "hotspot-engaged",
+        v.rate < 0.5 && r.lr > 96 && r.lr < 108,
+        JSON.stringify({ rate: v.rate, lr: r.lr }),
+      );
+      await page.screenshot({ path: `${OUT}/${tag}-hero-lens-slowmo.png` });
+
+      // THE regression: moving the circle off the figure, still on the
+      // film during a worker block, must release the slow motion while
+      // the ring stays armed.
+      await page.mouse.move(COLD.x, COLD.y);
+      await page.waitForTimeout(1000);
+      v = await video();
+      r = await ringState();
+      check(
+        "off-figure-release",
+        v.rate >= 0.95 && r.opacity >= 0.9 && r.lr > 84 && r.lr < 96,
+        JSON.stringify({ rate: v.rate, ...r }),
+      );
+
+      // A block change under a stationary cursor must release too.
+      await page.mouse.move(IRON_HOT.x, IRON_HOT.y);
+      await page.waitForTimeout(700);
+      await seekPlay(8.0);
+      await page.waitForTimeout(1000);
+      v = await video();
+      r = await ringState();
+      check(
+        "block-change-release",
+        v.rate >= 0.95 && r.opacity <= 0.75,
+        JSON.stringify({ rate: v.rate, ...r }),
+      );
+
+      // Window blur releases instantly.
+      await seekPlay(10.8);
+      await page.mouse.move(IRON_HOT.x, IRON_HOT.y);
+      await page.waitForTimeout(700);
+      await page.evaluate(() => window.dispatchEvent(new Event("blur")));
+      await page.waitForTimeout(250);
+      v = await video();
+      check("blur-release", v.rate >= 0.95, `rate=${v.rate}`);
+
+      // Scrolling retires the lens entirely.
+      await page.mouse.move(IRON_HOT.x + 4, IRON_HOT.y + 4); // recover from blur
+      await page.waitForTimeout(700);
+      await scrollToP(0.15);
+      await page.waitForTimeout(900);
+      v = await video();
+      r = await ringState();
+      check(
+        "lens-retired",
+        v.rate >= 0.95 && r.opacity === 0,
+        JSON.stringify({ rate: v.rate, opacity: r.opacity }),
+      );
     }
 
     await scrollToP(0.28);
     await page.waitForTimeout(600);
     await page.screenshot({ path: `${OUT}/${tag}-hero-beat-one.png` });
 
-    await scrollToP(0.54);
-    await page.waitForTimeout(700);
+    // Conversion band: the lens circle expands past the corners while
+    // the film runs at half speed.
+    await scrollToP(0.47);
+    await page.waitForTimeout(800);
     if (!REDUCED) {
-      const frozen = await page.evaluate(() => {
-        const v = document.querySelector("[data-hero-root] video");
-        return v ? { paused: v.paused, t: v.currentTime } : null;
-      });
+      const v = await video();
+      const r = await ringState();
       check(
-        "switch-frozen",
-        frozen !== null && frozen.paused && Math.abs(frozen.t - 11.5) < 0.1,
-        JSON.stringify(frozen),
+        "conversion-mid",
+        v.paused === false &&
+          v.rate >= 0.4 &&
+          v.rate <= 0.6 &&
+          r.lr > 300 &&
+          r.opacity > 0.8 &&
+          r.converting === true,
+        JSON.stringify({ rate: v.rate, paused: v.paused, ...r }),
       );
+      if (width < 1024) {
+        const treat = await page.evaluate(() => {
+          const el = document.querySelector("[data-hero-treat]");
+          const stage = document.querySelector("[data-hero-stage]");
+          if (!el || !stage) return null;
+          const cs = getComputedStyle(el);
+          const mask = cs.maskImage || cs.webkitMaskImage || "";
+          return {
+            radial: mask.includes("radial-gradient"),
+            lx: parseFloat(getComputedStyle(stage).getPropertyValue("--lx")),
+            ly: parseFloat(getComputedStyle(stage).getPropertyValue("--ly")),
+            w: stage.clientWidth,
+            h: stage.clientHeight,
+          };
+        });
+        check(
+          "mobile-conversion-origin",
+          treat !== null &&
+            treat.radial &&
+            Math.abs(treat.lx - treat.w * 0.5) < 4 &&
+            Math.abs(treat.ly - treat.h * 0.72) < 4,
+          JSON.stringify(treat),
+        );
+      }
     } else {
       const treat = await page.evaluate(() => {
         const el = document.querySelector("[data-hero-treat]");
@@ -123,34 +246,24 @@ for (const width of WIDTHS) {
       });
       check(
         "reduced-treat-mid",
-        treat !== null && treat > 0.2 && treat < 0.8,
+        treat !== null && treat > 0.3 && treat < 0.7,
         `opacity=${treat}`,
       );
+      const r = await ringState();
+      check("reduced-lr-static", r.lr === 90, `lr=${r.lr}`);
     }
-    await page.screenshot({ path: `${OUT}/${tag}-hero-switch-frozen.png` });
+    await page.screenshot({ path: `${OUT}/${tag}-hero-conversion-mid.png` });
 
     await scrollToP(0.75);
-    await page.waitForTimeout(700);
+    await page.waitForTimeout(900);
     if (!REDUCED) {
-      const post = await page.evaluate(() => {
-        const v = document.querySelector("[data-hero-root] video");
-        const ring = document.querySelector("[data-lens-ring]");
-        return {
-          paused: v ? v.paused : null,
-          rate: v ? v.playbackRate : null,
-          ringOpacity: ring ? getComputedStyle(ring).opacity : "0",
-        };
-      });
+      const v = await video();
+      const r = await ringState();
       check(
-        "post-switch-playing",
-        post.paused === false && post.rate === 1 && post.ringOpacity === "0",
-        JSON.stringify(post),
+        "post-conversion",
+        v.paused === false && v.rate >= 0.95 && r.opacity === 0 && r.lr > 500,
+        JSON.stringify({ rate: v.rate, paused: v.paused, ...r }),
       );
-      // Freeze the frame again for a deterministic screenshot.
-      await page.evaluate(() => {
-        const v = document.querySelector("[data-hero-root] video");
-        if (v) v.pause();
-      });
     } else {
       const tagState = await page.evaluate(() => {
         const robot = document.querySelector("[data-tag-robot]");
@@ -162,8 +275,26 @@ for (const width of WIDTHS) {
         `opacity=${tagState}`,
       );
     }
-    await page.screenshot({ path: `${OUT}/${tag}-hero-post-switch.png` });
-    if (!REDUCED) {
+    await page.screenshot({ path: `${OUT}/${tag}-hero-post-conversion.png` });
+
+    // Orchard divergence: the re-cut closer has humans on top and robots
+    // in the lens circle.
+    if (!REDUCED && width >= 1024) {
+      await page.evaluate(() =>
+        window.scrollTo({ top: 0, behavior: "instant" }),
+      );
+      await page.waitForTimeout(600);
+      await page.evaluate(() => {
+        const v = document.querySelector("[data-hero-root] video");
+        if (v) {
+          v.pause();
+          v.currentTime = 24.0;
+        }
+      });
+      await page.waitForTimeout(500);
+      await page.mouse.move(ORCHARD_HOT.x, ORCHARD_HOT.y);
+      await page.waitForTimeout(600);
+      await page.screenshot({ path: `${OUT}/${tag}-hero-orchard-lens.png` });
       await page.evaluate(() => {
         const v = document.querySelector("[data-hero-root] video");
         if (v) v.play().catch(() => {});
@@ -171,7 +302,7 @@ for (const width of WIDTHS) {
     }
 
     await page.evaluate(() =>
-      window.scrollTo({ top: Math.round(800 * 2.6), behavior: "instant" }),
+      window.scrollTo({ top: Math.round(800 * 3.1), behavior: "instant" }),
     );
     await page.waitForTimeout(600);
     await page.screenshot({ path: `${OUT}/${tag}-hero-post-pin.png` });
@@ -200,7 +331,6 @@ for (const width of WIDTHS) {
     await page.waitForTimeout(900);
     await page.screenshot({ path: `${OUT}/${tag}-rig-final.png` });
   } else {
-    // Static rig fallback shot so every width still documents the section.
     const found = await page.evaluate(() => {
       const el = document.querySelector("#rig");
       if (!el) return false;
@@ -276,7 +406,9 @@ console.log(
       warnings: consoleMsgs.filter((m) => m.type === "warning").length,
       pageErrors: pageErrors.length,
       hasOverflow: overflow.hasOverflow,
-      checks: checks.map((c) => `${c.pass ? "ok" : "FAIL"}:${c.name}${c.pass ? "" : ` ${c.detail}`}`),
+      checks: checks.map(
+        (c) => `${c.pass ? "ok" : "FAIL"}:${c.name}${c.pass ? "" : ` ${c.detail}`}`,
+      ),
     })),
     null,
     2,

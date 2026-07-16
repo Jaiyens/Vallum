@@ -130,54 +130,78 @@
   }
 }
 
-/* Hero entrance initial states. The bright wordmark layer starts hidden
-   only when motion is allowed; reduced motion and no JS both see resolved
-   bone-hi letters and no scan line. */
+/* Hero entrance initial state. The wordmark starts hidden only when
+   motion is allowed; reduced motion and no JS both see the resolved
+   bone-hi letters instantly. */
 @media (prefers-reduced-motion: no-preference) {
-  [data-wordmark-hi] {
-    clip-path: inset(0 0 100% 0);
+  [data-wordmark-text] {
+    opacity: 0;
   }
 }
-[data-scan-line] {
-  opacity: 0;
+
+/* One mask source of truth for every reveal layer. The circle sits at
+   the lens position with radius --lr; the same circle grows past the
+   corners during the scroll conversion. Feather constants (6px in, 2px
+   out) must move together with FEATHER_IN and FEATHER_OUT in
+   HeroExperience.tsx. Each consumer resolves the px coords against its
+   own box; all consumer boxes equal the stage box, so they align. */
+[data-hero-stage] {
+  --lens-mask: radial-gradient(
+    circle at var(--lx) var(--ly),
+    #000 0 calc(var(--lr, 90px) - 6px),
+    transparent calc(var(--lr, 90px) + 2px)
+  );
+  --lens-mask-inv: radial-gradient(
+    circle at var(--lx) var(--ly),
+    transparent 0 calc(var(--lr, 90px) - 6px),
+    #000 calc(var(--lr, 90px) + 2px)
+  );
 }
 
-/* Robot reveal layer masks. The radial layer is the cursor lens (radius
-   --lr so the ring and the hole share one size source); the linear layer
-   is the freeze-compare wipe with a soft feathered edge. --wipe runs from
-   -3% to 103% so the feather fully clears both edges. Percent-only math:
-   a px feather leaks a sliver on short viewports. Multiple mask layers
-   union by default, which is exactly the behavior both effects need. The
-   canvas itself never moves; only the variables animate. */
 [data-robot-canvas] {
-  -webkit-mask-image:
-    radial-gradient(
-      circle at var(--lx) var(--ly),
-      #000 0 var(--lr, 90px),
-      transparent var(--lr, 90px)
-    ),
-    linear-gradient(
-      to bottom,
-      #000 0,
-      #000 calc(var(--wipe) - 3%),
-      transparent calc(var(--wipe) + 3%)
-    );
-  mask-image:
-    radial-gradient(
-      circle at var(--lx) var(--ly),
-      #000 0 var(--lr, 90px),
-      transparent var(--lr, 90px)
-    ),
-    linear-gradient(
-      to bottom,
-      #000 0,
-      #000 calc(var(--wipe) - 3%),
-      transparent calc(var(--wipe) + 3%)
-    );
+  -webkit-mask-image: var(--lens-mask);
+  mask-image: var(--lens-mask);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   transform: translateZ(0);
   will-change: mask-image;
+}
+
+/* Conversion band: the ring rides the expanding edge as a bare stroke.
+   The interior tint would wash the whole revealed frame at cover radius
+   and the ticks and readout are lens-scale UI, so both drop out. */
+[data-lens-ring][data-converting] {
+  background: transparent;
+}
+[data-lens-ring][data-converting] > span {
+  display: none;
+}
+
+/* Robotic wordmark variant, visible only inside the lens circle. The
+   real wordmark wrapper carries the inverse mask on desktop motion, so
+   inside the circle the solid letters drop out and only the green
+   stroked variant shows: a true swap, not an overlay. */
+[data-lens-word] {
+  -webkit-mask-image: var(--lens-mask);
+  mask-image: var(--lens-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  transform: translateZ(0);
+  will-change: mask-image;
+}
+[data-lens-word-text] {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--color-green-signal);
+}
+@media (prefers-reduced-motion: no-preference) and (min-width: 1024px) {
+  [data-word-mask] {
+    -webkit-mask-image: var(--lens-mask-inv);
+    mask-image: var(--lens-mask-inv);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    transform: translateZ(0);
+    will-change: mask-image;
+  }
 }
 
 /* Treated robot state for viewports without the robot canvas. Under
@@ -192,22 +216,13 @@
 @media (prefers-reduced-motion: no-preference) {
   [data-hero-treat] {
     opacity: 1;
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      #000 0,
-      #000 calc(var(--wipe) - 3%),
-      transparent calc(var(--wipe) + 3%)
-    );
-    mask-image: linear-gradient(
-      to bottom,
-      #000 0,
-      #000 calc(var(--wipe) - 3%),
-      transparent calc(var(--wipe) + 3%)
-    );
+    -webkit-mask-image: var(--lens-mask);
+    mask-image: var(--lens-mask);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-backdrop-filter: contrast(1.06);
     backdrop-filter: contrast(1.06);
+    will-change: mask-image;
   }
 }
 @media (prefers-reduced-motion: no-preference) and (min-width: 1024px) {

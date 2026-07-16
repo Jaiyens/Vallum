@@ -10,7 +10,7 @@ export function LensRing() {
     <div
       data-lens-ring
       aria-hidden="true"
-      className="pointer-events-none absolute top-0 left-0 z-10 hidden rounded-full border-[1.5px] border-green-signal bg-green-deep/[0.08] opacity-0 lg:block"
+      className="pointer-events-none absolute top-0 left-0 z-10 block rounded-full border-[1.5px] border-green-signal bg-green-deep/[0.08] opacity-0"
       style={{
         width: "calc(var(--lr, 90px) * 2)",
         height: "calc(var(--lr, 90px) * 2)",
