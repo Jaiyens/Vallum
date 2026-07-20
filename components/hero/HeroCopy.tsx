@@ -13,18 +13,26 @@ export const WORDMARK_CLASS =
   "absolute left-1/2 bottom-14 lg:bottom-10 -translate-x-1/2 font-display text-[8vw] leading-none font-bold tracking-[0.06em] whitespace-nowrap uppercase select-none font-stretch-expanded";
 
 // The overgrown wordmark revealed inside the lens: the letters wrapped in
-// vines and gears, cut out from the key art. Now the full two-word "VALLUM
-// LABS" key art (F-0902 resolved 2026-07-16), so the lens swap reads the same
-// words as the typed wordmark. Same canvas as the old art (2978x603), but the
-// two words make the letter caps shorter: measured cap height is 52.24% of the
-// image height (was 74.3% for the one-word art). Matching the text caps
-// (5.52vw at the 8vw font) therefore needs width 52vw (was 36.7vw). The word
-// aspect of the art (8.54) matches the text wordmark, so that one width lines
-// up both the letter height and the letter width. The art also carries more
-// empty canvas below its letters (letters end at 69.7% vs 80.9% before), so a
-// 1.8vw downward nudge drops the letter baseline onto the text baseline that
-// the shared bottom anchor otherwise leaves 1.8vw high. Re-derive all three
-// numbers (width, aspect, nudge) if the art or the wordmark typography changes.
+// vines and gears, cut out from the key art, revealed where the typed word
+// drops out. The prior "VALLUM LABS" art was an opaque plate on pure black
+// whose vine glyphs did not sit on the typed glyphs, so the lens showed a
+// black hole (F-0902 reopened). This art is regenerated FROM the rendered
+// typed wordmark: the bone-on-black h1 was screenshotted at 1440x900, restyled
+// into vines and gears with its letter geometry preserved, then alpha-keyed so
+// the background (and the letter counters and the word gap) reads through to
+// the film. Canvas is a 2976x540 transparent strip; inside it the vine letters
+// run "V" left to "S" right across px 106..2858 (2752px, 92.5% of the frame)
+// and their caps sit at px 182..342.
+//
+// Alignment, all measured on the live page at 1440x900: the typed ink runs
+// x 162..1267 (1105px, 76.74vw) with caps at y 797.5..871.5 (74px), and the
+// shared bottom anchor leaves the wrapper content bottom at y 860. Displaying
+// the strip at width 82.98vw makes its 92.5%-wide letter run equal the 76.74vw
+// typed run, so the vine letters take the typed letters' width and spacing.
+// translate-y 5.98vw drops the vine caps onto the typed caps; translate-x
+// -0.21vw corrects the small offset between the art's optical centre and the
+// wrapper's geometric centre. Re-derive the three numbers (width, translate-y,
+// translate-x) if the art crop or the wordmark typography changes.
 export const LENS_WORDMARK_SRC = "/hero/wordmark-vines-labs.webp";
 
 // Entrance art direction. The wordmark types on letter by letter: each
@@ -151,9 +159,9 @@ export function HeroCopy() {
             src={LENS_WORDMARK_SRC}
             alt=""
             draggable={false}
-            loading="lazy"
+            loading="eager"
             decoding="async"
-            className="h-auto w-[52vw] max-w-none translate-y-[1.8vw] select-none"
+            className="h-auto w-[82.98vw] max-w-none -translate-x-[0.21vw] translate-y-[5.98vw] select-none"
           />
         </div>
       </div>
