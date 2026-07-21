@@ -7,7 +7,6 @@ import {
   MAGNET_GLIDE_S,
   MAGNET_MIN_DELTA_PX,
   MAGNET_MIN_VISIBLE_FRAC,
-  MAGNET_SETTLED_FRAC,
 } from "./gallery-config";
 
 // The scroll magnet. Between the hero unpin and the turn there is no landmark
@@ -16,6 +15,13 @@ import {
 // substantially, but not fully, on screen AND the last input was moving toward
 // it, the page glides on until the stage is centered.
 //
+// Framing is judged on the section, not the stage: on a tall window the whole
+// stage can sit on screen while the cream of the next beat leaks in under the
+// section's bottom edge, and that leak is what reads as misframed. The target
+// is a centered stage, capped so the section's bottom edge never rides up into
+// the viewport; the slack always lands above, where the hero's black absorbs
+// it invisibly.
+//
 // Three refusals keep this from reading as scroll-jacking:
 //   idle only    the magnet never grabs while the wheel or a finger is live;
 //                it waits for ScrollTrigger's debounced scrollEnd, which with
@@ -23,7 +29,9 @@ import {
 //   entry only   a stage cut off at the bottom is entered by scrolling down,
 //                one cut off at the top by scrolling up; idling there while
 //                headed the other way means the visitor is leaving, and
-//                pulling them back is exactly the hijack this must never be
+//                pulling them back is exactly the hijack this must never be.
+//                A stage wholly on screen is exempt: the visitor is AT the
+//                spiral, and a reframe there fights nobody
 //   yielding     the glide runs through Lenis without lock, so any input
 //                during it hands the page straight back to the visitor
 //
@@ -39,6 +47,7 @@ export function useScrollMagnet(
       "[data-helix-viewport]",
     );
     if (!viewport) return;
+    const section = viewport.closest<HTMLElement>("section");
 
     let lastY = window.scrollY;
     let dir: 1 | -1 = 1; // 1 is scrolling down
@@ -60,10 +69,18 @@ export function useScrollMagnet(
       // Against the smaller of the two heights, so a stage taller than a
       // short window can still count as settled.
       const frac = visible / Math.min(rect.height, vh);
-      if (frac < MAGNET_MIN_VISIBLE_FRAC || frac > MAGNET_SETTLED_FRAC) return;
+      if (frac < MAGNET_MIN_VISIBLE_FRAC) return;
       if (rect.top < 0 && rect.bottom > vh) return; // already fills the window
-      if ((rect.top >= 0 ? 1 : -1) !== dir) return; // entry only
-      const delta = rect.top - (vh - rect.height) / 2; // center the stage
+      const whole = rect.top >= 0 && rect.bottom <= vh;
+      if (!whole && (rect.top >= 0 ? 1 : -1) !== dir) return; // entry only
+      let delta = rect.top - (vh - rect.height) / 2; // center the stage
+      if (section) {
+        // Cream leaks under the section's bottom edge for any delta past
+        // flush; capping there trades a perfectly centered stage for an
+        // unbroken ink frame, which is the better deal on every window.
+        const flush = section.getBoundingClientRect().bottom - vh;
+        delta = Math.min(delta, flush);
+      }
       const max = document.documentElement.scrollHeight - vh;
       const target = Math.min(Math.max(window.scrollY + delta, 0), max);
       if (Math.abs(target - window.scrollY) < MAGNET_MIN_DELTA_PX) return;

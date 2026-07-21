@@ -49,10 +49,9 @@ export const SOURCE_CHAR_MS = 30;
 export const CARET_HIDE_DELAY_MS = 400;
 
 // Scroll magnet (helix mode only). The stage arms the magnet once this much
-// of it is on screen and disarms once it is effectively settled; corrections
-// smaller than the delta floor are never worth moving the page for.
+// of it is on screen; corrections smaller than the delta floor are never
+// worth moving the page for.
 export const MAGNET_MIN_VISIBLE_FRAC = 0.3;
-export const MAGNET_SETTLED_FRAC = 0.97;
 export const MAGNET_MIN_DELTA_PX = 24;
 export const MAGNET_GLIDE_S = 0.9; // shorter than the wheel glide: an assist, not a ride
 
