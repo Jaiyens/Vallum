@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { SECTION_IDS } from "@/lib/site";
 import { GALLERY_PANELS } from "@/src/content/gallery";
 import { createHelixController, type HelixController } from "./helix-rotation";
+import { useScrollMagnet } from "./use-scroll-magnet";
 import { useTypewriter } from "./use-typewriter";
 import { HelixStage } from "./HelixStage";
 import { MobileGallery } from "./MobileGallery";
@@ -46,6 +47,9 @@ export function GallerySection() {
   const openingRef = useRef(false);
 
   const typingRef = useTypewriter(centerTextRef, mode === "helix");
+  // Off while a takeover is open: the scene is suspended and blurred, and the
+  // takeover holds its own scroll lock anyway.
+  useScrollMagnet(stageRef, mode === "helix" && openPanel === null);
 
   useEffect(() => {
     const desktop = window.matchMedia(DESKTOP_QUERY);
