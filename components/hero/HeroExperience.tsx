@@ -151,8 +151,9 @@ export function HeroExperience() {
 
           // The wordmark box is carved out of the figure hit test: slow
           // motion, the focus veil, and magnification belong to the
-          // worker figures only. Over the letters the lens still reveals
-          // the overgrown variant through the mask, but never engages.
+          // worker figures only. Over the letters the lens reveals the
+          // overgrown variant through the mask at the full engaged
+          // radius, but never triggers slow motion.
           // Measured after fonts load (Archivo expanded reflows) and on
           // resize; stage-relative, so pinning does not skew it.
           let wmBox: { l: number; t: number; r: number; b: number } | undefined;
@@ -296,6 +297,24 @@ export function HeroExperience() {
               ringTo("hidden");
               return;
             }
+            // Over the letters the lens takes the full engaged radius, the
+            // same circle as the figure reveal, so the vine wordmark reads
+            // through a big window (Jay 2026-07-22). Slow motion, the focus
+            // veil, and magnification still belong to the figures only, so
+            // this rung sets the ring alone and returns before the figure
+            // hit test. Checked before the block kind so the name gets the
+            // big circle over establishers too.
+            const overWordmark =
+              wmBox !== undefined &&
+              lastX >= wmBox.l &&
+              lastX <= wmBox.r &&
+              lastY >= wmBox.t &&
+              lastY <= wmBox.b;
+            if (overWordmark) {
+              if (slowmo) releaseSlowmo();
+              ringTo("engaged");
+              return;
+            }
             const kind = blockFor(video.currentTime).kind;
             const hot = kind === "real" || kind === "twin";
             if (!hot) {
@@ -303,15 +322,7 @@ export function HeroExperience() {
               ringTo("passive");
               return;
             }
-            const overWordmark =
-              wmBox !== undefined &&
-              lastX >= wmBox.l &&
-              lastX <= wmBox.r &&
-              lastY >= wmBox.t &&
-              lastY <= wmBox.b;
-            const over =
-              !overWordmark &&
-              circleOverFigure(
+            const over = circleOverFigure(
                 lastX,
                 lastY,
                 LR_HIT,
