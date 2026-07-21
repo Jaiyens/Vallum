@@ -64,7 +64,7 @@ export function MethodSection() {
   return (
     <section
       id={SECTION_IDS.howItWorks}
-      className="surface-bone-forest-tint scroll-mt-14 border-t border-forest-line/30 text-black"
+      className="surface-bone-forest-tint scroll-mt-14 text-black"
     >
       <div
         ref={rootRef}

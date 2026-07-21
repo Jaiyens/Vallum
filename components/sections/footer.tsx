@@ -22,12 +22,9 @@ export function SiteFooter() {
         </div>
       </div>
 
-      {/* Closing forest strip. The hard border-t is replaced by the shared
-          seam-into-forest bridge (globals.css day-op block) so the
-          bone-to-forest close gets the same gradient treatment as every
-          other cream/forest boundary on the page. */}
-      <div className="relative bg-forest text-bone">
-        <span aria-hidden="true" className="seam-into-forest" />
+      {/* Closing forest strip. Hard edge against the bone wordmark block
+          above — founder rule 2026-07-21: no gradient seams anywhere. */}
+      <div className="bg-forest text-bone">
         <div className="mx-auto flex max-w-site flex-col gap-6 px-6 py-2 md:flex-row md:items-center md:justify-between md:px-16">
           <p className="text-[14px] leading-[1.5] tracking-[0.01em] text-bone/72">
             {ETHOS_COPY.footer.entityLine}

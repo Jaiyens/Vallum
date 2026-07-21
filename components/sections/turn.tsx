@@ -22,11 +22,11 @@ const newsreader = Newsreader({
 });
 
 // Beat 3, the turn. Bone opens the section; the two cited facts get their
-// own forest set-piece band (ui-refs-green section 3), bridged top and
-// bottom by the shared seam utilities (globals.css day-op block) so the
-// cream-to-green boundary reads as a gradient, never a hard edge. One
-// quiet discrete reveal on scroll, gated behind prefers-reduced-motion so
-// reduced motion and no-JS both render the resolved, final state.
+// own forest set-piece block. Founder rule 2026-07-21: every section is a
+// flat solid block with hard edges — no gradient seams — and the stat
+// block fills the viewport on its own. One quiet discrete reveal on
+// scroll, gated behind prefers-reduced-motion so reduced motion and no-JS
+// both render the resolved, final state.
 export function TurnSection() {
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -66,7 +66,7 @@ export function TurnSection() {
   return (
     <section className="bg-bone text-black">
       <div ref={rootRef}>
-        <div className="mx-auto max-w-site px-4 pt-section-sm md:px-6 md:pt-44">
+        <div className="mx-auto max-w-site px-4 py-section-sm md:px-6 md:py-44">
           <h2 className="max-w-3xl font-display text-lg font-semibold text-forest-line md:text-xl">
             {TURN_COPY.heading}
           </h2>
@@ -81,29 +81,24 @@ export function TurnSection() {
           </p>
         </div>
 
-        {/* Stat set-piece: the section's one forest band, per
-            ui-refs-green section 3's anatomy: numeral, then a qualifying
-            line kept verbatim from TURN_COPY (never paraphrased), then a
-            hairline, then an always-visible tracked-caps source line. The
-            numerals repeat the figures already inside each sentence below,
-            pulled out to display scale so they read as citations rather
-            than sitting buried in prose.
+        {/* Stat set-piece: the section's one forest block, anatomy per
+            ui-refs-green section 3: numeral, then a qualifying line kept
+            verbatim from TURN_COPY (never paraphrased), then a hairline,
+            then an always-visible tracked-caps source line. The numerals
+            repeat the figures already inside each sentence below, pulled
+            out to display scale so they read as citations rather than
+            sitting buried in prose.
 
-            The gap above is deliberately generous, both as the breath
-            before the register shift (ui-refs-green's "different room, not
-            CSS changed" cue) and because it is the lever that keeps the
-            luminance probe's light-band floor satisfied: dataset.tsx and
-            ethos.tsx (out of this charter's ownership) already run two
-            full forest sections back to back, so this bone run has to
-            carry real height to keep the page's overall light/dark ratio
-            in budget. Re-measure with the crawl.mjs luminance method
-            before shrinking it. */}
+            Founder rule 2026-07-21: the block starts and ends on a hard
+            edge and fills the viewport by itself, stats centered. This
+            supersedes the earlier seam-gradient treatment and the
+            oversized bone gap that fed the luminance probe's light-band
+            floor. */}
         <div
           data-reveal
-          className="relative mt-[230px] bg-forest px-4 py-14 text-bone-hi md:mt-[590px] md:px-6 md:py-20"
+          className="flex min-h-svh items-center bg-forest px-4 py-20 text-bone-hi md:px-6"
         >
-          <span aria-hidden="true" className="seam-into-forest" />
-          <div className="mx-auto grid max-w-site gap-16 md:grid-cols-2 md:gap-14">
+          <div className="mx-auto grid w-full max-w-site gap-16 md:grid-cols-2 md:gap-14">
             <div>
               <p
                 className={`${newsreader.className} leading-none tracking-tight text-bone-hi`}
@@ -136,7 +131,6 @@ export function TurnSection() {
               </p>
             </div>
           </div>
-          <span aria-hidden="true" className="seam-into-bone" />
         </div>
       </div>
     </section>

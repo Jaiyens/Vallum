@@ -5,14 +5,10 @@ import { ETHOS_COPY } from "@/src/content/ethos";
 // verdict on the workers but with the procedure that makes the record
 // possible, said once and plainly, then the founder passage (F-0015,
 // F-0402, F-0301). Server-safe, static, no motion: matte, calm, not grim.
-// The hard border-t is replaced by the shared seam-into-forest bridge
-// (globals.css day-op block): it fades from transparent, so it reads
-// correctly whether the section above (dataset.tsx, owned by another
-// agent) renders bone or its own forest.
+// Founder rule 2026-07-21: flat solid block, hard edges, no seam.
 export function EthosFounderSection() {
   return (
-    <section className="relative bg-forest text-bone">
-      <span aria-hidden="true" className="seam-into-forest" />
+    <section className="bg-forest text-bone">
       <div className="mx-auto max-w-site px-6 py-16 md:px-16 md:py-24 lg:py-8">
         <h2 className="max-w-[1040px] font-display text-[44px] leading-[1.02] tracking-[-0.015em] md:text-[64px] lg:text-[92px]">
           {ETHOS_COPY.heading}

@@ -15,7 +15,7 @@ export function DatasetSection() {
   return (
     <section
       id={SECTION_IDS.data}
-      className="scroll-mt-14 border-t border-bone/24 bg-forest text-bone-hi"
+      className="scroll-mt-14 bg-forest text-bone-hi"
     >
       <div className="mx-auto max-w-site px-4 py-section-sm md:px-6 md:py-44">
         <h2 className="max-w-3xl font-display text-3xl font-bold text-balance font-stretch-expanded md:text-5xl">

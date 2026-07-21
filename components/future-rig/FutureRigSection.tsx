@@ -63,7 +63,7 @@ export function FutureRigSection() {
     <section
       ref={root}
       id={SECTION_IDS.rig}
-      className="scroll-mt-14 border-t border-forest-line/30 bg-bone py-section-sm text-black md:py-section"
+      className="scroll-mt-14 bg-bone py-section-sm text-black md:py-section"
     >
       <div className="mx-auto max-w-site px-4 md:px-6">
         {/* header: plain and always visible (F-0412). A masked scroll-reveal
