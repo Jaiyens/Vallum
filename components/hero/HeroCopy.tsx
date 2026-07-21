@@ -12,27 +12,49 @@ import { HERO_COPY } from "@/src/content/hero";
 export const WORDMARK_CLASS =
   "absolute left-1/2 bottom-14 lg:bottom-10 -translate-x-1/2 font-display text-[8vw] leading-none font-bold tracking-[0.06em] whitespace-nowrap uppercase select-none font-stretch-expanded";
 
-// The overgrown wordmark revealed inside the lens: the letters wrapped in
-// vines and gears, cut out from the key art, revealed where the typed word
-// drops out. The prior "VALLUM LABS" art was an opaque plate on pure black
-// whose vine glyphs did not sit on the typed glyphs, so the lens showed a
-// black hole (F-0902 reopened). This art is regenerated FROM the rendered
-// typed wordmark: the bone-on-black h1 was screenshotted at 1440x900, restyled
-// into vines and gears with its letter geometry preserved, then alpha-keyed so
-// the background (and the letter counters and the word gap) reads through to
-// the film. Canvas is a 2976x540 transparent strip; inside it the vine letters
-// run "V" left to "S" right across px 106..2858 (2752px, 92.5% of the frame)
-// and their caps sit at px 182..342.
+// The overgrown wordmark revealed inside the lens: the "VALLUM LABS" letters
+// wrapped in vines and gears, alpha-keyed so the background, the letter
+// counters and the word gap read through to the film, revealed where the
+// typed word drops out (F-0902). The art is a stylised regeneration of the
+// TYPED wordmark, so its ceramic letter-run keeps the type's proportions
+// (verified: letter-run aspect 13.30 vs typed ink 13.31).
 //
-// Alignment, all measured on the live page at 1440x900: the typed ink runs
-// x 162..1267 (1105px, 76.74vw) with caps at y 797.5..871.5 (74px), and the
-// shared bottom anchor leaves the wrapper content bottom at y 860. Displaying
-// the strip at width 82.98vw makes its 92.5%-wide letter run equal the 76.74vw
-// typed run, so the vine letters take the typed letters' width and spacing.
-// translate-y 5.98vw drops the vine caps onto the typed caps; translate-x
-// -0.21vw corrects the small offset between the art's optical centre and the
-// wrapper's geometric centre. Re-derive the three numbers (width, translate-y,
-// translate-x) if the art crop or the wordmark typography changes.
+// PLACEMENT IS STRUCTURAL, not viewport-tuned. The <img> lives inside a
+// wrapper that carries WORDMARK_CLASS AND an invisible copy of the wordmark
+// string, so the wrapper box is byte-identical to the h1 box at every
+// viewport. Every number below is a pure ratio (a percent of that twin box,
+// or a multiple of the 8vw font-size fs); none of them touch viewport height
+// or a fixed pixel, so vine-on-typed holds at every width by construction.
+// The previous art placed the strip in its own vw-sized box
+// (82.98vw wide, translate-y 5.98vw) whose only tie to the type was three
+// magic numbers hand-fit at 1440x900. That decoupling meant a regenerated
+// asset (whose letters sit differently inside the frame) left the vine word
+// ~2.7vw too low and ~2vw too narrow at EVERY width: a constant vw error that
+// scales up in pixels, so it read as tolerable near 1440 and gross past
+// ~2000px. Full root-cause chain and the rejected options are in the fix
+// report that shipped this change.
+//
+// ---- constants (re-derive after any art regen) ----
+// A) Asset letter-run fractions, from cross-correlating a clean typed render
+//    against the art's bright-ceramic mask (coverage 0.805; sharp script in
+//    the fix report). The 2976x540 frame maps the typed ink to left 0.0497,
+//    right 0.9483, capTop 0.326, baseline 0.698, hence
+//      runWidthFrac RW = 0.8986, (1 - baselineFrac) = 0.3021,
+//      centreXFrac    = 0.499 (~centred),  asset aspect H/W = 540/2976 = 0.18145.
+// B) Typed metrics, measured live and constant across 1440..2560 (each a
+//    multiple of fs = 8vw): ink width 9.590*fs; twin BOX width 9.7217*fs (ink
+//    plus V/S side bearings); baseline 0.160*fs above the box bottom; ink
+//    centre 0.0488*fs left of box centre (V/S side-bearing asymmetry).
+// Applied to the <img> (see JSX below):
+//   width%     = (inkWidth / RW) / twinBoxWidth
+//              = (9.590/0.8986)/9.7217 = 1.0978        -> width: 109.78%
+//   translateY = (1-baselineFrac)*imgHeight - baseline   (down, in fs)
+//              = 0.3021*(1.0978*9.7217*0.18145) - 0.160
+//              = 0.425*fs                               -> translateY 3.40vw
+//   translateX = ink-centre-offset - (centreXFrac-0.5)*imgWidth   (in fs)
+//              = (-0.0488 - (-0.0010)*10.672)           -> -0.0381*fs = -0.305vw
+// Re-derive A) whenever the art is regenerated; re-derive B) only if the font,
+// the string, or the tracking change.
 export const LENS_WORDMARK_SRC = "/hero/wordmark-vines-labs.webp";
 
 // Entrance art direction. The wordmark types on letter by letter: each
@@ -152,16 +174,30 @@ export function HeroCopy() {
         className="pointer-events-none absolute inset-0 hidden lg:motion-safe:block"
       >
         <div className={WORDMARK_CLASS}>
-          {/* lazy: skipped entirely where the container is display:none
-              (mobile, reduced motion); in-viewport on desktop, so it
-              still fetches ahead of the first hover. */}
+          {/* Invisible twin of the typed wordmark. Same class and same
+              string as the h1, so this wrapper's box is byte-identical to
+              the h1 box at every viewport (same font, size, tracking,
+              bottom anchor, centring). The art is positioned relative to
+              THIS box, so the vine letters track the typed letters by
+              construction rather than by viewport-tuned magic numbers. */}
+          <span aria-hidden="true" className="invisible inline-block">
+            {HERO_COPY.wordmark}
+          </span>
+          {/* eager: a lazy img inside a masked container never fetches in
+              Chromium (F-0902); the container is display:none on mobile and
+              reduced motion, so nothing is fetched there. See the constant
+              block above LENS_WORDMARK_SRC for the width/translate math. */}
           <img
             src={LENS_WORDMARK_SRC}
             alt=""
             draggable={false}
             loading="eager"
             decoding="async"
-            className="h-auto w-[82.98vw] max-w-none -translate-x-[0.21vw] translate-y-[5.98vw] select-none"
+            className="pointer-events-none absolute bottom-0 left-1/2 h-auto max-w-none select-none"
+            style={{
+              width: "109.78%",
+              transform: "translateX(calc(-50% - 0.305vw)) translateY(3.40vw)",
+            }}
           />
         </div>
       </div>
