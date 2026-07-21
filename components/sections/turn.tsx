@@ -1,32 +1,17 @@
 "use client";
 
 import { useRef } from "react";
-import { Newsreader } from "next/font/google";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { TURN_COPY } from "@/src/content/sections";
 
-// Display serif for the positioning lead and the two stat numerals only
-// (research/ui-refs-green.md section 3, "large serif numerals... display
-// scale"). LOOK.md's target display face site-wide is Newsreader, but the
-// shared --font-display token still points at Archivo pending the
-// site-wide type swap another agent owns (see
-// components/future-rig/rig-font.ts for the same pattern already in the
-// codebase). Loaded locally so this section can carry the correct face
-// without touching the shared theme token.
-const newsreader = Newsreader({
-  subsets: ["latin"],
-  weight: "variable",
-  axes: ["opsz"],
-  style: ["normal"],
-  display: "swap",
-});
-
 // Beat 3, the turn. Bone opens the section; the two cited facts get their
-// own forest set-piece block. Founder rule 2026-07-21: every section is a
-// flat solid block with hard edges — no gradient seams — and the stat
-// block fills the viewport on its own. One quiet discrete reveal on
-// scroll, gated behind prefers-reduced-motion so reduced motion and no-JS
-// both render the resolved, final state.
+// own forest set-piece slab. Redesign 2026-07-22 (redesign/blocks-v2):
+// every section is a flat solid slab with hard edges, the stat slab fills
+// the viewport by itself, and all type comes off the shared LOOK.md scale
+// (display via --font-display, body 17px/1.65 at 640px measure, mono data
+// step for source lines). One quiet discrete reveal on scroll, gated
+// behind prefers-reduced-motion so reduced motion and no-JS both render
+// the resolved, final state.
 export function TurnSection() {
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -66,67 +51,65 @@ export function TurnSection() {
   return (
     <section className="bg-bone text-black">
       <div ref={rootRef}>
-        <div className="mx-auto max-w-site px-4 py-section-sm md:px-6 md:py-44">
-          <h2 className="max-w-3xl font-display text-lg font-semibold text-forest-line md:text-xl">
+        <div className="mx-auto max-w-site px-6 py-16 md:px-16 md:py-32">
+          <h2 className="font-display text-[22px] leading-[1.3] font-medium text-forest md:text-[26px]">
             {TURN_COPY.heading}
           </h2>
           <p
             data-reveal
-            className={`${newsreader.className} mt-6 max-w-3xl text-balance text-[34px] leading-[1.12] tracking-[-0.01em] md:text-[52px]`}
+            className="mt-6 max-w-[1040px] font-display text-[44px] leading-[1.02] tracking-[-0.015em] text-balance md:text-[64px] lg:text-[92px]"
           >
             {TURN_COPY.positioning}
           </p>
-          <p data-reveal className="mt-8 max-w-2xl text-lg leading-relaxed">
+          <p
+            data-reveal
+            className="mt-16 max-w-[640px] text-[17px] leading-[1.65]"
+          >
             {TURN_COPY.turn}
           </p>
         </div>
 
-        {/* Stat set-piece: the section's one forest block, anatomy per
+        {/* Stat set-piece: the section's one forest slab, anatomy per
             ui-refs-green section 3: numeral, then a qualifying line kept
             verbatim from TURN_COPY (never paraphrased), then a hairline,
-            then an always-visible tracked-caps source line. The numerals
-            repeat the figures already inside each sentence below, pulled
-            out to display scale so they read as citations rather than
-            sitting buried in prose.
-
-            Founder rule 2026-07-21: the block starts and ends on a hard
-            edge and fills the viewport by itself, stats centered. This
-            supersedes the earlier seam-gradient treatment and the
-            oversized bone gap that fed the luminance probe's light-band
-            floor. */}
+            then an always-visible mono source line. The numerals repeat
+            the figures already inside each sentence below, pulled out to
+            display scale so they read as citations rather than sitting
+            buried in prose. The slab starts and ends on a hard edge and
+            fills the viewport by itself, stats centered. */}
         <div
           data-reveal
-          className="flex min-h-svh items-center bg-forest px-4 py-20 text-bone-hi md:px-6"
+          className="flex min-h-svh items-center bg-forest px-6 py-16 text-bone-hi md:px-16"
         >
-          <div className="mx-auto grid w-full max-w-site gap-16 md:grid-cols-2 md:gap-14">
+          <div className="mx-auto grid w-full max-w-site gap-16 md:grid-cols-2">
             <div>
               <p
-                className={`${newsreader.className} leading-none tracking-tight text-bone-hi`}
+                className="font-display leading-none tracking-tight text-bone-hi"
                 style={{ fontSize: "clamp(72px, 11vw, 132px)" }}
               >
                 54%
               </p>
-              <p className="mt-6 max-w-md text-[15px] leading-relaxed text-bone-hi/90 md:text-base">
+              <p className="mt-6 max-w-[640px] text-[17px] leading-[1.65] text-bone-hi/90">
                 {TURN_COPY.lead}
               </p>
-              <p className="mt-5 border-t border-forest-line pt-3 font-mono text-[11px] tracking-[0.12em] text-bone/72 uppercase">
+              <p className="mt-6 border-t border-bone/24 pt-2 font-mono text-[13px] leading-[1.7] text-bone/72">
                 {TURN_COPY.leadSource}
               </p>
             </div>
             <div>
               <p
-                className={`${newsreader.className} leading-none tracking-tight text-bone-hi`}
+                className="font-display leading-none tracking-tight text-bone-hi"
                 style={{ fontSize: "clamp(72px, 11vw, 132px)" }}
               >
                 3,670
-                <span className="ml-2 font-sans text-[13px] font-medium tracking-[0.1em] text-bone/60 uppercase">
+                <span className="ml-3 font-sans text-[17px] font-medium text-bone/72">
                   hours
                 </span>
               </p>
-              <p className="mt-6 max-w-md text-[15px] leading-relaxed text-bone-hi/90 md:text-base">
+              <p className="mt-6 max-w-[640px] text-[17px] leading-[1.65] text-bone-hi/90">
                 {TURN_COPY.indoor}
               </p>
-              <p className="mt-5 border-t border-forest-line pt-3 font-mono text-[11px] tracking-[0.12em] text-bone/72 uppercase">
+              <p className="mt-6 border-t border-bone/24 pt-2 font-mono text-[13px] leading-[1.7] text-bone/72">
                 {TURN_COPY.indoorSource}
               </p>
             </div>

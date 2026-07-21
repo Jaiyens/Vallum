@@ -2,7 +2,6 @@
 
 import dynamic from "next/dynamic";
 import { SECTION_COPY } from "./callouts";
-import { rigDisplayFont } from "./rig-font";
 import { RigClosedPoster, RigMobileBlock, RigPinnedStage } from "./rig-static";
 import { SECTION_IDS } from "@/lib/site";
 
@@ -15,7 +14,7 @@ function FutureRigFallback() {
   return (
     <section
       id={SECTION_IDS.rig}
-      className="scroll-mt-14 border-t border-forest-line/30 bg-bone py-section-sm text-black md:py-section"
+      className="scroll-mt-14 bg-bone py-section-sm text-black md:py-section"
     >
       <noscript>
         <style>{`
@@ -27,7 +26,7 @@ function FutureRigFallback() {
       </noscript>
       <div className="mx-auto max-w-site px-4 md:px-6">
         <h2
-          className={`${rigDisplayFont.className} max-w-[1040px] text-balance text-forest text-[32px] leading-[1.08] tracking-[-0.01em] md:text-[44px] lg:text-[56px]`}
+          className="max-w-[1040px] font-display text-balance text-forest text-[32px] leading-[1.08] tracking-[-0.01em] md:text-[44px] lg:text-[56px]"
         >
           {SECTION_COPY.headline}
         </h2>

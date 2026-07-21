@@ -17,17 +17,18 @@ function GalleryFallback() {
   return (
     <section
       id={SECTION_IDS.problem}
-      className="scroll-mt-14 border-t border-border py-section-sm md:py-section"
+      className="scroll-mt-14 bg-black py-section-sm lg:h-svh lg:overflow-hidden lg:py-0"
     >
       <noscript>
         <style>{`
+          #problem{height:auto!important;overflow:visible!important;padding-block:var(--spacing-section)!important}
           .gallery-shell{height:auto!important;overflow:visible!important}
           .gallery-nojs-copy{display:block!important}
           .gallery-fallback-mobile{display:none!important}
           .gallery-fallback-grid{display:block!important}
         `}</style>
       </noscript>
-      <div className="mx-auto max-w-site px-4 md:px-6">
+      <div className="mx-auto max-w-site px-4 md:px-6 lg:h-full">
         <div className="gallery-fallback-mobile lg:hidden">
           <StaticCenterLine className="mb-8" />
           <div className="-mx-4 flex gap-4 overflow-hidden px-4 pb-4">
@@ -53,11 +54,8 @@ function GalleryFallback() {
             })}
           </div>
         </div>
-        <div className="gallery-fallback-grid hidden lg:block">
-          <div
-            className="gallery-shell overflow-hidden"
-            style={{ height: "clamp(560px, 78vh, 840px)" }}
-          >
+        <div className="gallery-fallback-grid hidden lg:block lg:h-full">
+          <div className="gallery-shell flex h-full flex-col justify-center overflow-hidden py-16">
             <StaticCenterLine className="mb-10" />
             <PosterGrid withNoJsCopy />
           </div>

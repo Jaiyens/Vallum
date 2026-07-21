@@ -133,7 +133,16 @@ export function GallerySection() {
   return (
     <section
       id={SECTION_IDS.problem}
-      className="scroll-mt-14 border-t border-border py-section-sm md:py-section"
+      // Redesign/blocks-v2: in helix mode the section is exactly one
+      // viewport tall with an explicit ink surface — the dark act's last
+      // full-screen slab, hard edge into the bone turn below. Mobile and
+      // reduced modes are content-driven lists, so they keep natural
+      // height with slab padding instead of clipping.
+      className={
+        mode === "helix"
+          ? "h-svh scroll-mt-14 overflow-hidden bg-black"
+          : "scroll-mt-14 bg-black py-section-sm md:py-section"
+      }
     >
       {mode === "helix" ? (
         <HelixStage

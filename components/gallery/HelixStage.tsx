@@ -41,7 +41,9 @@ export function HelixStage({
       data-helix-viewport
       className="relative overflow-clip"
       style={{
-        height: "clamp(560px, 78vh, 840px)",
+        // Fills the section, which is exactly 100svh in helix mode: the
+        // stage owns the whole screen instead of a clamped inner band.
+        height: "100%",
         width: "100vw",
         marginLeft: "calc(50% - 50vw)",
         filter: dimmed ? "blur(14px) saturate(35%)" : "blur(0px) saturate(100%)",
@@ -87,17 +89,10 @@ export function HelixStage({
           </div>
         </div>
       </div>
-      {/* Side vignettes: ink fading to nothing masks panels rotating away so
-          the object reads solid against the beat's ink surface. Siblings of the
-          3D scene, never on the stage or ring. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-[14%] bg-gradient-to-r from-black to-transparent"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-[14%] bg-gradient-to-l from-black to-transparent"
-      />
+      {/* No side vignettes: LOOK.md bans CSS gradients everywhere and the
+          slab rule wants hard edges — panels hard-clip at the viewport
+          edge, which reads as the full-bleed 3D world continuing past the
+          frame. */}
     </div>
   );
 }

@@ -11,7 +11,9 @@ export function SiteFooter() {
   return (
     <footer className="bg-bone text-black">
       <div className="mx-auto max-w-site px-6 py-16 text-center md:px-16 md:py-32 lg:py-48">
-        <p className="font-display uppercase leading-[1.05] tracking-[0.1em] text-forest text-[clamp(32px,9vw,128px)]">
+        {/* Spaced serif caps (LOOK.md wordmark grammar); "Vallum Labs"
+            stays two words per FACTS.md. */}
+        <p className="font-display font-medium uppercase leading-[1.05] tracking-[0.16em] text-forest text-[clamp(40px,10vw,144px)]">
           Vallum Labs
         </p>
         <div className="mx-auto mt-16 max-w-[640px]">
@@ -25,7 +27,7 @@ export function SiteFooter() {
       {/* Closing forest strip. Hard edge against the bone wordmark block
           above — founder rule 2026-07-21: no gradient seams anywhere. */}
       <div className="bg-forest text-bone">
-        <div className="mx-auto flex max-w-site flex-col gap-6 px-6 py-2 md:flex-row md:items-center md:justify-between md:px-16">
+        <div className="mx-auto flex max-w-site flex-col gap-6 px-6 py-6 md:flex-row md:items-center md:justify-between md:px-16">
           <p className="text-[14px] leading-[1.5] tracking-[0.01em] text-bone/72">
             {ETHOS_COPY.footer.entityLine}
           </p>

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Newsreader } from "next/font/google";
 import { SiteNav } from "@/components/site-nav";
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { SmoothScroll } from "@/components/SmoothScroll";
@@ -7,10 +7,14 @@ import { ScrollRefresh } from "@/components/scroll-refresh";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-const archivo = Archivo({
+// The one display face, site-wide (LOOK.md type scale): Newsreader with the
+// opsz axis so display sizes get true display cuts. Archivo is retired.
+const newsreader = Newsreader({
   subsets: ["latin"],
-  variable: "--font-archivo",
-  axes: ["wdth"],
+  variable: "--font-newsreader",
+  weight: "variable",
+  axes: ["opsz"],
+  style: ["normal"],
   display: "swap",
 });
 
@@ -54,7 +58,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${archivo.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${newsreader.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         {/* Motion SSR-renders entrance targets with inline opacity:0; without JS

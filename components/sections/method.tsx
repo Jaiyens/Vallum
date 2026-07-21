@@ -17,14 +17,13 @@ const STEPS = [
   { n: "03", label: METHOD_COPY.kitLabel, body: METHOD_COPY.kit },
 ] as const;
 
-// Beat 4, the method. Bone surface, tinted slightly toward forest
-// (surface-bone-forest-tint, globals.css day-op block) so the turn-to-method
-// run carries a second, quieter step of green rhythm without a full dark
-// band. The aerial anchors step 2 only, in a fixed column at 40% of the row
-// (under the 45% cap), never full-bleed. Discrete stagger reveal on scroll,
-// no scrub, no pin: three short rows and one photo is not a sequence long
-// enough to justify scrubbing (section 6/7). Reduced motion renders every
-// row and the photo at rest, no transform, no opacity ramp.
+// Beat 4, the method. Plain bone slab (redesign/blocks-v2: the tint
+// surface is retired; slabs commit to one surface). The aerial anchors
+// step 2 only, in a fixed column at 40% of the row (under the 45% cap),
+// never full-bleed. Discrete stagger reveal on scroll, no scrub, no pin:
+// three short rows and one photo is not a sequence long enough to justify
+// scrubbing (section 6/7). Reduced motion renders every row and the photo
+// at rest, no transform, no opacity ramp.
 export function MethodSection() {
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -64,24 +63,24 @@ export function MethodSection() {
   return (
     <section
       id={SECTION_IDS.howItWorks}
-      className="surface-bone-forest-tint scroll-mt-14 text-black"
+      className="scroll-mt-14 bg-bone text-black"
     >
       <div
         ref={rootRef}
-        className="mx-auto max-w-site px-4 py-section-sm md:px-6 md:py-44"
+        className="mx-auto max-w-site px-6 py-16 md:px-16 md:py-48"
       >
-        <h2 className="max-w-3xl font-display text-3xl font-bold text-balance font-stretch-expanded md:text-5xl">
+        <h2 className="max-w-[1040px] font-display text-[32px] leading-[1.08] tracking-[-0.01em] text-balance md:text-[44px] lg:text-[56px]">
           {METHOD_COPY.heading}
         </h2>
 
-        <div className="mt-20 md:mt-32">
+        <div className="mt-16 md:mt-32">
           {STEPS.map((step, i) => {
             const isWindow = i === 1;
             return (
               <div
                 key={step.label}
                 data-reveal
-                className={`${i === 0 ? "" : "mt-20 md:mt-28"} border-b border-forest-line pb-12 md:pb-16`}
+                className={`${i === 0 ? "" : "mt-16 md:mt-24"} border-b border-forest-line pb-16`}
               >
                 <div
                   className={
@@ -94,10 +93,10 @@ export function MethodSection() {
                     <span className="font-sans text-sm text-forest-line tabular-nums">
                       {step.n}
                     </span>
-                    <h3 className="mt-2 font-display text-xl font-semibold md:text-2xl">
+                    <h3 className="mt-2 font-display text-[22px] leading-[1.3] font-medium md:text-[26px]">
                       {step.label}
                     </h3>
-                    <p className="mt-3 max-w-[52ch] text-lg leading-relaxed">
+                    <p className="mt-6 max-w-[640px] text-[17px] leading-[1.65]">
                       {step.body}
                     </p>
                   </div>

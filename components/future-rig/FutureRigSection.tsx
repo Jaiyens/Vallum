@@ -6,7 +6,6 @@ import { RigScrub, type RigScrubHandle } from "./RigScrub";
 import { RigMobileBlock, RigPinnedStage } from "./rig-static";
 import { SECTION_COPY } from "./callouts";
 import { FRAME_COUNT } from "./frames-manifest";
-import { rigDisplayFont } from "./rig-font";
 import { SECTION_IDS } from "@/lib/site";
 
 export function FutureRigSection() {
@@ -73,7 +72,7 @@ export function FutureRigSection() {
             headings the same static way, so this matches house style rather
             than reintroducing a JS-gated reveal for a single line of type. */}
         <h2
-          className={`${rigDisplayFont.className} max-w-[1040px] text-balance text-forest text-[32px] leading-[1.08] tracking-[-0.01em] md:text-[44px] lg:text-[56px]`}
+          className="max-w-[1040px] font-display text-balance text-forest text-[32px] leading-[1.08] tracking-[-0.01em] md:text-[44px] lg:text-[56px]"
         >
           {SECTION_COPY.headline}
         </h2>
