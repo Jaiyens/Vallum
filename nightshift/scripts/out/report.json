@@ -1,0 +1,223 @@
+{
+  "base": "http://localhost:3001",
+  "boneLuminance": 0.8568,
+  "contrastFloor": 4.5,
+  "angles": [
+    {
+      "deg": 0,
+      "meanRGB": [
+        73,
+        64,
+        54
+      ],
+      "meanLum": 0.0541,
+      "meanContrast": 8.71,
+      "worstContrast": 1.79,
+      "textMeanContrast": 4.72,
+      "textWorstContrast": 1.76,
+      "frontPanelIndex": 0,
+      "panelBandMeanContrast": 16.42,
+      "panelBandWorstContrast": 16.37
+    },
+    {
+      "deg": 30,
+      "meanRGB": [
+        51,
+        49,
+        42
+      ],
+      "meanLum": 0.0308,
+      "meanContrast": 11.22,
+      "worstContrast": 3.3,
+      "textMeanContrast": 10.54,
+      "textWorstContrast": 3.48,
+      "frontPanelIndex": 7,
+      "panelBandMeanContrast": 11.56,
+      "panelBandWorstContrast": 4.21
+    },
+    {
+      "deg": 60,
+      "meanRGB": [
+        46,
+        50,
+        49
+      ],
+      "meanLum": 0.0307,
+      "meanContrast": 11.24,
+      "worstContrast": 2.87,
+      "textMeanContrast": 10.14,
+      "textWorstContrast": 2.62,
+      "frontPanelIndex": 7,
+      "panelBandMeanContrast": 11.71,
+      "panelBandWorstContrast": 4.91
+    },
+    {
+      "deg": 90,
+      "meanRGB": [
+        65,
+        67,
+        68
+      ],
+      "meanLum": 0.0557,
+      "meanContrast": 8.58,
+      "worstContrast": 1.96,
+      "textMeanContrast": 4.56,
+      "textWorstContrast": 1.56,
+      "frontPanelIndex": 6,
+      "panelBandMeanContrast": 15.05,
+      "panelBandWorstContrast": 14.71
+    },
+    {
+      "deg": 120,
+      "meanRGB": [
+        76,
+        77,
+        78
+      ],
+      "meanLum": 0.0734,
+      "meanContrast": 7.35,
+      "worstContrast": 1.3,
+      "textMeanContrast": 4.17,
+      "textWorstContrast": 1.28,
+      "frontPanelIndex": 5,
+      "panelBandMeanContrast": 10.21,
+      "panelBandWorstContrast": 8.17
+    },
+    {
+      "deg": 150,
+      "meanRGB": [
+        84,
+        85,
+        84
+      ],
+      "meanLum": 0.0897,
+      "meanContrast": 6.49,
+      "worstContrast": 1.31,
+      "textMeanContrast": 4.19,
+      "textWorstContrast": 1.29,
+      "frontPanelIndex": 5,
+      "panelBandMeanContrast": 9.97,
+      "panelBandWorstContrast": 7.08
+    },
+    {
+      "deg": 180,
+      "meanRGB": [
+        85,
+        87,
+        86
+      ],
+      "meanLum": 0.0941,
+      "meanContrast": 6.3,
+      "worstContrast": 1.07,
+      "textMeanContrast": 3.82,
+      "textWorstContrast": 1.08,
+      "frontPanelIndex": 4,
+      "panelBandMeanContrast": 6.15,
+      "panelBandWorstContrast": 5.28
+    },
+    {
+      "deg": 210,
+      "meanRGB": [
+        68,
+        72,
+        75
+      ],
+      "meanLum": 0.0641,
+      "meanContrast": 7.94,
+      "worstContrast": 1.71,
+      "textMeanContrast": 6.06,
+      "textWorstContrast": 1.76,
+      "frontPanelIndex": 3,
+      "panelBandMeanContrast": 13.05,
+      "panelBandWorstContrast": 10.35
+    },
+    {
+      "deg": 240,
+      "meanRGB": [
+        53,
+        58,
+        63
+      ],
+      "meanLum": 0.0417,
+      "meanContrast": 9.89,
+      "worstContrast": 2.64,
+      "textMeanContrast": 6.63,
+      "textWorstContrast": 2.93,
+      "frontPanelIndex": 3,
+      "panelBandMeanContrast": 13.63,
+      "panelBandWorstContrast": 11.26
+    },
+    {
+      "deg": 270,
+      "meanRGB": [
+        41,
+        46,
+        51
+      ],
+      "meanLum": 0.0265,
+      "meanContrast": 11.86,
+      "worstContrast": 3.76,
+      "textMeanContrast": 11.23,
+      "textWorstContrast": 3.35,
+      "frontPanelIndex": 2,
+      "panelBandMeanContrast": 15.54,
+      "panelBandWorstContrast": 14.93
+    },
+    {
+      "deg": 300,
+      "meanRGB": [
+        36,
+        35,
+        42
+      ],
+      "meanLum": 0.0175,
+      "meanContrast": 13.43,
+      "worstContrast": 5.28,
+      "textMeanContrast": 12.57,
+      "textWorstContrast": 5.49,
+      "frontPanelIndex": 1,
+      "panelBandMeanContrast": 16.44,
+      "panelBandWorstContrast": 16.4
+    },
+    {
+      "deg": 330,
+      "meanRGB": [
+        47,
+        41,
+        40
+      ],
+      "meanLum": 0.0233,
+      "meanContrast": 12.36,
+      "worstContrast": 2.84,
+      "textMeanContrast": 11.51,
+      "textWorstContrast": 2.82,
+      "frontPanelIndex": 1,
+      "panelBandMeanContrast": 16.43,
+      "panelBandWorstContrast": 16.39
+    }
+  ],
+  "touch": {
+    "controlVertical": {
+      "pageScrolled": 261
+    },
+    "verticalStartInRow": {
+      "scrollBefore": 809,
+      "scrollAfter": 1070,
+      "pageScrolled": 261
+    },
+    "horizontalInRow": {
+      "rowScrolled": 0,
+      "pageMoved": 0,
+      "rowHorizontallyScrollable": true,
+      "scrollWidth": 2064,
+      "clientWidth": 375
+    }
+  },
+  "errors": [],
+  "beforeFocusFPS": 55,
+  "focusFPS": 49,
+  "mobileFPS": 61,
+  "minMeanContrast": 6.3,
+  "minWorstContrast": 1.07,
+  "allAnglesPassMean": true
+}

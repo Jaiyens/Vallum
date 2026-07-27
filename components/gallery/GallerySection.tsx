@@ -4,11 +4,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { SECTION_IDS } from "@/lib/site";
 import { GALLERY_PANELS } from "@/src/content/gallery";
 import { createHelixController, type HelixController } from "./helix-rotation";
+import { useScrollMagnet } from "./use-scroll-magnet";
 import { useTypewriter } from "./use-typewriter";
 import { HelixStage } from "./HelixStage";
 import { MobileGallery } from "./MobileGallery";
 import { ReducedGallery } from "./ReducedGallery";
 import { StatTakeover } from "./StatTakeover";
+import { StatsSummary } from "./gallery-static";
 import { ROTATE_TO_FRONT_S, STEP_DEG } from "./gallery-config";
 
 type Mode = "helix" | "mobile" | "reduced";
@@ -21,10 +23,10 @@ function computeMode(): Mode {
   return window.matchMedia(DESKTOP_QUERY).matches ? "helix" : "mobile";
 }
 
-// The problem section. The centerpiece is its only heading; there is no
-// eyebrow. Renders one of three modes and owns the takeover state. Click
-// and breakpoint events are the only React state here; per-frame values
-// live in the rotation controller and never touch React.
+// The problem section (beat 2). The centerpiece is its only display heading;
+// there is no eyebrow. Renders one of three modes and owns the takeover state.
+// Every panel carries its statistic on its own glass band, and a visually
+// hidden StatsSummary rolls the eight cited figures up for a screen reader.
 export function GallerySection() {
   const [mode, setMode] = useState<Mode>(computeMode);
   const [openPanel, setOpenPanel] = useState<{
@@ -34,18 +36,20 @@ export function GallerySection() {
 
   const stageRef = useRef<HTMLDivElement | null>(null);
   const ringRef = useRef<HTMLDivElement | null>(null);
-  const proxyRef = useRef<HTMLDivElement | null>(null);
   const centerRootRef = useRef<HTMLDivElement | null>(null);
   const centerTextRef = useRef<HTMLSpanElement | null>(null);
   const leavesRef = useRef<(HTMLDivElement | null)[]>([]);
   const controllerRef = useRef<HelixController | null>(null);
-  // Synchronous re-entry lock for the fronting window: openIndex only
-  // flips in the rotateTo onComplete 0.35s after the click, and a second
-  // click in that window would otherwise pause the typewriter twice while
-  // close resumes it once, freezing it forever.
+  // Synchronous re-entry lock for the fronting window: openIndex only flips in
+  // the rotateTo onComplete after the click, and a second click in that window
+  // would otherwise pause the typewriter twice while close resumes it once,
+  // freezing it forever.
   const openingRef = useRef(false);
 
   const typingRef = useTypewriter(centerTextRef, mode === "helix");
+  // Off while a takeover is open: the scene is suspended and blurred, and the
+  // takeover holds its own scroll lock anyway.
+  useScrollMagnet(stageRef, mode === "helix" && openPanel === null);
 
   useEffect(() => {
     const desktop = window.matchMedia(DESKTOP_QUERY);
@@ -66,9 +70,8 @@ export function GallerySection() {
     if (mode !== "helix") return;
     const stage = stageRef.current;
     const ring = ringRef.current;
-    const proxy = proxyRef.current;
     const centerpiece = centerRootRef.current;
-    if (!stage || !ring || !proxy || !centerpiece) return;
+    if (!stage || !ring || !centerpiece) return;
     const panels: { root: HTMLElement; leaf: HTMLElement }[] = [];
     for (const leaf of leavesRef.current) {
       const root = leaf?.closest<HTMLElement>("[data-panel]");
@@ -76,7 +79,7 @@ export function GallerySection() {
     }
     if (panels.length !== GALLERY_PANELS.length) return;
 
-    const controller = createHelixController({ stage, ring, centerpiece, proxy, panels });
+    const controller = createHelixController({ stage, ring, centerpiece, panels });
     controllerRef.current = controller;
     return () => {
       controller.destroy();
@@ -96,8 +99,8 @@ export function GallerySection() {
         openingRef.current = true;
         typingRef.current.pause();
         // Front the clicked panel first: Flip records a flat box, so a
-        // hard-rotated pose would snap flat mid-morph. At yaw zero the
-        // morph is clean, and the fronting reads as choreography.
+        // hard-rotated pose would snap flat mid-morph. At yaw zero the morph is
+        // clean, and the fronting reads as choreography.
         controller.rotateTo(-index * STEP_DEG, {
           duration: ROTATE_TO_FRONT_S,
           onComplete: () => {
@@ -105,8 +108,6 @@ export function GallerySection() {
             controller.suspend();
             setOpenPanel({ index, leaf: leavesRef.current[index] ?? null });
           },
-          // A press on the stage during the fronting kills the tween; the
-          // click is abandoned, so the pause must unwind with it.
           onInterrupt: () => {
             if (openingRef.current) {
               openingRef.current = false;
@@ -134,23 +135,29 @@ export function GallerySection() {
       id={SECTION_IDS.problem}
       className="scroll-mt-14 border-t border-border py-section-sm md:py-section"
     >
-      <div className="mx-auto max-w-site px-4 md:px-6">
-        {mode === "helix" ? (
-          <HelixStage
-            stageRef={stageRef}
-            ringRef={ringRef}
-            proxyRef={proxyRef}
-            centerRootRef={centerRootRef}
-            centerTextRef={centerTextRef}
-            onOpen={openTakeover}
-            registerLeaf={registerLeaf}
-          />
-        ) : mode === "mobile" ? (
-          <MobileGallery onOpen={openTakeover} />
-        ) : (
-          <ReducedGallery onOpen={openTakeover} />
-        )}
-      </div>
+      {mode === "helix" ? (
+        <HelixStage
+          stageRef={stageRef}
+          ringRef={ringRef}
+          centerRootRef={centerRootRef}
+          centerTextRef={centerTextRef}
+          onOpen={openTakeover}
+          registerLeaf={registerLeaf}
+          dimmed={openPanel !== null}
+        />
+      ) : (
+        <div className="mx-auto max-w-site px-4 md:px-6">
+          {mode === "mobile" ? (
+            <MobileGallery onOpen={openTakeover} />
+          ) : (
+            <ReducedGallery onOpen={openTakeover} />
+          )}
+        </div>
+      )}
+      {/* The bottom ledger strip is gone (Jay's 2026-07-16 correction). The
+          cited numbers still reach a screen reader through this summary and
+          through each panel's aria-label. */}
+      <StatsSummary />
       {openPanel !== null ? (
         <StatTakeover
           panel={GALLERY_PANELS[openPanel.index]}

@@ -6,7 +6,10 @@ import { Flip, gsap } from "@/lib/gsap";
 import { lenisRef } from "@/lib/lenis-ref";
 import { AutoPauseVideo } from "@/components/media/auto-pause-video";
 import { GALLERY_VIDEO } from "@/lib/assets";
-import type { GalleryPanelContent } from "@/src/content/gallery";
+import {
+  type GalleryPanelContent,
+  panelLabel,
+} from "@/src/content/gallery";
 import {
   CARET_HIDE_DELAY_MS,
   CROSSFADE_S,
@@ -18,14 +21,16 @@ import {
   STAT_MIN_CHAR_MS,
   STAT_TARGET_MS,
 } from "./gallery-config";
-import { splitNumerals, teletypeSegments, type Teletype } from "./teletype";
+import { teletypeSegments, type Teletype } from "./teletype";
 
-// Fullscreen stat takeover. Desktop morphs the clicked panel's leaf into
-// the media slot with GSAP Flip; mobile and reduced motion crossfade with
-// their own video element. Text never fades: the stat teletypes so every
-// stat lands in about 1.2 seconds, then the source line, then p7's
-// secondary. Reduced motion renders everything instantly. Green appears
-// only on stat numerals.
+// The focus state (Recipe B). No opaque dialog covers the scene: the whole
+// canvas is blurred and desaturated by HelixStage while the clicked panel
+// resolves forward, so the world steps back rather than a box opening on top.
+// Desktop morphs the clicked panel's leaf into the media slot with GSAP Flip;
+// mobile and reduced motion crossfade with their own video element. The detail
+// (industry, then the statistic or the condition line, then the citation) sits
+// on a Recipe A glass band and teletypes in; reduced motion renders it at once.
+// Text is bone throughout, the caret is forest-line, never amber.
 
 type Mode = "flip" | "fade";
 
@@ -44,34 +49,31 @@ export function StatTakeover({
 }) {
   const asset = GALLERY_VIDEO[panel.id as keyof typeof GALLERY_VIDEO];
   const rootRef = useRef<HTMLDivElement>(null);
-  const backdropRef = useRef<HTMLDivElement>(null);
   const mediaSlotRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const statSpansRef = useRef<(HTMLSpanElement | null)[]>([]);
+  const primarySpanRef = useRef<HTMLSpanElement>(null);
   const sourceSpanRef = useRef<HTMLSpanElement>(null);
-  const secondarySpanRef = useRef<HTMLSpanElement>(null);
-  const secondarySourceSpanRef = useRef<HTMLSpanElement>(null);
-  const caretStatRef = useRef<HTMLSpanElement>(null);
+  const caretPrimaryRef = useRef<HTMLSpanElement>(null);
   const caretSourceRef = useRef<HTMLSpanElement>(null);
-  const caretSecondaryRef = useRef<HTMLSpanElement>(null);
-  const caretSecondarySourceRef = useRef<HTMLSpanElement>(null);
 
   const teletypesRef = useRef<Teletype[]>([]);
   const timersRef = useRef<number[]>([]);
   const flipAnimRef = useRef<gsap.core.Animation | null>(null);
+  const crossfadeAnimRef = useRef<gsap.core.Tween | null>(null);
   const leafHomeRef = useRef<HTMLElement | null>(null);
   const closingRef = useRef(false);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
 
-  const secondary = "secondary" in panel ? panel.secondary : null;
-  const statParts = splitNumerals(panel.stat);
+  // Every panel carries a statistic now; the takeover always renders the full
+  // stat, its source, and (for logging) a secondary cited figure.
+  const primaryText = panel.stat;
+  const sourceText = panel.source;
+  const secondary = panel.secondary ?? null;
 
   // Scroll lock. lenis.stop() halts the inertial glide; the overflow lock
-  // covers keyboard scrolling and the reduced motion mode where Lenis
-  // never mounted. The padding compensates the vanished scrollbar on
-  // classic-scrollbar platforms so the page never shifts mid-morph, and
-  // inert takes the covered page out of the tab order while the dialog is
-  // up.
+  // covers keyboard scrolling and reduced motion where Lenis never mounted.
+  // The padding compensates the vanished scrollbar so the page never shifts,
+  // and inert takes the covered page out of the tab order.
   useEffect(() => {
     lenisRef.current?.stop();
     const html = document.documentElement;
@@ -91,8 +93,6 @@ export function StatTakeover({
   }, []);
 
   // Focus management: remember the opener, focus the close control.
-  // preventScroll everywhere; a focus-driven scroll would drag the page or
-  // the helix viewport out from under the morph.
   useEffect(() => {
     restoreFocusRef.current =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -102,21 +102,10 @@ export function StatTakeover({
     };
   }, []);
 
-
   const setCaret = (
-    active:
-      | typeof caretStatRef
-      | typeof caretSourceRef
-      | typeof caretSecondaryRef
-      | typeof caretSecondarySourceRef
-      | null,
+    active: typeof caretPrimaryRef | typeof caretSourceRef | null,
   ) => {
-    for (const ref of [
-      caretStatRef,
-      caretSourceRef,
-      caretSecondaryRef,
-      caretSecondarySourceRef,
-    ]) {
+    for (const ref of [caretPrimaryRef, caretSourceRef]) {
       const el = ref.current;
       if (!el) continue;
       el.style.display = ref === active ? "inline-block" : "none";
@@ -125,16 +114,13 @@ export function StatTakeover({
 
   const startTyping = () => {
     if (instant || closingRef.current) return;
-    const statSegments = statParts
-      .map((part, i) => ({ el: statSpansRef.current[i], text: part.text }))
-      .filter((s): s is { el: HTMLSpanElement; text: string } => s.el !== null);
-    const statLen = panel.stat.length;
-    const statDelay = Math.min(
-      Math.max(STAT_TARGET_MS / statLen, STAT_MIN_CHAR_MS),
+    const primaryLen = primaryText.length;
+    const primaryDelay = Math.min(
+      Math.max(STAT_TARGET_MS / primaryLen, STAT_MIN_CHAR_MS),
       STAT_MAX_CHAR_MS,
     );
 
-    const finish = (lastCaret: typeof caretStatRef) => {
+    const finish = (lastCaret: typeof caretPrimaryRef) => {
       const caret = lastCaret.current;
       if (caret) caret.setAttribute("data-done", "");
       timersRef.current.push(
@@ -144,43 +130,27 @@ export function StatTakeover({
       );
     };
 
-    const typeSecondarySource = () => {
-      const el = secondarySourceSpanRef.current;
-      if (!el || !secondary) return finish(caretSecondaryRef);
-      setCaret(caretSecondarySourceRef);
+    const typeSource = () => {
+      const el = sourceSpanRef.current;
+      if (!el || !sourceText) return finish(caretPrimaryRef);
+      setCaret(caretSourceRef);
       teletypesRef.current.push(
-        teletypeSegments([{ el, text: secondary.source }], () => SOURCE_CHAR_MS, () =>
-          finish(caretSecondarySourceRef),
+        teletypeSegments([{ el, text: sourceText }], () => SOURCE_CHAR_MS, () =>
+          finish(caretSourceRef),
         ),
       );
     };
-    const typeSecondary = () => {
-      const el = secondarySpanRef.current;
-      if (!el || !secondary) return finish(caretSourceRef);
-      setCaret(caretSecondaryRef);
-      teletypesRef.current.push(
-        teletypeSegments([{ el, text: secondary.stat }], () => SOURCE_CHAR_MS, typeSecondarySource),
-      );
-    };
-    const typeSource = () => {
-      const el = sourceSpanRef.current;
-      if (!el) return;
-      setCaret(caretSourceRef);
-      teletypesRef.current.push(
-        teletypeSegments([{ el, text: panel.source }], () => SOURCE_CHAR_MS, () => {
-          if (secondary) typeSecondary();
-          else finish(caretSourceRef);
-        }),
-      );
-    };
 
-    setCaret(caretStatRef);
+    const primaryEl = primarySpanRef.current;
+    if (!primaryEl) return;
+    setCaret(caretPrimaryRef);
     teletypesRef.current.push(
-      teletypeSegments(statSegments, () => statDelay, typeSource),
+      teletypeSegments([{ el: primaryEl, text: primaryText }], () => primaryDelay, typeSource),
     );
   };
 
-  // Entrance: Flip morph or crossfade, then the teletype sequence.
+  // Entrance: Flip morph (helix) or crossfade (mobile, reduced), then the
+  // teletype sequence.
   useLayoutEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -189,8 +159,6 @@ export function StatTakeover({
       leafHomeRef.current = leaf.parentElement;
       const state = Flip.getState(leaf);
       mediaSlotRef.current.appendChild(leaf);
-      // Drop the focused 1.04 scale so the morph lands on the slot exactly;
-      // the close path restores it.
       gsap.set(leaf, { scale: 1 });
       flipAnimRef.current = Flip.from(state, {
         absolute: true,
@@ -202,16 +170,25 @@ export function StatTakeover({
           startTyping();
         },
       });
-      gsap.from(backdropRef.current, { opacity: 0, duration: 0.3, ease: "none" });
+      // The teletype is the copy's entrance; no opacity tween on the band, so
+      // it can never get stranded at zero under a StrictMode double-mount.
+    } else if (instant) {
+      // Reduced motion (and any other instant caller): no crossfade at all.
+      // gsap.from() here previously raced a StrictMode double-invoke of this
+      // effect (two untracked tweens fighting the same property), which left
+      // the whole dialog stranded at a near-zero opacity. An unconditional
+      // opacity: 1 has no tween to race, so it can never get stuck.
+      gsap.set(root, { opacity: 1 });
     } else {
-      // Reduced motion still gets this opacity-only crossfade per the
-      // spec; only the typing is skipped (startTyping no-ops on instant).
-      gsap.from(root, {
-        opacity: 0,
-        duration: CROSSFADE_S,
-        ease: "none",
-        onComplete: startTyping,
-      });
+      // fromTo() (not from()) pins both ends explicitly, so a StrictMode
+      // double-invoke that kills the first tween and starts a second one
+      // still animates the correct 0 -> 1 range instead of capturing
+      // whatever partial value the first tween left behind.
+      crossfadeAnimRef.current = gsap.fromTo(
+        root,
+        { opacity: 0 },
+        { opacity: 1, duration: CROSSFADE_S, ease: "none", onComplete: startTyping },
+      );
     }
 
     return () => {
@@ -221,9 +198,8 @@ export function StatTakeover({
       timersRef.current = [];
       flipAnimRef.current?.kill();
       flipAnimRef.current = null;
-      // If the leaf is still ours (StrictMode double-run, breakpoint or
-      // motion-preference unmount while open), return it home so the panel
-      // never loses its video.
+      crossfadeAnimRef.current?.kill();
+      crossfadeAnimRef.current = null;
       const home = leafHomeRef.current;
       if (mode === "flip" && leaf && home && leaf.parentElement !== home) {
         home.appendChild(leaf);
@@ -254,7 +230,6 @@ export function StatTakeover({
     if (mode === "flip" && leaf && leafHomeRef.current) {
       const state = Flip.getState(leaf);
       leafHomeRef.current.appendChild(leaf);
-      gsap.to(backdropRef.current, { opacity: 0, duration: FLIP_CLOSE_S, ease: "none" });
       if (rootRef.current) {
         gsap.to(rootRef.current.querySelectorAll("[data-takeover-copy]"), {
           opacity: 0,
@@ -269,8 +244,8 @@ export function StatTakeover({
         ease: "power3.inOut",
         onComplete: () => {
           // Hand the leaf back to its stylesheet, then restore the focused
-          // pose the rotation controller expects: this panel was fronted,
-          // so it is the focused one.
+          // pose the rotation controller expects: this panel was fronted, so
+          // it is the focused one.
           gsap.set(leaf, {
             clearProps:
               "position,left,top,width,height,inset,margin,zIndex,transform,opacity",
@@ -283,6 +258,9 @@ export function StatTakeover({
           onClosed();
         },
       });
+    } else if (instant) {
+      // Reduced motion closes at once, same as it opened.
+      onClosed();
     } else if (rootRef.current) {
       gsap.to(rootRef.current, {
         opacity: 0,
@@ -311,14 +289,16 @@ export function StatTakeover({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const caret = (ref: React.RefObject<HTMLSpanElement | null>, heightEm = 1) => (
+  const caret = (ref: React.RefObject<HTMLSpanElement | null>) => (
     <span
       ref={ref}
       aria-hidden="true"
-      className="gallery-caret w-[0.6ch] translate-y-[0.12em] bg-green-signal"
-      style={{ display: "none", height: `${heightEm}em` }}
+      className="gallery-caret ml-[1px] inline-block w-[0.5ch] translate-y-[0.08em] bg-forest-line align-baseline"
+      style={{ display: "none", height: "0.92em" }}
     />
   );
+
+  const primarySize = { fontSize: "clamp(30px, 5.2vw, 60px)", lineHeight: 1.08 };
 
   return createPortal(
     <div
@@ -326,21 +306,20 @@ export function StatTakeover({
       data-takeover
       role="dialog"
       aria-modal="true"
-      aria-label={`${panel.industry}. ${panel.stat}`}
+      aria-label={panelLabel(panel)}
       className="fixed inset-0 z-[60]"
     >
+      {/* Click-outside closes. Transparent: the scene behind is blurred by the
+          canvas itself (Recipe B), so no scrim is drawn here. */}
       <div
-        ref={backdropRef}
         data-takeover-backdrop
         onClick={requestClose}
-        className="absolute inset-0 bg-black-raise/[0.92]"
+        className="absolute inset-0"
       />
-      {/* Full copy for assistive tech. The visual layers stay aria-hidden
-          through and after the teletype churn; this block is the readable
-          record, sources included. */}
+      {/* Full copy for assistive tech; the visual layers stay aria-hidden. */}
       <div className="sr-only">
-        <p>{panel.stat}</p>
-        <p>{panel.source}</p>
+        <p>{primaryText}</p>
+        {sourceText ? <p>{sourceText}</p> : null}
         {secondary ? (
           <>
             <p>{secondary.stat}</p>
@@ -361,81 +340,63 @@ export function StatTakeover({
             />
           ) : null}
         </div>
+        {/* Recipe A band: blur(24) saturate(50) over ink-35, no border, no
+            shadow, no radius. Rides the detail, legible over the blurred scene. */}
         <div
-          className="pointer-events-auto max-h-[80vh] min-w-0 flex-1 overflow-y-auto"
           data-takeover-copy
+          className="pointer-events-auto max-h-[80vh] min-w-0 flex-1 overflow-y-auto"
+          style={{
+            backgroundColor: "rgba(12,11,9,0.35)",
+            WebkitBackdropFilter: "blur(24px) saturate(50%)",
+            backdropFilter: "blur(24px) saturate(50%)",
+            padding: 24,
+          }}
         >
-          {/* Stat headline: ghost pre-sizes the block so nothing shifts as
-              the teletype fills the overlay. */}
-          <div className="relative">
-            <p
-              aria-hidden="true"
-              className="invisible font-display font-bold font-stretch-expanded"
-              style={{ fontSize: "clamp(30px, 6.5vw, 88px)", lineHeight: 1.06 }}
-            >
-              {panel.stat}
+          <p className="font-display text-bone" style={{ fontSize: "clamp(20px,2.4vw,26px)" }}>
+            {panel.industry}
+          </p>
+          {/* Primary line: ghost pre-sizes the block so nothing shifts as the
+              teletype fills it. */}
+          <div className="relative mt-4">
+            <p aria-hidden="true" className="invisible font-display" style={primarySize}>
+              {primaryText}
             </p>
             <p
               aria-hidden="true"
-              className="absolute inset-0 whitespace-pre-wrap text-left font-display font-bold font-stretch-expanded text-bone-hi"
-              style={{ fontSize: "clamp(30px, 6.5vw, 88px)", lineHeight: 1.06 }}
+              className="absolute inset-0 whitespace-pre-wrap text-left font-display text-bone-hi"
+              style={primarySize}
             >
-              {statParts.map((part, i) => (
-                <span
-                  key={i}
-                  ref={(el) => {
-                    statSpansRef.current[i] = el;
-                  }}
-                  className={part.numeral ? "text-green-signal" : undefined}
-                >
-                  {instant ? part.text : null}
-                </span>
-              ))}
-              {caret(caretStatRef)}
+              <span ref={primarySpanRef}>{instant ? primaryText : null}</span>
+              {caret(caretPrimaryRef)}
             </p>
           </div>
-          {/* Source line. */}
-          <div className="relative mt-5">
-            <p aria-hidden="true" className="invisible font-mono text-sm md:text-base">
-              {panel.source}
-            </p>
-            <p
-              aria-hidden="true"
-              className="absolute inset-0 whitespace-pre-wrap text-left font-mono text-sm text-bone-dim md:text-base"
-            >
-              <span ref={sourceSpanRef}>{instant ? panel.source : null}</span>
-              {caret(caretSourceRef)}
-            </p>
-          </div>
+          {sourceText ? (
+            <div className="relative mt-5">
+              <p aria-hidden="true" className="invisible font-mono text-sm md:text-base">
+                {sourceText}
+              </p>
+              <p
+                aria-hidden="true"
+                className="absolute inset-0 whitespace-pre-wrap text-left font-mono text-sm text-bone-dim md:text-base"
+              >
+                <span ref={sourceSpanRef}>{instant ? sourceText : null}</span>
+                {caret(caretSourceRef)}
+              </p>
+            </div>
+          ) : null}
           {secondary ? (
-            <>
-              <div className="relative mt-6">
-                <p aria-hidden="true" className="invisible text-base md:text-lg">
-                  {secondary.stat}
-                </p>
-                <p
-                  aria-hidden="true"
-                  className="absolute inset-0 whitespace-pre-wrap text-left text-base text-bone md:text-lg"
-                >
-                  <span ref={secondarySpanRef}>{instant ? secondary.stat : null}</span>
-                  {caret(caretSecondaryRef)}
-                </p>
-              </div>
-              <div className="relative mt-2">
-                <p aria-hidden="true" className="invisible font-mono text-sm md:text-base">
-                  {secondary.source}
-                </p>
-                <p
-                  aria-hidden="true"
-                  className="absolute inset-0 whitespace-pre-wrap text-left font-mono text-sm text-bone-dim md:text-base"
-                >
-                  <span ref={secondarySourceSpanRef}>
-                    {instant ? secondary.source : null}
-                  </span>
-                  {caret(caretSecondarySourceRef)}
-                </p>
-              </div>
-            </>
+            <div className="mt-6 border-t border-hairline pt-4">
+              <p
+                aria-hidden="true"
+                className="font-display text-bone"
+                style={{ fontSize: "clamp(16px, 1.8vw, 20px)", lineHeight: 1.2 }}
+              >
+                {secondary.stat}
+              </p>
+              <p aria-hidden="true" className="mt-2 font-mono text-sm text-bone-dim">
+                {secondary.source}
+              </p>
+            </div>
           ) : null}
         </div>
       </div>
@@ -444,7 +405,7 @@ export function StatTakeover({
         type="button"
         onClick={requestClose}
         aria-label="Close"
-        className="absolute right-4 top-4 z-20 flex size-11 items-center justify-center rounded-panel border border-hairline font-mono text-lg text-bone hover:text-bone-hi md:right-6 md:top-6"
+        className="absolute right-4 top-4 z-20 flex size-11 items-center justify-center rounded-panel border border-hairline font-mono text-lg text-bone hover:text-bone-hi focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bone md:right-6 md:top-6"
       >
         x
       </button>
