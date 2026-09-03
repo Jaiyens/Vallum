@@ -118,7 +118,7 @@ export default function DatasetPage() {
           <div className="mt-16 flex max-w-[640px] flex-col gap-6 border-t border-forest-line/30 pt-6">
             <DormantAsk line={ETHOS_COPY.footer.askEcho} className={bodyStep} />
             {/* The two secondary routes point at each other (2026-09-03):
-                this page is the record, /white-paper is the argument. */}
+                this page is the record, the white paper is the argument. */}
             <nav aria-label="Continue" className="flex gap-6">
               <Link
                 href="/"
@@ -127,7 +127,7 @@ export default function DatasetPage() {
                 {ETHOS_COPY.footer.homeLabel}
               </Link>
               <Link
-                href="/white-paper"
+                href="/research"
                 className="text-[14px] font-medium underline decoration-1 underline-offset-[3px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-line"
               >
                 {ETHOS_COPY.footer.whitePaperLabel}

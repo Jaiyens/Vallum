@@ -1,5 +1,7 @@
-// Copy for the future rig section, which closes /white-paper (moved off /
-// on 2026-09-03 with the turn and the method).
+// Copy for the future rig section, now an unnumbered plate inside the white
+// paper at /research (moved off / on 2026-09-03 with the turn and the
+// method). The caption's kit fact was reconciled that day to Jay's research
+// document, which supersedes the July ledger.
 // The visual is a pure scroll-scrubbed
 // explosion (see RigScrub.tsx) with no annotations: the section pins on the
 // closed unit, holds, then expands as you keep scrolling.

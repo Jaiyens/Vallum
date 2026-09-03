@@ -11,11 +11,11 @@ export default function Home() {
       <HeroExperience />
       {/* HERO EXPERIENCE END */}
       <GalleryDynamic />
-      {/* Moved off / 2026-09-03 (founder): the turn and its stat slab, the
-          method, and the future rig now read as one argument on
-          /white-paper, linked from the nav. The front door keeps the film,
-          the faces, the record, and the person; the reasoning behind the
-          company lives on its own route. */}
+      {/* Moved off / 2026-09-03 (founder): the turn and its cited figures,
+          the method, and the future rig now read as one argument inside the
+          white paper at /research, linked from the nav. The front door keeps
+          the film, the faces, the record, and the person; the reasoning
+          behind the company lives on its own route. */}
       <DatasetSection />
       {/* Beat 6, the ethos and the founder passage (F-0015, F-0402). */}
       <EthosFounderSection />

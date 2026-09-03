@@ -42,12 +42,6 @@ export function SiteFooter() {
               href="/research"
               className="text-[14px] font-medium underline decoration-1 underline-offset-[3px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bone"
             >
-              {ETHOS_COPY.footer.researchLabel}
-            </Link>
-            <Link
-              href="/white-paper"
-              className="text-[14px] font-medium underline decoration-1 underline-offset-[3px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bone"
-            >
               {ETHOS_COPY.footer.whitePaperLabel}
             </Link>
             <Link

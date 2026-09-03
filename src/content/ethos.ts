@@ -43,11 +43,11 @@ export const ETHOS_COPY = {
     // above; no invented email or URL.
     askEcho: "A paid pilot is open. Reach Jay to start one.",
     homeLabel: "Home",
-    // Added 2026-09-03 with the /research route: Jay's own research
-    // document, handed over that day, shipped verbatim on its own tab.
-    researchLabel: "Research",
-    // Added 2026-09-03 with the /white-paper route (founder): the thesis,
-    // method, and rig moved off / and need a real link in both nav strips.
+    // Added 2026-09-03: Jay's research document, handed over that day, on
+    // its own tab. Briefly there were two document tabs, a "Research" one
+    // and a "White paper" one; they merged (founder), so there is one label
+    // and it is the genre word, which is also the kicker at the top of that
+    // page's masthead. The route stays /research.
     whitePaperLabel: "White paper",
     datasetLabel: "Dataset",
   },
