@@ -17,7 +17,10 @@ const STEPS = [
   { n: "03", label: METHOD_COPY.kitLabel, body: METHOD_COPY.kit },
 ] as const;
 
-// Beat 4, the method. Plain bone slab (redesign/blocks-v2: the tint
+// The method, the second movement of /white-paper. Moved off / on
+// 2026-09-03 (founder) with the turn and the future rig; it keeps the
+// #how-it-works id, which now resolves on that route.
+// Plain bone slab (redesign/blocks-v2: the tint
 // surface is retired; slabs commit to one surface). The aerial anchors
 // step 2 only, in a fixed column at 40% of the row (under the 45% cap),
 // never full-bleed. Discrete stagger reveal on scroll, no scrub, no pin:

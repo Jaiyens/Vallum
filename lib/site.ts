@@ -6,8 +6,11 @@ export const SITE_URL = "https://vallumlabs.com";
 // PLACEHOLDER: swap for the real cal.com booking URL.
 export const CAL_COM_LINK = "https://cal.com/CAL_COM_LINK_PLACEHOLDER";
 
-// PLACEHOLDER: swap for the real contact email.
-export const CONTACT_EMAIL = "hello@example.com";
+// Jay's address, published by him on the research document handed over
+// 2026-09-03, so it is a real fact and no longer a placeholder. DormantAsk
+// in components/sections/dormant-contact.tsx watches this constant and
+// turns the single ask echo into a live mailto now that it resolves.
+export const CONTACT_EMAIL = "jaiyen_shetty@berkeley.edu";
 
 // PLACEHOLDER: swap for real profiles.
 export const X_URL = "https://x.com/X_PLACEHOLDER";

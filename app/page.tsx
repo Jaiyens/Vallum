@@ -1,11 +1,8 @@
-import { FutureRigDynamic } from "@/components/future-rig/FutureRigDynamic";
 import { GalleryDynamic } from "@/components/gallery/GalleryDynamic";
 import { HeroExperience } from "@/components/hero/HeroExperience";
 import { DatasetSection } from "@/components/sections/dataset";
 import { EthosFounderSection } from "@/components/sections/ethos";
 import { SiteFooter } from "@/components/sections/footer";
-import { MethodSection } from "@/components/sections/method";
-import { TurnSection } from "@/components/sections/turn";
 
 export default function Home() {
   return (
@@ -14,16 +11,11 @@ export default function Home() {
       <HeroExperience />
       {/* HERO EXPERIENCE END */}
       <GalleryDynamic />
-      {/* The page turns light here (BRIEF.md, beats 3-5), with the turn's
-          own stat set-piece and the method's tinted surface mixing forest
-          back in so the middle of the page is not an unbroken cream run
-          (research/ui-refs-green.md). */}
-      <TurnSection />
-      <MethodSection />
-      {/* The rig sits in the method beat, not the closing position
-          (F-0301): a running method implies its kit, and the page still
-          has to close on the person, not on unbuilt hardware. */}
-      <FutureRigDynamic />
+      {/* Moved off / 2026-09-03 (founder): the turn and its stat slab, the
+          method, and the future rig now read as one argument on
+          /white-paper, linked from the nav. The front door keeps the film,
+          the faces, the record, and the person; the reasoning behind the
+          company lives on its own route. */}
       <DatasetSection />
       {/* Beat 6, the ethos and the founder passage (F-0015, F-0402). */}
       <EthosFounderSection />

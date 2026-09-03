@@ -43,6 +43,12 @@ export const ETHOS_COPY = {
     // above; no invented email or URL.
     askEcho: "A paid pilot is open. Reach Jay to start one.",
     homeLabel: "Home",
+    // Added 2026-09-03 with the /research route: Jay's own research
+    // document, handed over that day, shipped verbatim on its own tab.
+    researchLabel: "Research",
+    // Added 2026-09-03 with the /white-paper route (founder): the thesis,
+    // method, and rig moved off / and need a real link in both nav strips.
+    whitePaperLabel: "White paper",
     datasetLabel: "Dataset",
   },
 } as const;

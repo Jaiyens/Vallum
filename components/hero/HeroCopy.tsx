@@ -9,52 +9,56 @@ import { HERO_COPY } from "@/src/content/hero";
 // Bottom-anchored so the wordmark sits right above the mono line (which
 // lives at bottom-10); the extra offset below lg keeps the two from
 // touching where the descent gap shrinks with the vw font size.
+// Kerning is off on purpose: see the KERNING note above LENS_WORDMARK_SRC.
 export const WORDMARK_CLASS =
-  "absolute left-1/2 bottom-14 lg:bottom-10 -translate-x-1/2 font-display text-[8vw] leading-none font-bold tracking-[0.06em] whitespace-nowrap uppercase select-none font-stretch-expanded";
+  "absolute left-1/2 bottom-14 lg:bottom-10 -translate-x-1/2 font-display text-[8vw] leading-none font-bold tracking-[0.06em] [font-kerning:none] whitespace-nowrap uppercase select-none font-stretch-expanded";
 
 // The overgrown wordmark revealed inside the lens: the "VALLUM LABS" letters
 // wrapped in vines and gears, alpha-keyed so the background, the letter
 // counters and the word gap read through to the film, revealed where the
-// typed word drops out (F-0902). The art is a stylised regeneration of the
-// TYPED wordmark, so its ceramic letter-run keeps the type's proportions
-// (verified: letter-run aspect 13.30 vs typed ink 13.31).
+// typed word drops out (F-0902). The art was regenerated from the OLD typed
+// wordmark (Archivo expanded, 2026-07-20), so its ceramic letter-run keeps
+// that face's proportions (letter-run aspect 13.30). The typed wordmark is
+// now Newsreader bold caps (ink aspect 10.79), so no uniform scale can land
+// both the run width and the cap height. The art is therefore sized on BOTH
+// axes so its letter faces fill the typed ink box exactly, which stretches
+// the vines and gears 1.233x vertically. Letter-for-letter coincidence
+// (serif V on serif V) needs the art regenerated from the Newsreader render;
+// until then the ink box is what aligns.
 //
 // PLACEMENT IS STRUCTURAL, not viewport-tuned. The <img> lives inside a
 // wrapper that carries WORDMARK_CLASS AND an invisible copy of the wordmark
-// string, so the wrapper box is byte-identical to the h1 box at every
-// viewport. Every number below is a pure ratio (a percent of that twin box,
-// or a multiple of the 8vw font-size fs); none of them touch viewport height
-// or a fixed pixel, so vine-on-typed holds at every width by construction.
-// The previous art placed the strip in its own vw-sized box
-// (82.98vw wide, translate-y 5.98vw) whose only tie to the type was three
-// magic numbers hand-fit at 1440x900. That decoupling meant a regenerated
-// asset (whose letters sit differently inside the frame) left the vine word
-// ~2.7vw too low and ~2vw too narrow at EVERY width: a constant vw error that
-// scales up in pixels, so it read as tolerable near 1440 and gross past
-// ~2000px. Full root-cause chain and the rejected options are in the fix
-// report that shipped this change.
+// string, so the wrapper box is identical to the h1 box at every viewport.
+// Every number below is a multiple of the font size (em on the <img>, which
+// inherits the 8vw); none of them touch viewport height or a fixed pixel,
+// so vine-on-typed holds at every width by construction.
 //
-// ---- constants (re-derive after any art regen) ----
-// A) Asset letter-run fractions, from cross-correlating a clean typed render
-//    against the art's bright-ceramic mask (coverage 0.805; sharp script in
-//    the fix report). The 2976x540 frame maps the typed ink to left 0.0497,
-//    right 0.9483, capTop 0.326, baseline 0.698, hence
-//      runWidthFrac RW = 0.8986, (1 - baselineFrac) = 0.3021,
-//      centreXFrac    = 0.499 (~centred),  asset aspect H/W = 540/2976 = 0.18145.
-// B) Typed metrics, measured live and constant across 1440..2560 (each a
-//    multiple of fs = 8vw): ink width 9.590*fs; twin BOX width 9.7217*fs (ink
-//    plus V/S side bearings); baseline 0.160*fs above the box bottom; ink
-//    centre 0.0488*fs left of box centre (V/S side-bearing asymmetry).
+// KERNING. SplitText splits the h1 into one inline-block per character for
+// the typewriter entrance and never reverts, so the visible wordmark is laid
+// out WITHOUT kerning (each glyph is its own box). An unsplit twin kerns
+// (VA, LA, ...) and comes out 0.14em narrower, which is what pulled the art
+// off the letters before 2026-09-03 on top of the font change. WORDMARK_CLASS
+// disables kerning on both, so h1 and twin agree in every state: split,
+// unsplit, reduced motion, no JS.
+//
+// ---- constants (re-derive after any art regen or type change) ----
+// A) Asset letter-run fractions of the 2976x540 frame, from cross-correlating
+//    a clean typed render against the art's bright-ceramic mask (2026-07-21):
+//    left 0.0497, right 0.9483, capTop 0.326, baseline 0.698, hence
+//      runWidthFrac RW = 0.8986, faceHeightFrac FH = 0.372,
+//      belowBaselineFrac = 0.302, centreXFrac = 0.4990.
+// B) Typed metrics, Newsreader 700 caps, tracking 0.06em, kerning off,
+//    pixel-scanned at 2x across 1440/1710/1920/2560 (2026-09-03), each a
+//    multiple of fs = 8vw: ink width 8.480*fs; cap height 0.7855*fs; ink
+//    bottom 0.2345*fs above the box bottom; ink centre 0.0614*fs left of the
+//    box centre (trailing tracking plus V/S side bearings).
 // Applied to the <img> (see JSX below):
-//   width%     = (inkWidth / RW) / twinBoxWidth
-//              = (9.590/0.8986)/9.7217 = 1.0978        -> width: 109.78%
-//   translateY = (1-baselineFrac)*imgHeight - baseline   (down, in fs)
-//              = 0.3021*(1.0978*9.7217*0.18145) - 0.160
-//              = 0.425*fs                               -> translateY 3.40vw
-//   translateX = ink-centre-offset - (centreXFrac-0.5)*imgWidth   (in fs)
-//              = (-0.0488 - (-0.0010)*10.672)           -> -0.0381*fs = -0.305vw
-// Re-derive A) whenever the art is regenerated; re-derive B) only if the font,
-// the string, or the tracking change.
+//   width      = inkWidth / RW              = 8.480 / 0.8986 = 9.437em
+//   height     = capHeight / FH             = 0.7855 / 0.372 = 2.112em
+//   translateY = 0.302 * height - 0.2345    = 0.403em (down)
+//   translateX = -0.0614 - (0.4990 - 0.5) * 9.437 = -0.052em (after the -50%)
+// Re-derive A) whenever the art is regenerated; re-derive B) whenever the
+// font, the string, the tracking or the kerning change.
 export const LENS_WORDMARK_SRC = "/hero/wordmark-vines-labs.webp";
 
 // Entrance art direction. The wordmark types on letter by letter: each
@@ -87,7 +91,7 @@ export function HeroCopy() {
         let split: SplitText | undefined;
         let tween: gsap.core.Tween | undefined;
         let cancelled = false;
-        // Archivo expanded must be measured after fonts load or the char
+        // The display face must be loaded before the split or the char
         // boxes come out wrong.
         document.fonts.ready.then(() => {
           if (cancelled) return;
@@ -175,10 +179,11 @@ export function HeroCopy() {
       >
         <div className={WORDMARK_CLASS}>
           {/* Invisible twin of the typed wordmark. Same class and same
-              string as the h1, so this wrapper's box is byte-identical to
-              the h1 box at every viewport (same font, size, tracking,
-              bottom anchor, centring). The art is positioned relative to
-              THIS box, so the vine letters track the typed letters by
+              string as the h1, so this wrapper's box is identical to the
+              h1 box at every viewport (same font, size, tracking, bottom
+              anchor, centring, and kerning off so the split h1 and this
+              unsplit twin lay out alike). The art is positioned relative
+              to THIS box, so the vine letters track the typed letters by
               construction rather than by viewport-tuned magic numbers. */}
           <span aria-hidden="true" className="invisible inline-block">
             {HERO_COPY.wordmark}
@@ -193,10 +198,11 @@ export function HeroCopy() {
             draggable={false}
             loading="eager"
             decoding="async"
-            className="pointer-events-none absolute bottom-0 left-1/2 h-auto max-w-none select-none"
+            className="pointer-events-none absolute bottom-0 left-1/2 max-w-none select-none"
             style={{
-              width: "109.78%",
-              transform: "translateX(calc(-50% - 0.305vw)) translateY(3.40vw)",
+              width: "9.437em",
+              height: "2.112em",
+              transform: "translateX(calc(-50% - 0.052em)) translateY(0.403em)",
             }}
           />
         </div>

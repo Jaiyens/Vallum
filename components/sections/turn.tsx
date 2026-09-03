@@ -4,7 +4,9 @@ import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { TURN_COPY } from "@/src/content/sections";
 
-// Beat 3, the turn. Bone opens the section; the two cited facts get their
+// The turn, the opening argument of /white-paper. Moved off / on
+// 2026-09-03 (founder) together with the method and the future rig. Bone
+// opens the section; the two cited facts get their
 // own forest set-piece slab. Redesign 2026-07-22 (redesign/blocks-v2):
 // every section is a flat solid slab with hard edges, the stat slab fills
 // the viewport by itself, and all type comes off the shared LOOK.md scale
@@ -12,7 +14,15 @@ import { TURN_COPY } from "@/src/content/sections";
 // step for source lines). One quiet discrete reveal on scroll, gated
 // behind prefers-reduced-motion so reduced motion and no-JS both render
 // the resolved, final state.
-export function TurnSection() {
+// headingAs lets the owning route pick the level for the section's first
+// heading without restyling it. The turn now opens /white-paper, so that
+// route passes "h1" and the document starts at level 1; the default stays
+// "h2" for any page that mounts the turn below its own title.
+export function TurnSection({
+  headingAs: Heading = "h2",
+}: {
+  headingAs?: "h1" | "h2";
+}) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -52,9 +62,9 @@ export function TurnSection() {
     <section className="bg-bone text-black">
       <div ref={rootRef}>
         <div className="mx-auto max-w-site px-6 py-16 md:px-16 md:py-32">
-          <h2 className="font-display text-[22px] leading-[1.3] font-medium text-forest md:text-[26px]">
+          <Heading className="font-display text-[22px] leading-[1.3] font-medium text-forest md:text-[26px]">
             {TURN_COPY.heading}
-          </h2>
+          </Heading>
           <p
             data-reveal
             className="mt-6 max-w-[1040px] font-display text-[44px] leading-[1.02] tracking-[-0.015em] text-balance md:text-[64px] lg:text-[92px]"

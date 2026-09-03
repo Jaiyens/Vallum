@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { ETHOS_COPY } from "@/src/content/ethos";
 
 // Cross-page affordance (F-0504), scroll-intent chrome per Jay 2026-07-19:
 // hidden on load so the page opens flush with the hero film, revealed only
@@ -46,14 +47,27 @@ export function SiteNav() {
     >
       <nav
         aria-label="Primary"
-        className="mx-auto flex max-w-site items-center justify-between px-6 py-2 md:px-16"
+        className="mx-auto flex max-w-site flex-wrap items-center justify-between gap-x-6 gap-y-1 px-6 py-2 md:px-16"
       >
         <Link href="/" className={LINK_CLASS}>
           Vallum Labs
         </Link>
-        <Link href="/dataset" className={LINK_CLASS}>
-          Dataset
-        </Link>
+        {/* Two secondary routes now, so the right side is a group: the
+            argument (/white-paper) then the record (/dataset), reading in
+            the order the reader would want them. Labels come off
+            ETHOS_COPY.footer so this strip and the footer strip cannot
+            drift apart. */}
+        <div className="flex min-w-0 grow flex-wrap justify-end gap-x-4 gap-y-1 md:gap-x-6">
+          <Link href="/research" className={LINK_CLASS}>
+            {ETHOS_COPY.footer.researchLabel}
+          </Link>
+          <Link href="/white-paper" className={LINK_CLASS}>
+            {ETHOS_COPY.footer.whitePaperLabel}
+          </Link>
+          <Link href="/dataset" className={LINK_CLASS}>
+            {ETHOS_COPY.footer.datasetLabel}
+          </Link>
+        </div>
       </nav>
     </header>
   );

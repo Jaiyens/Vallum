@@ -154,7 +154,7 @@ export function HeroExperience() {
           // worker figures only. Over the letters the lens reveals the
           // overgrown variant through the mask at the full engaged
           // radius, but never triggers slow motion.
-          // Measured after fonts load (Archivo expanded reflows) and on
+          // Measured after fonts load (the display face reflows) and on
           // resize; stage-relative, so pinning does not skew it.
           let wmBox: { l: number; t: number; r: number; b: number } | undefined;
           const measureWordmark = () => {
