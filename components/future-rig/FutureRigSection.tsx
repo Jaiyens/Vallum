@@ -64,7 +64,7 @@ export function FutureRigSection() {
       id={SECTION_IDS.rig}
       className="scroll-mt-14 bg-bone py-section-sm text-black md:py-section"
     >
-      <div className="mx-auto max-w-site px-4 md:px-6">
+      <div className="mx-auto max-w-site px-6 md:px-16">
         {/* header: plain and always visible (F-0412). A masked scroll-reveal
             here previously depended on an IntersectionObserver trigger that
             could leave the heading permanently translated out of view; the

@@ -14,9 +14,12 @@ import {
 
 export const TURN_COPY = {
   heading: "Machines are learning this work by watching",
-  // 2026-07-16: the collect/license sentence moves here from hero.ts as the
-  // section's lead positioning line (Jay's correction). It sits ahead of the
-  // two fact paragraphs below.
+  // RETIRED FROM RENDER 2026-09-03. The turn moved onto /white-paper and
+  // then merged into /research, whose masthead already carries this claim in
+  // Jay's own words as RESEARCH_PAGE.thesis. Shipping both put the same
+  // sentence twice on one page, so the founder-authored line wins and this
+  // one stops rendering. Kept, not deleted: it is Jay's 2026-07-16 copy and
+  // the string may be wanted again if the turn ever gets its own page.
   positioning:
     "We collect consent-cleared, action-labeled egocentric video and license it to robotics and world-model teams.",
   // Cut 2026-07-16: body trimmed from ~127 words to fit a hard 70-word cap
@@ -43,12 +46,19 @@ export const METHOD_COPY = {
   // mono label added for the visual-steps render another agent is building.
   // Old flat keys (people, window, kit) stay populated so nothing importing
   // them breaks; the *Label keys are new.
+  // RETIRED FROM RENDER 2026-09-03, all six step keys below. The three
+  // method steps merged into /research, where consent, the collection
+  // window, and the capture kit are each stated at length in Jay's own
+  // words (RESEARCH_PAGE.consent, .status/.operations*, .hardware). Only
+  // `heading` still ships: it titles the consent band on that page. The
+  // step strings stay here, reconciled to Jay's facts, so nothing in the
+  // repo states the superseded July window or the head-strap-only kit.
   peopleLabel: "Consent first",
   people:
     "Every participant signs a release in their own language, and the site owner authorizes it.",
   windowLabel: "Harvest window",
   window:
-    "The first window is the Western Cape harvest season, July 2026 to approximately January 2027.",
+    "The first window is the Western Cape harvest season, September 2026 to January 2027.",
   kitLabel: "Capture kit",
   kit: CAPTURE_SPECS,
 } as const;

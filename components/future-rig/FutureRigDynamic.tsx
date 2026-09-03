@@ -24,7 +24,7 @@ function FutureRigFallback() {
           .rig-exploded-static{display:block!important}
         `}</style>
       </noscript>
-      <div className="mx-auto max-w-site px-4 md:px-6">
+      <div className="mx-auto max-w-site px-6 md:px-16">
         <h2
           className="max-w-[1040px] font-display text-balance text-forest text-[32px] leading-[1.08] tracking-[-0.01em] md:text-[44px] lg:text-[56px]"
         >

@@ -6,6 +6,9 @@ import {
   type ResearchSectionId,
 } from "@/src/content/research-page";
 import { ETHOS_COPY } from "@/src/content/ethos";
+import { METHOD_COPY, TURN_COPY } from "@/src/content/sections";
+import { METHOD_AERIAL } from "@/lib/assets";
+import { FutureRigDynamic } from "@/components/future-rig/FutureRigDynamic";
 
 export const metadata: Metadata = {
   title: RESEARCH_PAGE.meta.title,
@@ -16,6 +19,18 @@ export const metadata: Metadata = {
   },
 };
 
+// Merged 2026-09-03 (founder). The turn, its cited-figure set-piece, the
+// method, and the future rig came off the home page and briefly lived on a
+// separate /white-paper route; that route is gone and this page is the one
+// white paper. Where the moved blocks and Jay's document stated the same
+// fact, Jay's document won, so the three method steps and the turn's
+// positioning line stopped rendering rather than contradicting the sections
+// below them (see the RETIRED notes in src/content/sections.ts). What the
+// blocks uniquely carried is here: the two cited figures open the paper as
+// evidence, "Consent first, camera second" titles the consent band and
+// brings the Western Cape aerial with it, and the rig plate closes the
+// hardware argument before the ask.
+//
 // Type steps are the /dataset steps verbatim, so the two secondary pages
 // read as one system.
 const bodyStep = "text-[16px] leading-[1.65] md:text-[17px]";
@@ -103,6 +118,65 @@ export default function ResearchPage() {
             {RESEARCH_PAGE.status}
           </p>
         </div>
+
+        {/* Evidence. The two cited figures that used to open the home page,
+            kept in their own forest treatment: numeral, the qualifying
+            sentence verbatim from TURN_COPY, a hairline, then an
+            always-visible mono source line (ui-refs-green section 3). They
+            belong at the top of a white paper, ahead of the contents: this
+            is the reason the rest of the document exists. TURN_COPY.
+            positioning is not repeated here; RESEARCH_PAGE.thesis above
+            already makes that claim in Jay's own words. */}
+        <div className="mx-auto max-w-site border-t border-bone/15 px-6 pb-16 md:px-16 md:pb-24">
+          <h2 className="pt-12 font-display text-[22px] leading-[1.3] font-medium text-bone-hi md:pt-16 md:text-[26px]">
+            {TURN_COPY.heading}
+          </h2>
+
+          <div className="mt-12 grid gap-12 md:mt-16 md:grid-cols-2 md:gap-16">
+            <div>
+              <p
+                className="font-display leading-none tracking-tight text-bone-hi"
+                style={{ fontSize: "clamp(72px, 11vw, 132px)" }}
+              >
+                54%
+              </p>
+              <p className={`mt-6 max-w-[640px] ${bodyStep} text-bone-hi/90`}>
+                {TURN_COPY.lead}
+              </p>
+              <p
+                className={`mt-6 border-t border-bone/24 pt-2 ${monoRow} text-bone/72`}
+              >
+                {TURN_COPY.leadSource}
+              </p>
+            </div>
+            <div>
+              <p
+                className="font-display leading-none tracking-tight text-bone-hi"
+                style={{ fontSize: "clamp(72px, 11vw, 132px)" }}
+              >
+                3,670
+                <span className="ml-3 font-sans text-[17px] font-medium text-bone/72">
+                  hours
+                </span>
+              </p>
+              <p className={`mt-6 max-w-[640px] ${bodyStep} text-bone-hi/90`}>
+                {TURN_COPY.indoor}
+              </p>
+              <p
+                className={`mt-6 border-t border-bone/24 pt-2 ${monoRow} text-bone/72`}
+              >
+                {TURN_COPY.indoorSource}
+              </p>
+            </div>
+          </div>
+
+          {/* The pivot the figures are there to earn. */}
+          <p
+            className={`mt-12 max-w-[640px] font-display text-[21px] leading-[1.4] text-bone-hi md:mt-16 md:text-[24px]`}
+          >
+            {TURN_COPY.turn}
+          </p>
+        </div>
       </section>
 
       {/* Bone: contents ledger, then the first three sections. */}
@@ -162,9 +236,39 @@ export default function ResearchPage() {
           company is actually selling, so it gets its own slab. */}
       <section className="bg-forest text-bone-hi">
         <div className={BAND}>
-          <Block id="consent" tone="forest">
-            <p className={`${bodyStep} text-bone-hi/94`}>{RESEARCH_PAGE.consent}</p>
-          </Block>
+          {/* The method block's title survives the merge: it is the one
+              line the moved section said that Jay's prose does not, and it
+              states the band's argument before the numbered section makes
+              it. The three steps underneath it did not survive; consent,
+              the window, and the kit are each stated at length below and in
+              the sections above, in Jay's words. */}
+          <h2 className="max-w-[1040px] font-display text-balance text-[32px] leading-[1.08] tracking-[-0.01em] text-bone-hi md:text-[44px] lg:text-[56px]">
+            {METHOD_COPY.heading}
+          </h2>
+
+          {/* The Western Cape aerial, the document's one photograph. It
+              anchored the harvest-window step on the home page; here it
+              sits with the consent band, which is the same ground seen from
+              above. Held to a column, never full-bleed. */}
+          <div className="mt-12 overflow-hidden rounded-panel md:mt-16 md:max-w-[62%]">
+            <img
+              src={METHOD_AERIAL.src}
+              alt={METHOD_AERIAL.label}
+              width={2400}
+              height={1018}
+              loading="lazy"
+              decoding="async"
+              className="h-auto w-full object-cover"
+            />
+          </div>
+
+          <div className="mt-16 md:mt-24">
+            <Block id="consent" tone="forest">
+              <p className={`${bodyStep} text-bone-hi/94`}>
+                {RESEARCH_PAGE.consent}
+              </p>
+            </Block>
+          </div>
         </div>
       </section>
 
@@ -208,6 +312,13 @@ export default function ResearchPage() {
           </div>
         </div>
       </section>
+
+      {/* The rig, an unnumbered plate. It is a figure rather than a section
+          of Jay's document, so it stays out of RESEARCH_SECTIONS and does
+          not renumber his contents ledger. It earns this position: the
+          hardware section above states what is in the field today, and this
+          states what replaces it, immediately before the ask. */}
+      <FutureRigDynamic />
 
       {/* Forest: the ask. One slab, one address, nothing else in it. */}
       <section className="bg-forest text-bone-hi">

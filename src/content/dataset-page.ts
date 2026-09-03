@@ -18,8 +18,14 @@ export const CONSENT_PROVENANCE_STACK = [
   "C2PA content-provenance signing where the pipeline supports it",
 ] as const;
 
+// Reconciled 2026-09-03 to Jay's research document, which supersedes the
+// 2026-07-15 ledger on both counts: the rigs are head AND chest mounted with
+// four in the field (was "4 to 6 ... on head straps"), and capture is stated
+// as monocular RGB at 1920x1080, HEVC (the July ledger held no codec claim
+// and said "1080p minimum"). findings/needs-fact.md carries the request for
+// Jay to ratify these into FACTS.md.
 export const CAPTURE_SPECS =
-  "The capture kit today is 4 to 6 refurbished iPhones on head straps, carried in personally. Every clip is head-mounted, 1080p minimum, 30fps.";
+  "The capture kit today is four head and chest mounted iPhone rigs in the field, carried in personally. Capture is monocular RGB at 1920x1080, 30 fps, HEVC at capture, with camera settings locked for the whole shift.";
 
 // Rewritten 2026-07-16 (Jay's morning correction): no dollar figures, no
 // 50/50 split, no 20-to-40-hours quantity anywhere on the site. Stated
@@ -60,7 +66,7 @@ export const DATASET_PAGE = {
 
   windowTitle: "Collection window",
   window:
-    "The first collection window is the Western Cape harvest season, July 2026 to approximately January 2027, agriculture first. Construction, rooftop solar, offshore rigs, wind turbines, and high-rise ironwork are the stated direction beyond agriculture.",
+    "The first collection window is the Western Cape harvest season, September 2026 to January 2027, agriculture first. Construction, rooftop solar, offshore rigs, wind turbines, and high-rise ironwork are the stated direction beyond agriculture.",
 
   offerTitle: "The offer",
   offer: OFFER_COPY,
