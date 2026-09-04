@@ -64,6 +64,12 @@ export const METHOD_COPY = {
 } as const;
 
 export const DATASET_COPY = {
+  // RETIRED FROM RENDER 2026-09-03. The home "record" section
+  // (components/sections/dataset.tsx) came off / at the founder's request;
+  // /dataset renders the same schema, consent stack, and offer from
+  // dataset-page.ts. Kept, not deleted: `heading` and `lead` are Jay's
+  // 2026-07-16 copy and are wanted again if the record returns to /.
+  //
   // Renamed 2026-07-16 (Jay hates "What ships with every clip"). This
   // section is becoming a designed schema artifact, so the heading now
   // names the artifact itself rather than describing shipping contents.

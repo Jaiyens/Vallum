@@ -67,10 +67,11 @@ export function FutureRigSection() {
       <div className="mx-auto max-w-site px-6 md:px-16">
         {/* header: plain and always visible (F-0412). A masked scroll-reveal
             here previously depended on an IntersectionObserver trigger that
-            could leave the heading permanently translated out of view; the
-            sibling bone-beat sections (method, dataset, ethos) render their
-            headings the same static way, so this matches house style rather
-            than reintroducing a JS-gated reveal for a single line of type. */}
+            could leave the heading permanently translated out of view; every
+            other bone slab on the site (/dataset, /research, the footer
+            wordmark) renders its heading the same static way, so this matches
+            house style rather than reintroducing a JS-gated reveal for a
+            single line of type. */}
         <h2
           className="max-w-[1040px] font-display text-balance text-forest text-[32px] leading-[1.08] tracking-[-0.01em] md:text-[44px] lg:text-[56px]"
         >

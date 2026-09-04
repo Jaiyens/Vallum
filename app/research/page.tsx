@@ -8,7 +8,6 @@ import {
 import { ETHOS_COPY } from "@/src/content/ethos";
 import { METHOD_COPY, TURN_COPY } from "@/src/content/sections";
 import { METHOD_AERIAL } from "@/lib/assets";
-import { FutureRigDynamic } from "@/components/future-rig/FutureRigDynamic";
 
 export const metadata: Metadata = {
   title: RESEARCH_PAGE.meta.title,
@@ -19,17 +18,19 @@ export const metadata: Metadata = {
   },
 };
 
-// Merged 2026-09-03 (founder). The turn, its cited-figure set-piece, the
-// method, and the future rig came off the home page and briefly lived on a
-// separate /white-paper route; that route is gone and this page is the one
-// white paper. Where the moved blocks and Jay's document stated the same
-// fact, Jay's document won, so the three method steps and the turn's
-// positioning line stopped rendering rather than contradicting the sections
-// below them (see the RETIRED notes in src/content/sections.ts). What the
-// blocks uniquely carried is here: the two cited figures open the paper as
-// evidence, "Consent first, camera second" titles the consent band and
-// brings the Western Cape aerial with it, and the rig plate closes the
-// hardware argument before the ask.
+// Merged 2026-09-03 (founder). The turn, its cited-figure set-piece, and the
+// method came off the home page and briefly lived on a separate
+// /white-paper route; that route is gone and this page is the one white
+// paper. Where the moved blocks and Jay's document stated the same fact,
+// Jay's document won, so the three method steps and the turn's positioning
+// line stopped rendering rather than contradicting the sections below them
+// (see the RETIRED notes in src/content/sections.ts). What the blocks
+// uniquely carried is here: the two cited figures open the paper as
+// evidence, and "Consent first, camera second" titles the consent band and
+// brings the Western Cape aerial with it. The rig plate that briefly sat
+// between Farms and the ask went back to the bottom of / later the same day
+// (founder): this page is Jay's document, and the render is the site's own
+// figure, not his.
 //
 // Type steps are the /dataset steps verbatim, so the two secondary pages
 // read as one system.
@@ -312,13 +313,6 @@ export default function ResearchPage() {
           </div>
         </div>
       </section>
-
-      {/* The rig, an unnumbered plate. It is a figure rather than a section
-          of Jay's document, so it stays out of RESEARCH_SECTIONS and does
-          not renumber his contents ledger. It earns this position: the
-          hardware section above states what is in the field today, and this
-          states what replaces it, immediately before the ask. */}
-      <FutureRigDynamic />
 
       {/* Forest: the ask. One slab, one address, nothing else in it. */}
       <section className="bg-forest text-bone-hi">

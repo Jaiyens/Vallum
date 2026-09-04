@@ -1,6 +1,13 @@
 // UI copy for beat 6 (the ethos, forest, full bleed) and beat 7 (the
 // wordmark footer). Every string ships verbatim. Never paraphrase here or
 // at a call site. Factual claims trace to nightshift/FACTS.md.
+//
+// 2026-09-03: beat 6 no longer renders anywhere. The ethos and founder
+// slab (components/sections/ethos.tsx) came off / at the founder's
+// request; `heading`, `languagesLabel`, `languages`, `passage`, and
+// `founder` are RETIRED FROM RENDER and kept because they are founder
+// reviewed copy. `footer` is live: the nav, both footer strips, and
+// /dataset read it.
 
 export const ETHOS_COPY = {
   // Shape A job label, matching STORY.md's own name for this beat.
