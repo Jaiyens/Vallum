@@ -33,7 +33,9 @@ export function GalleryPanel({
   return (
     <div
       data-panel
-      className="absolute left-1/2 top-1/2 w-[clamp(190px,16vw,250px)]"
+      // pointer-events auto: the stage and the ring above it are none, so
+      // a click reaches a back-half panel instead of the ring's own plane.
+      className="pointer-events-auto absolute left-1/2 top-1/2 w-[clamp(190px,16vw,250px)]"
       style={{
         transform: `translate(-50%, -50%) rotateY(${index * STEP_DEG}deg) translateZ(var(--helix-radius)) translateY(calc(${index} * var(--helix-rise)))`,
       }}

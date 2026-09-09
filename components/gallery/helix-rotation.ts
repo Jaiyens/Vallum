@@ -76,8 +76,13 @@ export function createHelixController(args: {
   ring: HTMLElement;
   centerpiece: HTMLElement;
   panels: HelixPanel[];
+  // The pointer surface. Not the stage: from the top view the stage's and
+  // the ring's own hit boxes (full-viewport planes at z=0) sit in front of
+  // every back-half panel, so both are pointer-events none and the flat
+  // viewport takes the drag instead. Panel events still bubble up to it.
+  input: HTMLElement;
 }): HelixController {
-  const { stage, ring, centerpiece, panels } = args;
+  const { stage, ring, centerpiece, panels, input } = args;
   // The home pose is scroll-driven: flat while the section is still sliding
   // in, the resting top view once it is flush. Auto-rotate follows it every
   // frame; a drag takes the pose over and the idle reset hands it back.
@@ -103,7 +108,8 @@ export function createHelixController(args: {
   const bands = panels.map((p) =>
     p.root.querySelector<HTMLElement>("[data-panel-band]"),
   );
-  const bandAlpha = (distDeg: number) => clamp((100 - distDeg) / 20, 0, 1);
+  // Zero by the time a panel turns its back (90deg from front).
+  const bandAlpha = (distDeg: number) => clamp((90 - distDeg) / 15, 0, 1);
 
   // Depth brightness: the front panel is lit, the rest recede into the ink so
   // whatever crosses behind the centerpiece band arrives already dark. This is
@@ -252,7 +258,10 @@ export function createHelixController(args: {
     killResume();
     resumeCall = gsap.delayedCall(RESUME_IDLE_S, () => {
       resumeCall = null;
-      if (suspended || !onScreen) return;
+      // Off screen is fine: the tick gates the azimuth advance on onScreen,
+      // and bailing here left the ring dead for good when a visitor dragged,
+      // scrolled away inside the idle window, and came back.
+      if (suspended) return;
       autoActive = true;
       state.tiltTarget = homeTilt(); // ease the pose home, never snap
     });
@@ -292,8 +301,8 @@ export function createHelixController(args: {
     if (!dragging) {
       if (Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
       dragging = true;
-      stage.setPointerCapture(e.pointerId);
-      stage.style.cursor = "grabbing";
+      input.setPointerCapture(e.pointerId);
+      input.style.cursor = "grabbing";
     }
     state.azTarget = startAz + dx * AZ_GAIN_DEG_PER_PX;
     state.tiltTarget = clamp(
@@ -309,9 +318,9 @@ export function createHelixController(args: {
     pending = false;
     dragging = false;
     activePointer = null;
-    stage.style.cursor = "";
+    input.style.cursor = "";
     try {
-      stage.releasePointerCapture(e.pointerId);
+      input.releasePointerCapture(e.pointerId);
     } catch {
       /* capture was never taken (a click, or a cancelled touch) */
     }
@@ -320,12 +329,12 @@ export function createHelixController(args: {
     void wasDragging;
   };
 
-  stage.addEventListener("pointerdown", onPointerDown);
-  stage.addEventListener("pointermove", onPointerMove);
-  stage.addEventListener("pointerup", endPointer);
-  stage.addEventListener("pointercancel", endPointer);
-  stage.style.touchAction = "pan-y";
-  stage.style.cursor = "grab";
+  input.addEventListener("pointerdown", onPointerDown);
+  input.addEventListener("pointermove", onPointerMove);
+  input.addEventListener("pointerup", endPointer);
+  input.addEventListener("pointercancel", endPointer);
+  input.style.touchAction = "pan-y";
+  input.style.cursor = "grab";
 
   // Offscreen gate: auto-rotate and video playback stop while the section is
   // out of view, so nothing fetches or decodes below the fold.
@@ -334,6 +343,13 @@ export function createHelixController(args: {
       onScreen = entry.isIntersecting;
       if (onScreen) {
         if (focused >= 0) playVideo(focused);
+        // Coming back is a reset: whatever pose a drag left behind, the
+        // ring turns and eases home again without waiting on the idle timer.
+        if (!suspended && !dragging && !autoActive) {
+          killResume();
+          autoActive = true;
+          state.tiltTarget = homeTilt();
+        }
       } else if (focused >= 0) {
         videos[focused]?.pause();
       }
@@ -416,10 +432,10 @@ export function createHelixController(args: {
     destroy() {
       io.disconnect();
       gsap.ticker.remove(tick);
-      stage.removeEventListener("pointerdown", onPointerDown);
-      stage.removeEventListener("pointermove", onPointerMove);
-      stage.removeEventListener("pointerup", endPointer);
-      stage.removeEventListener("pointercancel", endPointer);
+      input.removeEventListener("pointerdown", onPointerDown);
+      input.removeEventListener("pointermove", onPointerMove);
+      input.removeEventListener("pointerup", endPointer);
+      input.removeEventListener("pointercancel", endPointer);
       rotateTween?.kill();
       killResume();
       delete (window as Window & { __helix?: HelixTestHook }).__helix;

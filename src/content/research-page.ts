@@ -36,7 +36,8 @@ export type ResearchSectionId = (typeof RESEARCH_SECTIONS)[number]["id"];
 
 export const RESEARCH_PAGE = {
   meta: {
-    title: "Research | Vallum Labs",
+    // "White paper", the nav's word for this page, since 2026-09-04.
+    title: "White paper | Vallum Labs",
     description:
       "Vallum Labs collects consent-cleared, action-labeled, first-person video of real outdoor manual work and licenses it to robotics and world-model labs.",
   },

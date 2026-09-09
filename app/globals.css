@@ -109,10 +109,13 @@
   }
   html {
     @apply font-sans;
-    color-scheme: dark;
+    /* LOOK.md housekeeping: a light page with a dark opening. The canvas
+     behind every route (overscroll, scrollbar gutter) is bone; the dark
+     sections paint their own ink. Was dark until 2026-09-04. */
+  color-scheme: light;
   }
   body {
-    @apply bg-black text-bone antialiased;
+    @apply bg-bone text-bone antialiased;
   }
   ::selection {
     background: var(--color-green-signal);

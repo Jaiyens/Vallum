@@ -6,7 +6,6 @@ import { lenisRef } from "@/lib/lenis-ref";
 import {
   MAGNET_ENTER_FRAC,
   MAGNET_GLIDE_S,
-  MAGNET_LEAVE_FRAC,
   MAGNET_MIN_DELTA_PX,
 } from "./gallery-config";
 
@@ -23,10 +22,13 @@ import {
 //                Lenis fires only after the inertial glide has died
 //   both ways    a section entered from above or below locks once
 //                MAGNET_ENTER_FRAC of it is on screen (founder, 2026-09-04:
-//                a soft auto lock; the old entry-only gate refused upward
-//                entry and left the hero strip showing)
-//   hysteresis   leaving needs MAGNET_LEAVE_FRAC still on screen before the
-//                page is pulled back, so an exit half-way out is let go
+//                a soft auto lock; the old gate refused upward entry and
+//                left the hero strip showing)
+//   entry only   a visitor moving AWAY from the section is never pulled
+//                back, whatever is still on screen: an arrow key, a single
+//                wheel notch, a finger flick all leave. Pulling back on exit
+//                is the trap that reads as scroll-jacking, and review found
+//                that a symmetric threshold reverted every keyboard step
 //   yielding     the glide runs through Lenis without lock, so any input
 //                during it hands the page straight back to the visitor
 //
@@ -53,9 +55,12 @@ export function useScrollMagnet(
     let lastY = window.scrollY;
     let dir: 1 | -1 = 1; // 1 is scrolling down
     let pointerDown = false;
+    // A glide started by this effect must not settle a section the effect
+    // no longer owns (mode flip, takeover opening) when it completes.
+    let cancelled = false;
 
     const settle = () => {
-      section.dataset.settled = "";
+      if (!cancelled) section.dataset.settled = "";
     };
     const unsettle = () => {
       delete section.dataset.settled;
@@ -82,11 +87,10 @@ export function useScrollMagnet(
       const frac = visible / Math.min(rect.height, vh);
       // Heading toward the section: it hangs below and the last move was
       // down, or it hangs above and the last move was up. Anything that
-      // already fills the frame counts as entering.
+      // already fills the frame counts as entering. Leaving never pulls.
       const entering =
         rect.top > 0 ? dir === 1 : rect.bottom < vh ? dir === -1 : true;
-      const threshold = entering ? MAGNET_ENTER_FRAC : MAGNET_LEAVE_FRAC;
-      if (frac < threshold) {
+      if (!entering || frac < MAGNET_ENTER_FRAC) {
         unsettle();
         return;
       }
@@ -124,7 +128,12 @@ export function useScrollMagnet(
     window.addEventListener("pointerup", onPointerUp, { passive: true });
     window.addEventListener("pointercancel", onPointerUp, { passive: true });
     ScrollTrigger.addEventListener("scrollEnd", onScrollEnd);
+    // Publish the state once on (re)mount: a takeover closes with the
+    // section already flush and no scroll to follow, so the settled flag
+    // would otherwise wait for a scroll that never comes.
+    onScrollEnd();
     return () => {
+      cancelled = true;
       unsettle();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointerdown", onPointerDown);

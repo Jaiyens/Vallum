@@ -29,7 +29,7 @@ const dataStep = "font-mono text-[13px] leading-[1.7] tabular-nums";
 const heading =
   "font-display font-medium text-forest text-[22px] leading-[1.3] md:text-[24px] lg:text-[26px]";
 const title =
-  "font-display text-forest text-[32px] leading-[1.08] tracking-[-0.01em] md:text-[44px]";
+  "font-display text-forest text-[32px] leading-[1.08] tracking-[-0.01em] md:text-[44px] lg:text-[56px]";
 const link =
   "font-medium underline decoration-1 underline-offset-[3px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-line";
 const muted = "text-black/62";
@@ -63,7 +63,7 @@ export default function ResearchPage() {
     operations: (
       <>
         <p className={bodyStep}>{RESEARCH_PAGE.operationsLead}</p>
-        <ul className="list-disc space-y-2 pl-5">
+        <ul className="list-disc space-y-2 pl-6">
           {RESEARCH_PAGE.operationsTasks.map((task) => (
             <li key={task} className={bodyStep}>
               {task}
@@ -86,7 +86,7 @@ export default function ResearchPage() {
           {RESEARCH_PAGE.datasets.map((set) => (
             <div
               key={set.name}
-              className="grid gap-1 py-6 md:grid-cols-[120px_minmax(0,1fr)_84px] md:items-baseline md:gap-6"
+              className="grid gap-2 py-6 md:grid-cols-[120px_minmax(0,1fr)_84px] md:items-baseline md:gap-6"
             >
               <dt className={dataStep}>{set.name}</dt>
               <dd className={bodyStep}>{set.scope}</dd>

@@ -39,7 +39,7 @@ export function HelixStage({
   return (
     <div
       data-helix-viewport
-      className="relative overflow-clip"
+      className="relative select-none overflow-clip"
       style={{
         // Fills the section, which is exactly 100svh in helix mode: the
         // stage owns the whole screen instead of a clamped inner band.
@@ -71,12 +71,15 @@ export function HelixStage({
         <div
           ref={stageRef}
           data-helix-stage
-          className="absolute inset-0 cursor-grab select-none"
+          // pointer-events none: this box is a full-viewport plane at z=0
+          // and, from the top view, its hit box sits in front of every
+          // back-half panel. The flat viewport is the drag surface instead
+          // (the controller's `input`); panels re-enable pointer events.
+          className="pointer-events-none absolute inset-0"
           style={{
             // No translate here: GSAP owns this element's transform (rotateX,
             // the polar tilt) and would strip it. Framing is on the wrapper.
             transformStyle: "preserve-3d",
-            touchAction: "pan-y",
           }}
         >
           {/* Orbital rings on two inclinations: Saturn plus atom, the coverage
@@ -86,7 +89,7 @@ export function HelixStage({
           <div
             ref={ringRef}
             data-helix-ring
-            className="absolute inset-0"
+            className="pointer-events-none absolute inset-0"
             style={{ transformStyle: "preserve-3d" }}
           >
             {/* The heading reads first for assistive tech; paint order in

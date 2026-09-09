@@ -79,7 +79,14 @@ export function GallerySection() {
     }
     if (panels.length !== GALLERY_PANELS.length) return;
 
-    const controller = createHelixController({ stage, ring, centerpiece, panels });
+    const input = stage.closest<HTMLElement>("[data-helix-viewport]") ?? stage;
+    const controller = createHelixController({
+      stage,
+      ring,
+      centerpiece,
+      panels,
+      input,
+    });
     controllerRef.current = controller;
     return () => {
       controller.destroy();
@@ -168,10 +175,13 @@ export function GallerySection() {
       // viewport tall with an explicit ink surface — the dark act's last
       // full-screen slab, hard edge into the bone turn below. Mobile and
       // reduced modes are content-driven lists, so they keep natural
-      // height with slab padding instead of clipping.
+      // height with slab padding instead of clipping. `relative` puts the
+      // section in the positioned paint phase: the hero above is pinned by
+      // transform and would otherwise paint over this ink, bleeding one
+      // sub-pixel row of its last frame at exactly the lock position.
       className={
         mode === "helix"
-          ? "h-svh scroll-mt-14 overflow-hidden bg-black"
+          ? "relative h-svh scroll-mt-14 overflow-hidden bg-black"
           : "scroll-mt-14 bg-black py-section-sm md:py-section"
       }
     >

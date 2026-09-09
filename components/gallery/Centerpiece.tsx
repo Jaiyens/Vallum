@@ -39,15 +39,18 @@ export function Centerpiece({
       role="heading"
       aria-level={2}
       aria-label={ariaLabel}
-      className="absolute left-0 right-0"
-      style={{
-        // Vertical center of the ring; CSS translate composes before the
-        // GSAP-owned rotation, so the box is centered from first paint and the
-        // per-frame rotationY write never disturbs it.
-        top: "calc(50% + 3.5 * var(--helix-rise))",
-        translate: "0 -50%",
-      }}
+      // Zero-height root on the ring's centre line, so the GSAP-owned
+      // counter-rotation turns about that line. pointer-events none: the
+      // band spans the viewport and would otherwise swallow clicks meant
+      // for the panels behind it.
+      className="pointer-events-none absolute left-0 right-0 h-0"
+      style={{ top: "calc(50% + 3.5 * var(--helix-rise))" }}
     >
+      {/* The -50% centring lives here, one level below the GSAP target:
+          GSAP strips the CSS translate property from any element it
+          transforms, so on the root it silently never applied and the
+          box hung from the centre line instead of straddling it. */}
+      <div style={{ translate: "0 -50%" }}>
       <div
         aria-hidden="true"
         data-centerpiece-band
@@ -84,6 +87,7 @@ export function Centerpiece({
             />
           </span>
         </div>
+      </div>
       </div>
     </div>
   );

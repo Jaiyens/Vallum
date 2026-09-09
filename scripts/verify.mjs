@@ -546,6 +546,45 @@ for (const width of WIDTHS) {
       await page.waitForTimeout(4800);
       const ra1 = await helix();
       check("gallery-auto-resumes", ra1 - ra0 > 1, `delta=${ra1 - ra0}`);
+
+      // Soft lock (2026-09-04): idling 200px above the helix section glides
+      // the page flush and publishes data-settled; then two ArrowDown steps
+      // must move the page, because the lock never pulls a visitor back.
+      const problemTop = await page.evaluate(
+        () =>
+          window.scrollY +
+          document.getElementById("problem").getBoundingClientRect().top,
+      );
+      await page.evaluate(
+        (top) => window.scrollTo({ top, behavior: "instant" }),
+        problemTop - 200,
+      );
+      await page.mouse.move(640, 400);
+      await page.mouse.wheel(0, 1);
+      await page.waitForTimeout(2800);
+      const locked = await page.evaluate(() => {
+        const s = document.getElementById("problem");
+        return {
+          top: Math.round(s.getBoundingClientRect().top),
+          settled: s.hasAttribute("data-settled"),
+        };
+      });
+      check(
+        "helix-soft-lock",
+        Math.abs(locked.top) <= 2 && locked.settled,
+        JSON.stringify(locked),
+      );
+      const yLocked = await page.evaluate(() => window.scrollY);
+      await page.keyboard.press("ArrowDown");
+      await page.waitForTimeout(700);
+      await page.keyboard.press("ArrowDown");
+      await page.waitForTimeout(2200);
+      const yAfter = await page.evaluate(() => window.scrollY);
+      check(
+        "helix-lock-releases",
+        yAfter > yLocked + 20,
+        `scrollY ${yLocked} -> ${yAfter}`,
+      );
     }
 
     if (!REDUCED && width < 1024) {
