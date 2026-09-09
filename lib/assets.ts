@@ -87,6 +87,8 @@ export const GALLERY_VIDEO = {
 // only imagery that law permits is empty ground. Graded cold and matte
 // into bone, ink, and forest, with no amber or golden warmth. 21:9, 2400
 // by 1018. Not captured footage: it reads as environment, never as data.
+// Unreferenced since 2026-09-04: /research dropped its photograph; the file
+// stays in public/method/.
 export const METHOD_AERIAL = {
   src: "/method/western-cape-aerial.jpg",
   label:

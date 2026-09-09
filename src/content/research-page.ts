@@ -15,9 +15,10 @@
 // stale ledger, so it ships; findings/needs-fact.md carries the request
 // for Jay to ratify these into FACTS.md and to reconcile /dataset.
 
-// Section order is the founder document's order. Numbers on the page and
-// in the contents ledger are derived from this array, never typed twice,
-// so the two cannot drift.
+// Section order is the founder document's order. The order and the anchor
+// ids on /research derive from this array, never typed twice. Section
+// numbers no longer render anywhere (2026-09-04): the numbered gutter and
+// the contents ledger went with the masthead.
 export const RESEARCH_SECTIONS = [
   { id: "team", label: "Team" },
   { id: "hardware", label: "Hardware" },
@@ -40,17 +41,23 @@ export const RESEARCH_PAGE = {
       "Vallum Labs collects consent-cleared, action-labeled, first-person video of real outdoor manual work and licenses it to robotics and world-model labs.",
   },
 
-  // Masthead. The kicker and the version are the document's own words
-  // ("Schema v0", "Not in v0"); the dateline is the stated window's first
-  // month, not an invented publication date.
+  // Masthead, now one dateline. The kicker and the version are the
+  // document's own words ("Schema v0", "Not in v0"); the dateline is the
+  // stated window's first month, not an invented publication date. Since
+  // 2026-09-04 the three strings compose the dateline under the title,
+  // "White paper · v0 · September 2026".
+  // The company name titles the document, as build.ai and humanarchive.ai title theirs; existing verbatim text (nav wordmark, colophon prefix).
+  title: "Vallum Labs",
   kicker: "White paper",
   version: "v0",
   dateline: "September 2026",
+  // RETIRED FROM RENDER 2026-09-04 (founder): the masthead is gone; "Vallum Labs" titles the document. Kept, not deleted.
   heading: "Research",
   thesis:
     "Vallum Labs collects consent-cleared, action-labeled, first-person video of real outdoor manual work and licenses it to robotics and world-model labs.",
   status: "Now collecting in the Western Cape, South Africa. September 2026 to January 2027.",
 
+  // RETIRED FROM RENDER 2026-09-04 (founder): the contents ledger went with the masthead. Kept, not deleted.
   contentsTitle: "Contents",
 
   team: "Founded in 2026 by Jaiyen Shetty. Grew up farming in Fresno, California. Computer science and business at Berkeley. Previously at Meta, the UN, the Gates Foundation and Amplitude. Based in Cape Town through January 2027, then the next region.",

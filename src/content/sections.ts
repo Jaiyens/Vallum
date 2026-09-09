@@ -13,6 +13,11 @@ import {
 } from "@/src/content/dataset-page";
 
 export const TURN_COPY = {
+  // RETIRED FROM RENDER 2026-09-04. The evidence band came off /research
+  // with the masthead ("remove the fourth screenshot in its entirety",
+  // founder). heading, lead, leadSource, indoor, indoorSource and turn all
+  // stop rendering; the reading list on /research still cites EgoScale and
+  // Ego4D by title. Kept, not deleted.
   heading: "Machines are learning this work by watching",
   // RETIRED FROM RENDER 2026-09-03. The turn moved onto /white-paper and
   // then merged into /research, whose masthead already carries this claim in
@@ -49,10 +54,11 @@ export const METHOD_COPY = {
   // RETIRED FROM RENDER 2026-09-03, all six step keys below. The three
   // method steps merged into /research, where consent, the collection
   // window, and the capture kit are each stated at length in Jay's own
-  // words (RESEARCH_PAGE.consent, .status/.operations*, .hardware). Only
-  // `heading` still ships: it titles the consent band on that page. The
-  // step strings stay here, reconciled to Jay's facts, so nothing in the
-  // repo states the superseded July window or the head-strap-only kit.
+  // words (RESEARCH_PAGE.consent, .status/.operations*, .hardware). Since
+  // 2026-09-04 `heading` no longer ships either: the consent band it titled
+  // is gone, so all of METHOD_COPY is retired from render. The step strings
+  // stay here, reconciled to Jay's facts, so nothing in the repo states the
+  // superseded July window or the head-strap-only kit.
   peopleLabel: "Consent first",
   people:
     "Every participant signs a release in their own language, and the site owner authorizes it.",
