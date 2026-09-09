@@ -16,10 +16,22 @@ export const RESUME_IDLE_S = 4; // auto resumes this long after the last input
 export const DAMP_PER_FRAME = 0.12;
 
 // Polar clamp, mapped from the spec's 0.15pi to 0.85pi. Level view is 0deg of
-// stage rotateX; the range keeps the rings open and never edge-on.
+// stage rotateX; the range keeps the rings open and never edge-on. Sign: CSS
+// rotateX with a y-down axis lifts the far rim for NEGATIVE angles, so the
+// camera reads from above; positive reads from below.
 export const POLAR_MIN_DEG = -63;
 export const POLAR_MAX_DEG = 63;
-export const REST_TILT_DEG = -8; // composed resting pose, a touch from above
+// The resting pose is a top view (founder, 2026-09-04: "I need to be able to
+// see the text in the vortex"). At -8deg the front panel, 560px nearer the
+// camera than the centerpiece, sat over the typed line; from -32deg the near
+// rim projects below the text band and the far rim above it, so the line
+// sits in a clear band at 1440x900 and 1710x1107 (-26deg still overlaps by
+// ~36px where the helix rise lifts the front panel).
+export const REST_TILT_DEG = -32;
+// The approach: as the section slides into the frame the camera opens from
+// REST + APPROACH (a flatter pose) down to REST, finishing exactly where the
+// scroll magnet lands the section flush. Scrubbed by scroll, no timers.
+export const APPROACH_TILT_DEG = 22;
 
 // Pointer-to-orbit gains and the click/drag threshold. Below the threshold a
 // press is a click (opens a panel); past it, it is a drag (orbits).
@@ -48,12 +60,15 @@ export const STAT_MAX_CHAR_MS = 22;
 export const SOURCE_CHAR_MS = 30;
 export const CARET_HIDE_DELAY_MS = 400;
 
-// Scroll magnet (helix mode only). The stage arms the magnet once this much
-// of it is on screen; corrections smaller than the delta floor are never
-// worth moving the page for.
-export const MAGNET_MIN_VISIBLE_FRAC = 0.3;
-export const MAGNET_MIN_DELTA_PX = 24;
-export const MAGNET_GLIDE_S = 0.9; // shorter than the wheel glide: an assist, not a ride
+// Scroll magnet (helix mode only): the soft lock. Entering from either
+// direction, the page glides flush once this much of the section is on
+// screen; leaving, it only pulls back while the larger fraction is still on
+// screen, so an exit half-way out is never hijacked. Corrections under the
+// delta floor are not worth moving the page for.
+export const MAGNET_ENTER_FRAC = 0.35;
+export const MAGNET_LEAVE_FRAC = 0.6;
+export const MAGNET_MIN_DELTA_PX = 2;
+export const MAGNET_GLIDE_S = 0.8; // shorter than the wheel glide: an assist, not a ride
 
 // Takeover morph.
 export const FLIP_OPEN_S = 0.6;

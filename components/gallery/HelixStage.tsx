@@ -50,16 +50,31 @@ export function HelixStage({
         transition: `filter ${FOCUS_BLUR_S}s cubic-bezier(0.2,0,0,1)`,
       }}
     >
-      <div className="absolute inset-0" style={{ perspective: "1900px" }}>
+      {/* Vertical framing lives on the perspective wrapper, which GSAP never
+          touches: GSAP clears the CSS translate property on every element it
+          transforms (CSSPlugin sets style.translate = "none"), so a translate
+          on the stage silently never applied. Shifting the wrapper moves the
+          camera and the scene together, a pure 2D shift of the rendered
+          image: -3.5 rises re-centres the spiral's mean rise, --helix-lift
+          raises the whole scene because from the top view the near rim
+          projects larger and lower than the far rim. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          perspective: "1900px",
+          translate: "0 calc(-3.5 * var(--helix-rise) - var(--helix-lift))",
+          // --helix-fit zooms the rendered scene out on short windows; see
+          // the token block in globals.css.
+          scale: "var(--helix-fit)",
+        }}
+      >
         <div
           ref={stageRef}
           data-helix-stage
           className="absolute inset-0 cursor-grab select-none"
           style={{
-            // Vertical centering rides the CSS translate property, which
-            // composes before the GSAP-owned transform; GSAP owns rotateX
-            // (the polar tilt), so the two never fight.
-            translate: "0 calc(-3.5 * var(--helix-rise))",
+            // No translate here: GSAP owns this element's transform (rotateX,
+            // the polar tilt) and would strip it. Framing is on the wrapper.
             transformStyle: "preserve-3d",
             touchAction: "pan-y",
           }}

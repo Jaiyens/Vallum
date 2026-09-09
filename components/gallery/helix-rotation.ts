@@ -15,6 +15,7 @@
 
 import { gsap } from "@/lib/gsap";
 import {
+  APPROACH_TILT_DEG,
   AUTO_RAD_PER_S,
   AZ_GAIN_DEG_PER_PX,
   DAMP_PER_FRAME,
@@ -45,6 +46,9 @@ export type HelixController = {
     deg: number,
     opts?: { duration?: number; onComplete?: () => void; onInterrupt?: () => void },
   ): void;
+  // 0 = the section is a full viewport away, 1 = flush in the frame. Drives
+  // the home tilt from the flat approach pose down to the resting top view.
+  setApproach(t: number): void;
   suspend(): void;
   release(): void;
   focusedIndex(): number;
@@ -54,6 +58,8 @@ export type HelixController = {
 type HelixTestHook = {
   rotation: number;
   setRotation(deg: number): void;
+  tilt: number;
+  setApproach(t: number): void;
   focused: number;
 };
 
@@ -72,11 +78,16 @@ export function createHelixController(args: {
   panels: HelixPanel[];
 }): HelixController {
   const { stage, ring, centerpiece, panels } = args;
+  // The home pose is scroll-driven: flat while the section is still sliding
+  // in, the resting top view once it is flush. Auto-rotate follows it every
+  // frame; a drag takes the pose over and the idle reset hands it back.
+  let approach = 1;
+  const homeTilt = () => REST_TILT_DEG + (1 - approach) * APPROACH_TILT_DEG;
   const state = {
     az: 0,
     azTarget: 0,
-    tilt: REST_TILT_DEG,
-    tiltTarget: REST_TILT_DEG,
+    tilt: homeTilt(),
+    tiltTarget: homeTilt(),
   };
   const videos = panels.map((p) => p.leaf.querySelector("video"));
   // The poster sits beside the leaf so the slot never goes black while the leaf
@@ -84,6 +95,15 @@ export function createHelixController(args: {
   // panel would glow through the glass band. Both are leaves, so filtering them
   // never touches the 3D stage or ring.
   const posters = panels.map((p) => p.root.querySelector("img"));
+  // From the top view the back half of the ring is fully visible, and a
+  // panel seen from behind shows its stat band mirrored. The band fades out
+  // as its panel crosses the side of the ring and back in as it returns, so
+  // a label only ever reads the right way round. The photo stays: a mirrored
+  // photograph is not something the eye catches, mirrored type is.
+  const bands = panels.map((p) =>
+    p.root.querySelector<HTMLElement>("[data-panel-band]"),
+  );
+  const bandAlpha = (distDeg: number) => clamp((100 - distDeg) / 20, 0, 1);
 
   // Depth brightness: the front panel is lit, the rest recede into the ink so
   // whatever crosses behind the centerpiece band arrives already dark. This is
@@ -181,6 +201,10 @@ export function createHelixController(args: {
   const setRing = gsap.quickSetter(ring, "rotationY", "deg");
   const setStageTilt = gsap.quickSetter(stage, "rotationX", "deg");
   const setCenter = gsap.quickSetter(centerpiece, "rotationY", "deg");
+  // The centerpiece is billboarded on both axes: counter-rotated against the
+  // ring's yaw AND the stage's tilt, so at a 32deg top view the typed line
+  // stands up to face the camera instead of lying in the ring plane.
+  const setCenterTilt = gsap.quickSetter(centerpiece, "rotationX", "deg");
 
   const tick = (_time: number, deltaMs: number) => {
     const dt = Math.min((deltaMs || 16.7) / 1000, 0.05);
@@ -193,11 +217,16 @@ export function createHelixController(args: {
     if (!rotateTween) {
       state.az += (state.azTarget - state.az) * f;
     }
+    // While auto owns the pose the tilt target tracks the scroll-driven home
+    // pose; after a drag it holds where the visitor left it until the idle
+    // reset re-arms auto.
+    if (autoActive && !dragging) state.tiltTarget = homeTilt();
     state.tilt += (state.tiltTarget - state.tilt) * f;
 
     setRing(state.az);
     setStageTilt(state.tilt);
     setCenter(state.az * -1);
+    setCenterTilt(state.tilt * -1);
     updateFocus();
 
     // Depth brightness, every frame, except while a takeover owns the front
@@ -205,8 +234,11 @@ export function createHelixController(args: {
     // angular distance from front.
     if (!suspended) {
       for (let i = 0; i < PANEL_COUNT; i++) {
-        const b = i === focused ? 1 : depthBright(distToFront(i * STEP_DEG + state.az));
+        const dist = distToFront(i * STEP_DEG + state.az);
+        const b = i === focused ? 1 : depthBright(dist);
         applyBrightness(i, b);
+        const band = bands[i];
+        if (band) band.style.opacity = bandAlpha(dist).toFixed(3);
       }
     }
   };
@@ -222,7 +254,7 @@ export function createHelixController(args: {
       resumeCall = null;
       if (suspended || !onScreen) return;
       autoActive = true;
-      state.tiltTarget = REST_TILT_DEG; // ease the pose home, never snap
+      state.tiltTarget = homeTilt(); // ease the pose home, never snap
     });
   };
 
@@ -322,6 +354,12 @@ export function createHelixController(args: {
       state.az = deg;
       state.azTarget = deg;
     },
+    get tilt() {
+      return state.tilt;
+    },
+    setApproach(t: number) {
+      approach = clamp(t, 0, 1);
+    },
     get focused() {
       return focused;
     },
@@ -357,6 +395,9 @@ export function createHelixController(args: {
           opts.onInterrupt?.();
         },
       });
+    },
+    setApproach(t) {
+      approach = clamp(t, 0, 1);
     },
     suspend() {
       suspended = true;

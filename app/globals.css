@@ -323,11 +323,38 @@
    the render now sits flush on bone with its own hard rectangular edge; see
    components/future-rig/rig-static.tsx for the current treatment. */
 
-/* Problem section: helix gallery. Geometry tokens live on the stage so the
-   spiral collapses to a flat ring with one edit: --helix-rise: 0px. */
-[data-helix-stage] {
+/* Problem section: helix gallery. Geometry tokens live on the flat viewport
+   (the ancestor of the perspective wrapper, the stage, and every panel) so
+   the spiral collapses to a flat ring with one edit: --helix-rise: 0px. */
+[data-helix-viewport] {
   --helix-radius: min(42vw, 560px);
   --helix-rise: 24px;
+  /* Scene lift for the top view (rest tilt -32deg): the near rim projects
+     larger and lower than the far rim, so the ring centre rides above the
+     viewport centre. Tuned by screenshot at 1280x800 through 1920x1080. */
+  --helix-lift: calc(4vh + 60px);
+  /* Fit: from the top view the ellipse stands about 980px tall at the 560px
+     radius cap, which clears a 1080px window but not a laptop's 800 or 900.
+     The perspective wrapper is scaled as a whole (camera and scene together,
+     a pure zoom of the rendered image) so short windows see the same
+     composition smaller instead of losing the front panel's band below the
+     fold. Radius and panel size stay width-driven. */
+  --helix-fit: 1;
+}
+/* The lift eases with the fit: the zoom is about the wrapper's centre, so a
+   smaller scene needs less raising to sit centred (measured 1440x900 and
+   1280x800, balanced to within 10px top and bottom). */
+@media (max-height: 1000px) {
+  [data-helix-viewport] {
+    --helix-fit: 0.86;
+    --helix-lift: calc(4vh + 44px);
+  }
+}
+@media (max-height: 860px) {
+  [data-helix-viewport] {
+    --helix-fit: 0.76;
+    --helix-lift: calc(4vh + 24px);
+  }
 }
 
 /* Typewriter block caret: 530ms visible, 530ms dark, no fade. data-done
@@ -385,4 +412,3 @@
     opacity: 0;
   }
 }
-

@@ -87,6 +87,37 @@ export function GallerySection() {
     };
   }, [mode]);
 
+  // The approach drive. As the section slides into the frame from either
+  // direction the camera opens from a flatter pose down to the resting top
+  // view, finishing exactly where the scroll magnet lands the section flush
+  // (founder, 2026-09-04: a scrolling animation tied to the soft lock).
+  // Scrubbed by scroll position, no timers; the controller's damping smooths
+  // the per-frame target. Lenis drives the real window scroll, so the plain
+  // scroll event covers both the wheel glide and the magnet's own glide.
+  useEffect(() => {
+    if (mode !== "helix") return;
+    const section = stageRef.current?.closest<HTMLElement>("section");
+    if (!section) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const top = section.getBoundingClientRect().top;
+      const t = 1 - Math.min(1, Math.abs(top) / window.innerHeight);
+      controllerRef.current?.setApproach(t);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [mode]);
+
   const registerLeaf = useCallback((index: number, el: HTMLDivElement | null) => {
     leavesRef.current[index] = el;
   }, []);

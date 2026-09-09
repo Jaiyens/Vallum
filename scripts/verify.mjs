@@ -93,11 +93,12 @@ for (const width of WIDTHS) {
       check("wordmark-resolved", wm !== null && wm >= 0.99, `opacity=${wm}`);
     }
 
-    // The hero pins for 300% of the viewport height: p -> scrollY = p*3*vh.
+    // The hero pins for 240% of the viewport height (HeroExperience end:
+    // "+=240%"): p -> scrollY = p*2.4*vh. Was 300% until 2026-07-16.
     const scrollToP = async (p) => {
       await page.evaluate(
         (top) => window.scrollTo({ top, behavior: "instant" }),
-        Math.round(800 * 3 * p),
+        Math.round(800 * 2.4 * p),
       );
     };
 
@@ -338,7 +339,7 @@ for (const width of WIDTHS) {
     }
 
     await page.evaluate(() =>
-      window.scrollTo({ top: Math.round(800 * 3.1), behavior: "instant" }),
+      window.scrollTo({ top: Math.round(800 * 2.5), behavior: "instant" }),
     );
     await page.waitForTimeout(600);
     await page.screenshot({ path: `${OUT}/${tag}-hero-post-pin.png` });
@@ -412,9 +413,11 @@ for (const width of WIDTHS) {
       const r0 = await helix();
       await page.waitForTimeout(1200);
       const r1 = await helix();
+      // AUTO_RAD_PER_S 0.3 is ~17.2deg/s, so 1.2s of idle auto-rotate is
+      // ~20deg; the band allows for the damped start and a slow machine.
       check(
         "gallery-autorotate",
-        r0 !== null && r1 !== null && r1 - r0 > 2 && r1 - r0 < 9,
+        r0 !== null && r1 !== null && r1 - r0 > 10 && r1 - r0 < 32,
         `delta=${r1 - r0}`,
       );
 
@@ -538,8 +541,9 @@ for (const width of WIDTHS) {
         !closed.takeover && !closed.locked && closed.leafHome,
         JSON.stringify(closed),
       );
+      // RESUME_IDLE_S is 4s: auto resumes four seconds after the last input.
       const ra0 = await helix();
-      await page.waitForTimeout(2200);
+      await page.waitForTimeout(4800);
       const ra1 = await helix();
       check("gallery-auto-resumes", ra1 - ra0 > 1, `delta=${ra1 - ra0}`);
     }
