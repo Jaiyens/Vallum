@@ -60,12 +60,15 @@ export const STAT_MAX_CHAR_MS = 22;
 export const SOURCE_CHAR_MS = 30;
 export const CARET_HIDE_DELAY_MS = 400;
 
-// Scroll magnet (helix mode only): the soft lock. Entering from either
-// direction, the page glides flush once this much of the section is on
-// screen; a visitor moving away is never pulled back, so a keyboard step or
-// a single wheel notch always leaves. Corrections under the delta floor are
-// not worth moving the page for.
+// Scroll magnet (helix mode only): the lock. Entering from either direction,
+// the page glides flush once MAGNET_ENTER_FRAC of the section is on screen.
+// Leaving, it is pulled back whenever more than MAGNET_LEAVE_FRAC is still
+// on screen (founder, 2026-09-09: "when the helix is spinning and my screen
+// isn't fully on the black section, it should auto-adjust"), so the only way
+// out is a deliberate scroll past half a screen. Corrections under the delta
+// floor are not worth moving the page for.
 export const MAGNET_ENTER_FRAC = 0.35;
+export const MAGNET_LEAVE_FRAC = 0.5;
 export const MAGNET_MIN_DELTA_PX = 2;
 export const MAGNET_GLIDE_S = 0.8; // shorter than the wheel glide: an assist, not a ride
 

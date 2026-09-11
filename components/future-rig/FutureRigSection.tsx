@@ -59,10 +59,16 @@ export function FutureRigSection() {
   }, []);
 
   return (
+    // The slab is the render's own field. The frames ship as the source
+    // video's colour render on its charcoal studio field (founder,
+    // 2026-09-09: "find the normal video and put it back in", and the
+    // section "has to match the same color as the black rig explosion"),
+    // so the surface is that field's border tone, measured as the mean of
+    // the encoded frames as the browser draws them (25,28,31), not the site's ink.
     <section
       ref={root}
       id={SECTION_IDS.rig}
-      className="scroll-mt-14 bg-bone py-section-sm text-black md:py-section"
+      className="scroll-mt-14 bg-[#191c1f] py-section-sm text-bone md:py-section"
     >
       <div className="mx-auto max-w-site px-6 md:px-16">
         {/* header: plain and always visible (F-0412). A masked scroll-reveal
@@ -73,12 +79,12 @@ export function FutureRigSection() {
             house style rather than reintroducing a JS-gated reveal for a
             single line of type. */}
         <h2
-          className="max-w-[1040px] font-display text-balance text-forest text-[32px] leading-[1.08] tracking-[-0.01em] md:text-[44px] lg:text-[56px]"
+          className="max-w-[1040px] font-display text-balance text-bone text-[32px] leading-[1.08] tracking-[-0.01em] md:text-[44px] lg:text-[56px]"
         >
           {SECTION_COPY.headline}
         </h2>
-        <p className="mt-4 max-w-xl text-lg text-forest-line">{SECTION_COPY.subline}</p>
-        <p className="mt-2 max-w-xl text-sm text-forest-line">{SECTION_COPY.bridge}</p>
+        <p className="mt-4 max-w-xl text-lg text-bone/72">{SECTION_COPY.subline}</p>
+        <p className="mt-2 max-w-xl text-sm text-bone/72">{SECTION_COPY.bridge}</p>
 
         {/* desktop: pinned, scroll-scrubbed explosion */}
         <RigPinnedStage visual={<RigScrub ref={scrub} />} />

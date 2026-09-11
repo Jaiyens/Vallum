@@ -6,6 +6,7 @@ import { lenisRef } from "@/lib/lenis-ref";
 import {
   MAGNET_ENTER_FRAC,
   MAGNET_GLIDE_S,
+  MAGNET_LEAVE_FRAC,
   MAGNET_MIN_DELTA_PX,
 } from "./gallery-config";
 
@@ -24,11 +25,12 @@ import {
 //                MAGNET_ENTER_FRAC of it is on screen (founder, 2026-09-04:
 //                a soft auto lock; the old gate refused upward entry and
 //                left the hero strip showing)
-//   entry only   a visitor moving AWAY from the section is never pulled
-//                back, whatever is still on screen: an arrow key, a single
-//                wheel notch, a finger flick all leave. Pulling back on exit
-//                is the trap that reads as scroll-jacking, and review found
-//                that a symmetric threshold reverted every keyboard step
+//   hysteresis   a visitor moving AWAY is pulled back only while more than
+//                MAGNET_LEAVE_FRAC of the section is still on screen. This
+//                is the founder's call (2026-09-09): the helix must never sit
+//                partly on screen, so a nudge returns and only a deliberate
+//                scroll past half a screen leaves. Keyboard users leave with
+//                PageDown or Space, which move a full screen
 //   yielding     the glide runs through Lenis without lock, so any input
 //                during it hands the page straight back to the visitor
 //
@@ -87,10 +89,11 @@ export function useScrollMagnet(
       const frac = visible / Math.min(rect.height, vh);
       // Heading toward the section: it hangs below and the last move was
       // down, or it hangs above and the last move was up. Anything that
-      // already fills the frame counts as entering. Leaving never pulls.
+      // already fills the frame counts as entering.
       const entering =
         rect.top > 0 ? dir === 1 : rect.bottom < vh ? dir === -1 : true;
-      if (!entering || frac < MAGNET_ENTER_FRAC) {
+      const threshold = entering ? MAGNET_ENTER_FRAC : MAGNET_LEAVE_FRAC;
+      if (frac < threshold) {
         unsettle();
         return;
       }

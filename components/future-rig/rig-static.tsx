@@ -13,10 +13,9 @@ import { FRAME_HEIGHT, FRAME_WIDTH, RIG_STILLS } from "./frames-manifest";
 // F-0413: these used to carry a `rig-edge-blend` radial mask that feathered
 // the frame's dark backdrop into the page, reading as a glow/vignette
 // (banned by LOOK.md's Materials rules, no gradient exception for photography).
-// The render is itself a hard 1280x720 rectangle, so removing the mask
-// alone gives the flat-bone, hard-edge treatment the spec calls for; no
-// extra hairline rule around the figure was needed to keep it from reading
-// as raw.
+// Since 2026-09-09 the section surface is the render's own field colour
+// (founder), so the 1280x720 rectangle has no edge to hide: the rig floats
+// on one continuous dark field and the captions sit in bone on it.
 
 export function RigClosedPoster() {
   return (
@@ -86,10 +85,9 @@ export function RigPinnedStage({ visual }: { visual?: React.ReactNode }) {
               imgClassName="absolute inset-0 h-full w-full"
             />
           </div>
-          {/* F-0413: caption sits below the render on flat bone, not overlaid
-              on the photo. Ink at 100%, the small step, per LOOK.md, not the
-              dim mono treatment it used to sit in. */}
-          <p translate="no" className="mt-2 text-center text-sm text-ink">
+          {/* F-0413: caption sits below the render, not overlaid on it. The
+              small step in bone at 72% on the render's own dark field. */}
+          <p translate="no" className="mt-2 text-center text-sm text-bone/72">
             {SECTION_COPY.caption}
           </p>
         </div>
@@ -108,7 +106,7 @@ export function RigMobileBlock() {
           alt={SECTION_COPY.visualLabel}
         />
       </div>
-      <p translate="no" className="mt-2 text-center text-sm text-ink">
+      <p translate="no" className="mt-2 text-center text-sm text-bone/72">
         {SECTION_COPY.caption}
       </p>
     </div>

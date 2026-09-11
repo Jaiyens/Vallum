@@ -414,10 +414,11 @@ for (const width of WIDTHS) {
       await page.waitForTimeout(1200);
       const r1 = await helix();
       // AUTO_RAD_PER_S 0.3 is ~17.2deg/s, so 1.2s of idle auto-rotate is
-      // ~20deg; the band allows for the damped start and a slow machine.
+      // ~20deg; the band allows for the damped start and a loaded machine
+      // (measured as low as 7.8 with another Playwright run alongside).
       check(
         "gallery-autorotate",
-        r0 !== null && r1 !== null && r1 - r0 > 10 && r1 - r0 < 32,
+        r0 !== null && r1 !== null && r1 - r0 > 4 && r1 - r0 < 32,
         `delta=${r1 - r0}`,
       );
 
@@ -547,9 +548,10 @@ for (const width of WIDTHS) {
       const ra1 = await helix();
       check("gallery-auto-resumes", ra1 - ra0 > 1, `delta=${ra1 - ra0}`);
 
-      // Soft lock (2026-09-04): idling 200px above the helix section glides
-      // the page flush and publishes data-settled; then two ArrowDown steps
-      // must move the page, because the lock never pulls a visitor back.
+      // Lock (2026-09-04, retuned 2026-09-09): idling 200px above the helix
+      // section glides the page flush and publishes data-settled; a nudge
+      // away is pulled back, and a deliberate scroll past half a screen
+      // (PageDown here) leaves.
       const problemTop = await page.evaluate(
         () =>
           window.scrollY +
@@ -576,14 +578,20 @@ for (const width of WIDTHS) {
       );
       const yLocked = await page.evaluate(() => window.scrollY);
       await page.keyboard.press("ArrowDown");
-      await page.waitForTimeout(700);
-      await page.keyboard.press("ArrowDown");
-      await page.waitForTimeout(2200);
+      await page.waitForTimeout(2600);
+      const yNudged = await page.evaluate(() => window.scrollY);
+      check(
+        "helix-lock-holds",
+        Math.abs(yNudged - yLocked) <= 2,
+        `scrollY ${yLocked} -> ${yNudged} after ArrowDown`,
+      );
+      await page.keyboard.press("PageDown");
+      await page.waitForTimeout(2600);
       const yAfter = await page.evaluate(() => window.scrollY);
       check(
         "helix-lock-releases",
-        yAfter > yLocked + 20,
-        `scrollY ${yLocked} -> ${yAfter}`,
+        yAfter > yLocked + 400,
+        `scrollY ${yLocked} -> ${yAfter} after PageDown`,
       );
     }
 
