@@ -35,6 +35,9 @@
 //   Reads f-NNN.png (1-based, from `ffmpeg -vf fps=10`), keeps 56 frames from
 //   firstIndex (default 5), writes public/rig/frames/frame-NNN.webp at q88
 //   and the two stills as byte copies of the first and last frame.
+//   Then bump FRAMES_VERSION in components/future-rig/frames-manifest.ts:
+//   the frames are served immutable, so an unbumped set stays stale for
+//   returning visitors.
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";

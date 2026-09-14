@@ -10,15 +10,57 @@ export type RigScrubHandle = {
   draw: (index: number) => void;
 };
 
-// The scrubbed visual: the closed poster renders immediately, every frame
-// is fetched and decoded once the section is within one viewport, and only
-// then does the canvas take over, drawing frame 0 first. Frame 0 is a
-// byte-for-byte copy of the poster, so the swap is invisible. The scrub
-// itself lives in FutureRigSection's anime timeline, which calls draw().
+type Frame = ImageBitmap | HTMLImageElement;
+
+// Parallel fetches. Enough to fill a slow link without starving the page's
+// videos of connections.
+const LOAD_CONCURRENCY = 6;
+
+// Coarse to fine: both ends, then the midpoint of every remaining gap,
+// breadth-first (0, 55, 27, 13, 41, ...). Any prefix of this order is an
+// evenly spaced subset of the sequence, so the scrub plays the whole
+// explosion in coarse steps within the first handful of frames and gets
+// smoother as the rest arrive.
+function loadOrder(count: number): number[] {
+  const order = [0, count - 1];
+  let gaps: [number, number][] = [[0, count - 1]];
+  while (gaps.length) {
+    const next: [number, number][] = [];
+    for (const [a, b] of gaps) {
+      if (b - a < 2) continue;
+      const mid = (a + b) >> 1;
+      order.push(mid);
+      next.push([a, mid], [mid, b]);
+    }
+    gaps = next;
+  }
+  return order;
+}
+
+// The loaded frame closest to the requested one, or -1 if none is.
+function nearestLoaded(frames: (Frame | undefined)[], target: number): number {
+  for (let d = 0; d < frames.length; d++) {
+    if (frames[target - d]) return target - d;
+    if (frames[target + d]) return target + d;
+  }
+  return -1;
+}
+
+// The scrubbed visual: the closed poster renders immediately and the frames
+// stream in coarse to fine (see loadOrder). The canvas takes over once both
+// ends are decoded and always paints the loaded frame nearest the one the
+// scroll asks for, repainting as closer frames land. Frame 0 is a
+// byte-for-byte copy of the poster, so the swap is invisible.
+//
+// Until 2026-09-14 the canvas waited for all 56 frames. On the founder's
+// connection the slowest of them took 14s, so a first visit scrolled the
+// whole pin on the frozen poster and then snapped to the end state. The
+// scrub itself lives in FutureRigSection's anime timeline, which calls
+// draw().
 export function RigScrub({ ref }: { ref?: Ref<RigScrubHandle> }) {
   const boxRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const framesRef = useRef<(ImageBitmap | HTMLImageElement)[] | null>(null);
+  const framesRef = useRef<(Frame | undefined)[] | null>(null);
   const requestedRef = useRef(0);
   const paintedRef = useRef(-1);
   const [ready, setReady] = useState(false);
@@ -26,11 +68,14 @@ export function RigScrub({ ref }: { ref?: Ref<RigScrubHandle> }) {
   const paint = () => {
     const canvas = canvasRef.current;
     const frames = framesRef.current;
-    if (!canvas || !frames || requestedRef.current === paintedRef.current) return;
+    if (!canvas || !frames) return;
+    const index = nearestLoaded(frames, requestedRef.current);
+    const frame = frames[index];
+    if (!frame || index === paintedRef.current) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    ctx.drawImage(frames[requestedRef.current], 0, 0, canvas.width, canvas.height);
-    paintedRef.current = requestedRef.current;
+    ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+    paintedRef.current = index;
   };
 
   useImperativeHandle(ref, () => ({
@@ -64,41 +109,61 @@ export function RigScrub({ ref }: { ref?: Ref<RigScrubHandle> }) {
      
   }, []);
 
-  // Fetch and decode the full sequence once the section is within one
-  // viewport of entering. The canvas only appears when every frame is
-  // ready; a failed fetch just means the poster stays up. No blank states.
+  // Fetch and decode the sequence, coarse to fine. It starts once the page
+  // has loaded and gone idle, so the frames are usually in before anyone
+  // scrolls this far, or earlier if the section comes within one viewport
+  // first. The idle start is desktop-only with motion allowed (the only
+  // layout that scrubs; elsewhere the stage is display:none and the
+  // observer never fires) and skipped under Save-Data. A frame that fails
+  // is simply never painted; its neighbours cover the gap, and if an end
+  // frame fails the poster stays up. No blank states.
   useEffect(() => {
     const box = boxRef.current;
     if (!box) return;
     let cancelled = false;
+    let started = false;
+    const frames: (Frame | undefined)[] = new Array(FRAME_COUNT);
+    framesRef.current = frames;
+
+    const fetchFrame = async (i: number): Promise<Frame> => {
+      const res = await fetch(framePath(i), { priority: "low" });
+      if (!res.ok) throw new Error(`frame ${i}: HTTP ${res.status}`);
+      const blob = await res.blob();
+      if (typeof createImageBitmap === "function") {
+        return createImageBitmap(blob);
+      }
+      const img = new Image();
+      img.src = URL.createObjectURL(blob);
+      await img.decode();
+      return img;
+    };
 
     const load = async () => {
-      try {
-        const frames = await Promise.all(
-          Array.from({ length: FRAME_COUNT }, async (_, i) => {
-            const res = await fetch(framePath(i));
-            if (!res.ok) throw new Error(`frame ${i}: HTTP ${res.status}`);
-            const blob = await res.blob();
-            if (typeof createImageBitmap === "function") {
-              return createImageBitmap(blob);
-            }
-            const img = new Image();
-            img.src = URL.createObjectURL(blob);
-            await img.decode();
-            return img;
-          }),
-        );
-        if (cancelled) {
-          for (const f of frames) if ("close" in f) f.close();
-          return;
+      if (started) return;
+      started = true;
+      const order = loadOrder(FRAME_COUNT);
+      let cursor = 0;
+      const worker = async () => {
+        while (!cancelled && cursor < order.length) {
+          const i = order[cursor++];
+          let frame: Frame;
+          try {
+            frame = await fetchFrame(i);
+          } catch {
+            continue;
+          }
+          if (cancelled) {
+            if ("close" in frame) frame.close();
+            return;
+          }
+          frames[i] = frame;
+          if (frames[0] && frames[FRAME_COUNT - 1]) {
+            setReady(true);
+            paint();
+          }
         }
-        framesRef.current = frames;
-        paintedRef.current = -1;
-        paint();
-        setReady(true);
-      } catch {
-        // keep the poster
-      }
+      };
+      await Promise.all(Array.from({ length: LOAD_CONCURRENCY }, worker));
     };
 
     const io = new IntersectionObserver(
@@ -112,15 +177,36 @@ export function RigScrub({ ref }: { ref?: Ref<RigScrubHandle> }) {
     );
     io.observe(box);
 
+    const scrubs = window.matchMedia(
+      "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
+    ).matches;
+    const saveData =
+      (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
+        ?.saveData === true;
+    let cancelIdle = () => {};
+    const startWhenIdle = () => {
+      // Safari has no requestIdleCallback.
+      if (typeof requestIdleCallback === "function") {
+        const id = requestIdleCallback(() => void load(), { timeout: 3000 });
+        cancelIdle = () => cancelIdleCallback(id);
+      } else {
+        const id = window.setTimeout(() => void load(), 1500);
+        cancelIdle = () => window.clearTimeout(id);
+      }
+    };
+    if (scrubs && !saveData) {
+      if (document.readyState === "complete") startWhenIdle();
+      else window.addEventListener("load", startWhenIdle, { once: true });
+    }
+
     return () => {
       cancelled = true;
       io.disconnect();
-      if (framesRef.current) {
-        for (const f of framesRef.current) if ("close" in f) f.close();
-        framesRef.current = null;
-      }
+      window.removeEventListener("load", startWhenIdle);
+      cancelIdle();
+      for (const f of frames) if (f && "close" in f) f.close();
+      framesRef.current = null;
     };
-     
   }, []);
 
   return (

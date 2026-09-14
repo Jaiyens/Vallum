@@ -21,8 +21,15 @@ export const FRAME_COUNT = 56;
 export const FRAME_WIDTH = 1280;
 export const FRAME_HEIGHT = 720;
 
+// Cache key for the frame set. next.config.ts serves /rig/frames as
+// immutable for a year (Vercel's default for public files is max-age=0,
+// which made every visit revalidate all 56 frames), so BUMP THIS whenever
+// the frames are regenerated (scripts/flatten-rig-field.mjs) or returning
+// visitors keep the old set.
+export const FRAMES_VERSION = "2026-09-14";
+
 export function framePath(i: number) {
-  return `/rig/frames/frame-${String(i).padStart(3, "0")}.webp`;
+  return `/rig/frames/frame-${String(i).padStart(3, "0")}.webp?v=${FRAMES_VERSION}`;
 }
 
 // The closed webp is a byte-for-byte copy of frame 000, so the poster and
