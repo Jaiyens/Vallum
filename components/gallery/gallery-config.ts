@@ -21,17 +21,18 @@ export const DAMP_PER_FRAME = 0.12;
 // camera reads from above; positive reads from below.
 export const POLAR_MIN_DEG = -63;
 export const POLAR_MAX_DEG = 63;
-// The resting pose is a top view (founder, 2026-09-04: "I need to be able to
-// see the text in the vortex"). At -8deg the front panel, 560px nearer the
-// camera than the centerpiece, sat over the typed line; from -32deg the near
-// rim projects below the text band and the far rim above it, so the line
-// sits in a clear band at 1440x900 and 1710x1107 (-26deg still overlaps by
-// ~36px where the helix rise lifts the front panel).
-export const REST_TILT_DEG = -32;
+// The resting pose. At -32deg (2026-09-04, "I need to be able to see the text
+// in the vortex") the camera alone kept panels off the typed line, but from
+// that high the panels read foreshortened and tilted. Since 2026-09-14 the
+// wave (--helix-wave in globals.css) does that job: each panel sinks below
+// the line as it passes in front and climbs above it behind, so the camera
+// comes down to -16deg and the panels face the viewer. No front-half panel
+// overlaps the line at any azimuth at 1280x800 through 1920x1080.
+export const REST_TILT_DEG = -16;
 // The approach: as the section slides into the frame the camera opens from
 // REST + APPROACH (a flatter pose) down to REST, finishing exactly where the
 // scroll magnet lands the section flush. Scrubbed by scroll, no timers.
-export const APPROACH_TILT_DEG = 22;
+export const APPROACH_TILT_DEG = 14;
 
 // Pointer-to-orbit gains and the click/drag threshold. Below the threshold a
 // press is a click (opens a panel); past it, it is a drag (orbits).

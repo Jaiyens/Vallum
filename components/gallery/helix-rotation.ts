@@ -81,8 +81,12 @@ export function createHelixController(args: {
   // every back-half panel, so both are pointer-events none and the flat
   // viewport takes the drag instead. Panel events still bubble up to it.
   input: HTMLElement;
+  // The guide rings' own stage, in a separate 3D context under the same
+  // camera (see HelixStage). It takes the polar tilt only, never the spin.
+  guides: HTMLElement | null;
 }): HelixController {
-  const { stage, ring, centerpiece, panels, input } = args;
+  const { stage, ring, centerpiece, panels, input, guides } = args;
+  const tilted = guides ? [stage, guides] : [stage];
   // The home pose is scroll-driven: flat while the section is still sliding
   // in, the resting top view once it is flush. Auto-rotate follows it every
   // frame; a drag takes the pose over and the idle reset hands it back.
@@ -114,10 +118,13 @@ export function createHelixController(args: {
   // Depth brightness: the front panel is lit, the rest recede into the ink so
   // whatever crosses behind the centerpiece band arrives already dark. This is
   // what holds bone text legible against every frame without a solid box, and
-  // it reads as atmosphere, not an effect.
+  // it reads as atmosphere, not an effect. The floor rose from 0.2 to 0.4
+  // with the wave (founder, 2026-09-14: "we can barely see what is
+  // spinning around"): back panels now ride above the line instead of
+  // crossing it, so they no longer need to arrive near-black.
   const depthBright = (distDeg: number) => {
     const t = (1 + Math.cos((distDeg * Math.PI) / 180)) / 2; // 1 front, 0 back
-    return 0.2 + 0.7 * Math.pow(t, 2.2);
+    return 0.4 + 0.5 * Math.pow(t, 2.2);
   };
   const applyBrightness = (i: number, b: number) => {
     const v = `brightness(${b.toFixed(3)})`;
@@ -133,7 +140,7 @@ export function createHelixController(args: {
   let rotateTween: gsap.core.Tween | null = null;
 
   gsap.set(ring, { transformOrigin: "50% 50%", force3D: true });
-  gsap.set(stage, { transformOrigin: "50% 50%", force3D: true });
+  gsap.set(tilted, { transformOrigin: "50% 50%", force3D: true });
   // The tiny z keeps Safari from z-fighting the centerpiece against panels
   // crossing the z=0 plane. Centering lives on the element's CSS translate,
   // which composes before the GSAP-owned rotation.
@@ -205,7 +212,7 @@ export function createHelixController(args: {
   };
 
   const setRing = gsap.quickSetter(ring, "rotationY", "deg");
-  const setStageTilt = gsap.quickSetter(stage, "rotationX", "deg");
+  const setStageTilt = gsap.quickSetter(tilted, "rotationX", "deg");
   const setCenter = gsap.quickSetter(centerpiece, "rotationY", "deg");
   // The centerpiece is billboarded on both axes: counter-rotated against the
   // ring's yaw AND the stage's tilt, so at a 32deg top view the typed line
@@ -234,6 +241,16 @@ export function createHelixController(args: {
     setCenter(state.az * -1);
     setCenterTilt(state.tilt * -1);
     updateFocus();
+
+    // The wave: each slot's vertical offset follows the cosine of its angle
+    // from front (the CSS side multiplies by --helix-wave and the radius), so
+    // the front panel bottoms out under the centerpiece and the back panel
+    // tops out above it. Written even while suspended so the fronted pose
+    // the takeover Flip measured stays exactly where it was.
+    for (let i = 0; i < PANEL_COUNT; i++) {
+      const rad = ((i * STEP_DEG + state.az) * Math.PI) / 180;
+      panels[i].root.style.setProperty("--panel-wave", Math.cos(rad).toFixed(4));
+    }
 
     // Depth brightness, every frame, except while a takeover owns the front
     // leaf. The focused panel is fully lit; everyone else falls off with the

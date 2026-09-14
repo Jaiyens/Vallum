@@ -6,10 +6,11 @@ import { GALLERY_CENTERPIECE } from "@/src/content/gallery";
 // The typewriter line on the helix axis. A child of the ring at translateZ
 // zero; the rotation controller counter-rotates it every frame on both axes
 // (against the ring's yaw and the stage's tilt) from the same value source as
-// the ring, so it always stands up to face the viewer. From the resting top
-// view (2026-09-04) the near rim passes below the line and the far rim above
-// it, so panels no longer cross it; the glass band stays for the moments the
-// visitor drags the camera flat again.
+// the ring, so it always stands up to face the viewer. The wave (2026-09-14)
+// sinks each panel below the line as it passes in front and lifts it above
+// the line behind, so front panels never cross it; the glass band stays for
+// back panels grazing the ends of a long line and for the moments the
+// visitor drags the camera flat.
 //
 // Recipe A glass band (LOOK.md): a full-canvas-width horizontal stripe riding
 // the text block, backdrop-filter blur(24px) saturate(50%) over an ink-35

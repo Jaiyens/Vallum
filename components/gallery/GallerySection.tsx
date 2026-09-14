@@ -79,13 +79,14 @@ export function GallerySection() {
     }
     if (panels.length !== GALLERY_PANELS.length) return;
 
-    const input = stage.closest<HTMLElement>("[data-helix-viewport]") ?? stage;
+    const viewport = stage.closest<HTMLElement>("[data-helix-viewport]");
     const controller = createHelixController({
       stage,
       ring,
       centerpiece,
       panels,
-      input,
+      input: viewport ?? stage,
+      guides: viewport?.querySelector<HTMLElement>("[data-helix-guides]") ?? null,
     });
     controllerRef.current = controller;
     return () => {

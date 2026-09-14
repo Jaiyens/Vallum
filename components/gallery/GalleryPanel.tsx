@@ -1,12 +1,16 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { AutoPauseVideo } from "@/components/media/auto-pause-video";
 import { GALLERY_VIDEO } from "@/lib/assets";
 import { type GalleryPanelContent, panelLabel } from "@/src/content/gallery";
 import { STEP_DEG } from "./gallery-config";
 
-// One helix slot. The slot div carries the static spiral transform; the
-// ring's rotation does the spinning, so this transform never changes. The
+// One helix slot. The slot div carries the slot transform; the ring's
+// rotation does the spinning. The only moving part is the wave: a vertical
+// offset proportional to the cosine of the slot's angle from front, so a
+// panel sinks to its lowest point as it passes in front of the centerpiece
+// and climbs to its highest behind it. The
 // inner leaf is the only element that takes brightness and scale, and it is
 // the node the takeover Flip borrows. The poster img is a sibling of the
 // leaf so the slot never goes black while the leaf is away, and it doubles
@@ -36,9 +40,15 @@ export function GalleryPanel({
       // pointer-events auto: the stage and the ring above it are none, so
       // a click reaches a back-half panel instead of the ring's own plane.
       className="pointer-events-auto absolute left-1/2 top-1/2 w-[clamp(190px,16vw,250px)]"
-      style={{
-        transform: `translate(-50%, -50%) rotateY(${index * STEP_DEG}deg) translateZ(var(--helix-radius)) translateY(calc(${index} * var(--helix-rise)))`,
-      }}
+      style={
+        {
+          // --panel-wave is the cosine of this slot's angle from front,
+          // written every frame by the controller; the inline value is the
+          // pose at azimuth zero so the first paint already rides the wave.
+          "--panel-wave": Math.cos((index * STEP_DEG * Math.PI) / 180).toFixed(4),
+          transform: `translate(-50%, -50%) rotateY(${index * STEP_DEG}deg) translateZ(var(--helix-radius)) translateY(calc(${index} * var(--helix-rise) + var(--panel-wave) * var(--helix-wave) * var(--helix-radius)))`,
+        } as CSSProperties
+      }
     >
       <button
         type="button"

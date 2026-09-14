@@ -331,32 +331,47 @@
    the spiral collapses to a flat ring with one edit: --helix-rise: 0px. */
 [data-helix-viewport] {
   --helix-radius: min(42vw, 560px);
-  --helix-rise: 24px;
-  /* Scene lift for the top view (rest tilt -32deg): the near rim projects
-     larger and lower than the far rim, so the ring centre rides above the
-     viewport centre. Tuned by screenshot at 1280x800 through 1920x1080. */
-  --helix-lift: calc(4vh + 60px);
-  /* Fit: from the top view the ellipse stands about 980px tall at the 560px
-     radius cap, which clears a 1080px window but not a laptop's 800 or 900.
-     The perspective wrapper is scaled as a whole (camera and scene together,
-     a pure zoom of the rendered image) so short windows see the same
-     composition smaller instead of losing the front panel's band below the
-     fold. Radius and panel size stay width-driven. */
-  --helix-fit: 1;
+  /* Flat ring (2026-09-14): a per-slot spiral step would put one front panel
+     168px lower than another, and the wave below needs every panel to
+     bottom out at the same height. */
+  --helix-rise: 0px;
+  /* The wave: peak vertical offset as a fraction of the radius. Each panel
+     sits at cos(angle from front) times this, lowest in front of the
+     centerpiece and highest behind it, while staying upright. */
+  --helix-wave: 0.36;
+  /* Scene lift: the front panel dips low and projects large while the back
+     panel rises and shrinks, so the centerpiece rides well above the
+     viewport centre. Balanced with the bottom margin ~16px deeper than the
+     top (founder, 2026-09-14: "move the helix up just a bit"). Tuned by
+     measurement at 1280x800 through 1920x1080. */
+  --helix-lift: calc(4vh + 84px);
+  /* Fit: with upright panels on the wave the scene stands about 1120px tall
+     at the 560px radius cap, taller than any laptop window. The perspective
+     wrapper is scaled as a whole (camera and scene together, a pure zoom of
+     the rendered image) so short windows see the same composition smaller
+     instead of losing the front panel's band below the fold. Radius and
+     panel size stay width-driven. */
+  --helix-fit: 0.92;
+}
+/* Written on eight panel roots every frame; non-inheriting so the write
+   restyles the slot alone, not the video and band beneath it. */
+@property --panel-wave {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
 }
 /* The lift eases with the fit: the zoom is about the wrapper's centre, so a
-   smaller scene needs less raising to sit centred (measured 1440x900 and
-   1280x800, balanced to within 10px top and bottom). */
+   smaller scene needs less raising to sit centred. */
 @media (max-height: 1000px) {
   [data-helix-viewport] {
-    --helix-fit: 0.86;
-    --helix-lift: calc(4vh + 44px);
+    --helix-fit: 0.78;
+    --helix-lift: calc(4vh + 72px);
   }
 }
 @media (max-height: 860px) {
   [data-helix-viewport] {
-    --helix-fit: 0.76;
-    --helix-lift: calc(4vh + 24px);
+    --helix-fit: 0.72;
+    --helix-lift: calc(4vh + 59px);
   }
 }
 
