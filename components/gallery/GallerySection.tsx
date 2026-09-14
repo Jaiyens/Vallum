@@ -204,7 +204,7 @@ export function GallerySection() {
           )}
         </div>
       )}
-      {/* The bottom ledger strip is gone (Jay's 2026-07-16 correction). The
+      {/* The bottom ledger strip is gone (Jaiyen's 2026-07-16 correction). The
           cited numbers still reach a screen reader through this summary and
           through each panel's aria-label. */}
       <StatsSummary />

@@ -65,7 +65,7 @@ Phase 3: seven critics, then `arbiter`, then builders. `build-hero` owns the Hel
 
 ## The three-step critic round
 
-Jay asked for the agents to talk to each other with a master deciding. This is that, and the order is the whole design.
+Jaiyen asked for the agents to talk to each other with a master deciding. This is that, and the order is the whole design.
 
 **Step 1, independent.** All seven critics in one background wave. They do not see each other. Seven independent reads is the value. Seven agents agreeing because they read each other is worth nothing.
 

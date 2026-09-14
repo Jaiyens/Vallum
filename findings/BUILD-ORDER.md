@@ -18,7 +18,7 @@ The reasoning, in order.
 
 4. Authorship. The morph (human timeline above, robot twin below, the reveal) is the founder's own signature concept, shipped by him on 2026-07-15, analogous to the Helix as a fixed set piece. An arbiter deleting a founder's central creative act unilaterally, in the night, on a contestable rung-5 recoil call, with the founder absent and the correct fix requiring his authorship, is overreach. A call this large and this personal belongs in front of him first, with the finding stated plainly. That is what "top of the morning report" means: not a defer to nowhere, but the first thing he rules on.
 
-The one condition that flips it to pull-immediately. Provenance. If the footage under the morph is stock, or a real worker from files Jay does not control, then it is no longer rung 5. It is rung 2, consent and law, the same open provenance question already attached to the hero b-roll (iteration-1 F-0101/F-0408), and it jumps to pull-tonight regardless of authorship. That answer is the gating variable and is a warden-and-Jay question I cannot resolve from artifacts.
+The one condition that flips it to pull-immediately. Provenance. If the footage under the morph is stock, or a real worker from files Jaiyen does not control, then it is no longer rung 5. It is rung 2, consent and law, the same open provenance question already attached to the hero b-roll (iteration-1 F-0101/F-0408), and it jumps to pull-tonight regardless of authorship. That answer is the gating variable and is a warden-and-Jaiyen question I cannot resolve from artifacts.
 
 Lighter mitigation to hand the founder in the morning, not ranked tonight. The finding notes the effect arms only when the cursor sits directly on a person, and that the film slows and pushes in on that specific figure. Disarming the cursor-targeting, so the film plays its established-work-then-machine sequence without hunting the human body, may lift most of the recoil short of a full re-cut. I do not rank it tonight because I cannot confirm it is a small isolated change and it touches the founder's signature interaction, which belongs to the same morning conversation.
 
@@ -43,7 +43,7 @@ Coverage: three P1s and two P2s across two builders, disjoint files, neither tou
 |---|---|---|
 | F-0709 | P0 | Ruled above. The morning's number-one judgment item; film stands overnight, provenance is the flip condition. |
 | F-0106 | P1 | The rights the consent release grants are not in FACTS.md; stating them is a counsel question, not a night invention. |
-| F-0108 | P1 | Codec, container, annotation file format, and delivery method are not ledgered (same block as iteration-1 F-0103); logged for Jay. |
+| F-0108 | P1 | Codec, container, annotation file format, and delivery method are not ledgered (same block as iteration-1 F-0103); logged for Jaiyen. |
 | F-0205 | P1 | Connecting the access thesis to the Western Cape is a positioning copy pass; morning narrative work, not a 15-minute fix. |
 | F-0206 | P1 | The "no way to respond" half is fact-blocked on the contact channel (iteration-1 F-0011/F-0105); the "restated twice" half is partly addressed by ship item 1 and otherwise waits with F-0305. |
 | F-0305 | P1 | Its consistency complaint is served by ship item 1; its restructure remedy (compress beat 5, move the full schema to /dataset only) fights the narrator's beat-5 spec and is a structural morning call. |
@@ -53,7 +53,7 @@ Coverage: three P1s and two P2s across two builders, disjoint files, neither tou
 | F-0414 | P1 | Close-button rounded focus ring lives in `components/gallery/StatTakeover.tsx`, the tree the in-flight F-0409 agent holds. Defer to avoid a collision; dispatch right after F-0409 lands. |
 | F-0415 | P1 | Takeover backdrop stops short of the viewport bottom; same StatTakeover file, same collision. Pair with F-0414 the moment F-0409 lands. |
 | F-0507 | P1 | Tab skipping five beats needs focus-order work across several sections; a real a11y pass, too broad for 15 minutes. |
-| F-0107 | P2 | Team size and who executes the work is not in FACTS.md; fact-blocked, logged for Jay. |
+| F-0107 | P2 | Team size and who executes the work is not in FACTS.md; fact-blocked, logged for Jaiyen. |
 | F-0109 | P2 | No acceptance test stated; "delivery and acceptance" is ledgered but the acceptance criteria are not; fact-blocked. |
 | F-0110 | P2 | POPIA bare self-declaration; substantiation is a counsel matter, not a night edit. |
 | F-0204 | P2 | Founder never named; the name is a known fact and the fix is cheap, so this is a strong first morning copy add, but it is a copy-owner change outside tonight's two higher-coverage clusters. |
@@ -66,7 +66,7 @@ Coverage: three P1s and two P2s across two builders, disjoint files, neither tou
 
 ## What I am least sure about
 
-1. The F-0709 provenance gate. I routed it to the morning as a rung-5 recoil call, but the whole ruling hinges on the footage being consented and Jay-controlled. That is the same unresolved question as iteration-1 F-0101/F-0408, and I could not confirm it from artifacts. If the answer is "stock or not his," the finding was never rung 5, and leaving the film standing overnight was the wrong call. A reasonable arbiter could also decide the recoil is visceral and on-target enough for the exact audience that the cursor-targeting should be disarmed tonight even without a re-cut; I held off only because I could not scope that change as small and isolated.
+1. The F-0709 provenance gate. I routed it to the morning as a rung-5 recoil call, but the whole ruling hinges on the footage being consented and Jaiyen-controlled. That is the same unresolved question as iteration-1 F-0101/F-0408, and I could not confirm it from artifacts. If the answer is "stock or not his," the finding was never rung 5, and leaving the film standing overnight was the wrong call. A reasonable arbiter could also decide the recoil is visceral and on-target enough for the exact audience that the cursor-targeting should be disarmed tonight even without a re-cut; I held off only because I could not scope that change as small and isolated.
 
 2. String unification versus beat-5 compression. Ship item 1 makes the two pages more identical to kill the "two writers" complaint (F-0608/F-0609). It does not touch the "wastes the split" complaint (F-0305), which wants beat 5 compressed instead. A reviewer could argue the higher-value tonight move is to compress beat 5, not to unify strings. I chose unify because compression is a narrator-spec structural call, bigger and riskier than a 15-minute string pass, and unification does not block a later compression.
 

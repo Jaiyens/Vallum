@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ETHOS_COPY } from "@/src/content/ethos";
 
-// Cross-page affordance (F-0504), scroll-intent chrome per Jay 2026-07-19:
+// Cross-page affordance (F-0504), scroll-intent chrome per Jaiyen 2026-07-19:
 // hidden on load so the page opens flush with the hero film, revealed only
 // when the reader scrolls up (the "take me somewhere" gesture), hidden again
 // on downward scroll. Keyboard focus always reveals it, so the first tab

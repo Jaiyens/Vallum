@@ -8,11 +8,13 @@
 // palette: a forest tint (F-0421) the founder rejected as green, then an ink
 // pass (2026-09-03) that matted the field off and composited the rig back by
 // luma alone, which the founder rejected as a quality loss ("way worse
-// quality than before"). Since 2026-09-09 the frames are the source render,
-// unprocessed and at q88 instead of the original q70, and the section's
-// surface takes the render's own field tone instead (see FutureRigSection),
-// so the rectangle has no edge to hide. scripts/grade-rig-frames.mjs stays
-// as the record of the retired pass.
+// quality than before"). Since 2026-09-09 the frames are the source render
+// in colour at q88 instead of the original q70, and the section's surface
+// takes the render's own field tone instead (see FutureRigSection). The
+// field's falloff is flattened onto that tone across the whole frame by
+// scripts/flatten-rig-field.mjs (2026-09-14; the rig is offset, never
+// matted), so the rectangle has no edge to hide. scripts/grade-rig-frames.mjs
+// stays as the record of the retired ink pass.
 
 export const FRAME_COUNT = 56;
 

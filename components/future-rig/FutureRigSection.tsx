@@ -63,12 +63,13 @@ export function FutureRigSection() {
     // video's colour render on its charcoal studio field (founder,
     // 2026-09-09: "find the normal video and put it back in", and the
     // section "has to match the same color as the black rig explosion"),
-    // so the surface is that field's border tone, measured as the mean of
-    // the encoded frames as the browser draws them (25,28,31), not the site's ink.
+    // so the surface is that field's tone as the browser draws the encoded
+    // frames (25,27,31; scripts/flatten-rig-field.mjs flattens the whole
+    // field onto it), not the site's ink.
     <section
       ref={root}
       id={SECTION_IDS.rig}
-      className="scroll-mt-14 bg-[#191c1f] py-section-sm text-bone md:py-section"
+      className="scroll-mt-14 bg-[#191b1f] py-section-sm text-bone md:py-section"
     >
       <div className="mx-auto max-w-site px-6 md:px-16">
         {/* header: plain and always visible (F-0412). A masked scroll-reveal
@@ -84,7 +85,6 @@ export function FutureRigSection() {
           {SECTION_COPY.headline}
         </h2>
         <p className="mt-4 max-w-xl text-lg text-bone/72">{SECTION_COPY.subline}</p>
-        <p className="mt-2 max-w-xl text-sm text-bone/72">{SECTION_COPY.bridge}</p>
 
         {/* desktop: pinned, scroll-scrubbed explosion */}
         <RigPinnedStage visual={<RigScrub ref={scrub} />} />

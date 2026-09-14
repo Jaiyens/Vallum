@@ -14,7 +14,7 @@ function FutureRigFallback() {
   return (
     <section
       id={SECTION_IDS.rig}
-      className="scroll-mt-14 bg-[#191c1f] py-section-sm text-bone md:py-section"
+      className="scroll-mt-14 bg-[#191b1f] py-section-sm text-bone md:py-section"
     >
       <noscript>
         <style>{`
@@ -31,7 +31,6 @@ function FutureRigFallback() {
           {SECTION_COPY.headline}
         </h2>
         <p className="mt-4 max-w-xl text-lg text-bone/72">{SECTION_COPY.subline}</p>
-        <p className="mt-2 max-w-xl text-sm text-bone/72">{SECTION_COPY.bridge}</p>
 
         <RigPinnedStage
           visual={

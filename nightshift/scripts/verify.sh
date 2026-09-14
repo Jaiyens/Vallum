@@ -55,7 +55,7 @@ fi
 DOM=$(ls artifacts/1440/*.dom.txt 2>/dev/null || true)
 if [ -n "$DOM" ]; then
 
-  # Placeholders. Jay's rule: the page ships finished. FACTS.md's rule: it ships true.
+  # Placeholders. Jaiyen's rule: the page ships finished. FACTS.md's rule: it ships true.
   # Both are satisfied by rewriting the sentence, never by filling or leaving a slot.
   PH=$(grep -rniE '\bTBD\b|\bTODO\b|lorem ipsum|coming soon|fill in later|placeholder|\bXX+\b|\[[A-Za-z_ ]{2,}\]' $DOM 2>/dev/null || true)
   if [ -z "$PH" ]; then good "no placeholders"
