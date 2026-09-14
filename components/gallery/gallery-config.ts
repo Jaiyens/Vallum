@@ -26,13 +26,17 @@ export const POLAR_MAX_DEG = 63;
 // that high the panels read foreshortened and tilted. Since 2026-09-14 the
 // wave (--helix-wave in globals.css) does that job: each panel sinks below
 // the line as it passes in front and climbs above it behind, so the camera
-// comes down to -16deg and the panels face the viewer. No front-half panel
-// overlaps the line at any azimuth at 1280x800 through 1920x1080.
-export const REST_TILT_DEG = -16;
-// The approach: as the section slides into the frame the camera opens from
-// REST + APPROACH (a flatter pose) down to REST, finishing exactly where the
-// scroll magnet lands the section flush. Scrubbed by scroll, no timers.
-export const APPROACH_TILT_DEG = 14;
+// comes down to a near-level -4deg (founder picked this pose from a
+// screenshot over -16deg) and the panels face the viewer. At 1710 and 1920
+// wide the right-front panel's corner brushes the full stop of the widest
+// line near 39deg azimuth; every glyph stays readable.
+export const REST_TILT_DEG = -4;
+// The approach: as the section slides into the frame the camera levels out
+// from REST + APPROACH (a higher, top-down pose) to REST, finishing exactly
+// where the scroll magnet lands the section flush. Scrubbed by scroll, no
+// timers. Negative since the rest went near-level: a positive approach would
+// start the scroll-in looking up at the ring from below.
+export const APPROACH_TILT_DEG = -12;
 
 // Pointer-to-orbit gains and the click/drag threshold. Below the threshold a
 // press is a click (opens a panel); past it, it is a drag (orbits).
