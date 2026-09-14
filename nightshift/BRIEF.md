@@ -28,7 +28,7 @@ Every page either answers one of those or it is decoration.
 
 Second reader: a pre-seed investor. Secondary. The site does not sell to them. No raise language anywhere.
 
-Third reader, and this one is new and it matters: **a normal person.** A worker. A farm owner deciding whether to let Jay on the property. A journalist. Someone's parent. They are not the customer and they are not why the site exists, but if they read this page and come away thinking the company is ghoulish, the company has a problem that no buyer conversion rate fixes. See "The Palantir problem" below.
+Third reader, and this one is new and it matters: **a normal person.** A worker. A farm owner deciding whether to let Jaiyen on the property. A journalist. Someone's parent. They are not the customer and they are not why the site exists, but if they read this page and come away thinking the company is ghoulish, the company has a problem that no buyer conversion rate fixes. See "The Palantir problem" below.
 
 ## Who the competitors are
 
@@ -103,7 +103,7 @@ Rules:
 
 ## The public benefit question, and a hard line
 
-Jay wants the site to carry a public-benefit ethos. Correct instinct, and it is the most defensible thing about the company.
+Jaiyen wants the site to carry a public-benefit ethos. Correct instinct, and it is the most defensible thing about the company.
 
 **Ship the ethos. Never the label.**
 
@@ -150,7 +150,7 @@ This is deterministic. It is not a critic's opinion and you do not argue with it
 
 ### The register: old money
 
-Jay's words: modern, strong, smart, sophisticated, old money. That is a real and specific thing, not a vibe. It decomposes:
+Jaiyen's words: modern, strong, smart, sophisticated, old money. That is a real and specific thing, not a vibe. It decomposes:
 
 - **Space is the flex.** Only people who need to sell fill the page. Generous margins are a status claim and they are free
 - **Restraint over decoration.** Every element earns its place or leaves
@@ -163,7 +163,7 @@ Jay's words: modern, strong, smart, sophisticated, old money. That is a real and
 
 ### The status badge ban
 
-Mono-caps labels like `CONCEPT · IN DEVELOPMENT` are cut. Jay is right that they read as machine-made, because they are: generated designs reach for the status pill constantly, and it is one of the most reliable tells there is.
+Mono-caps labels like `CONCEPT · IN DEVELOPMENT` are cut. Jaiyen is right that they read as machine-made, because they are: generated designs reach for the status pill constantly, and it is one of the most reliable tells there is.
 
 **But the honesty they were carrying does not get cut with them.** The rig does not physically exist. A render of hardware that does not exist, presented without qualification, is a product claim and it is false. Technical buyers pattern-match unqualified renders of nonexistent hardware to vaporware instantly, and it is worse for this company than any other because the entire pitch is provenance.
 
@@ -173,7 +173,7 @@ So: the badge dies, the truth moves into prose. One plain sentence in the copy, 
 
 ### Glass, done correctly
 
-Jay wants see-through glass. There are two things called that and only one is right.
+Jaiyen wants see-through glass. There are two things called that and only one is right.
 
 **Wrong:** glassmorphism. A frosted rectangle with a white border and a soft shadow floating on a gradient. A 2021 trend, and the opposite of old money.
 
@@ -189,7 +189,7 @@ This matters beyond taste, because glass is also the fix for a real bug. See the
 
 The Helix is beat 2. Panels of dangerous industries orbiting a typewriter centerpiece, drag to spin, each panel a video paired with one verified, cited fatality statistic. Panels pass in front of and behind the text, and the occlusion is the point. The centerpiece text counter-rotates by the ring's exact negative rotation each frame, so it always faces the viewer while depth sorting stays correct.
 
-Jay likes it and it is close. `build-hero` owns it. Five defects, in priority order.
+Jaiyen likes it and it is close. `build-hero` owns it. Five defects, in priority order.
 
 ### 1. The centerpiece text is unreadable. P0.
 
@@ -197,7 +197,7 @@ The text sits over spinning video panels. Background luminance changes every fra
 
 **Do not fix this with a black box behind the text.** That is the ugly answer and it kills the occlusion, which is the best thing in the section.
 
-Fix it with glass, which is the same mechanism as defect 4 and the same thing Jay already asked for aesthetically. A shaped `backdrop-filter` region riding the text block, blurring and desaturating whatever passes behind it, with no border and no shadow. Panels still occlude. Text stays legible against every frame. Three requirements collapse into one implementation.
+Fix it with glass, which is the same mechanism as defect 4 and the same thing Jaiyen already asked for aesthetically. A shaped `backdrop-filter` region riding the text block, blurring and desaturating whatever passes behind it, with no border and no shadow. Panels still occlude. Text stays legible against every frame. Three requirements collapse into one implementation.
 
 Verify by extracting frames at multiple rotation angles and measuring contrast at each. Not by looking once at rest. `critic-eyes` owns the check and it failed to catch this, which is why its mandate is now explicit.
 
@@ -217,21 +217,21 @@ Currently azimuth only. Unlock polar. Full orbit.
 
 ### 4. Rings, and a real focus state. P1.
 
-Jay wants Saturn, or an atom. Rings on multiple inclinations reads as both, and it happens to mean something here: coverage, orbit, a world being circled. Use it.
+Jaiyen wants Saturn, or an atom. Rings on multiple inclinations reads as both, and it happens to mean something here: coverage, orbit, a world being circled. Use it.
 
 Click a panel and:
 
-- The scene canvas blurs and desaturates. The whole background, not a region. This is the "too much happening" fix and Jay asked for it directly
+- The scene canvas blurs and desaturates. The whole background, not a region. This is the "too much happening" fix and Jaiyen asked for it directly
 - Auto-rotate stops. Orbit input is released
 - The panel resolves forward through glass and holds the detail: the clip, the industry, the statistic, the citation
 - Escape, click-outside, and a real focus trap. Focus returns to the panel that opened it
 - `prefers-reduced-motion`: no orbit, no auto-rotate, panels in a static readable arrangement, click still opens detail
 
-Jay asked for something cooler than a modal, specifically a 3D render or the video. The video is the cooler thing and it is already there. The blur is what makes it feel expensive, because the blur is what makes it feel like the world stepped back rather than a dialog opening on top of it.
+Jaiyen asked for something cooler than a modal, specifically a 3D render or the video. The video is the cooler thing and it is already there. The blur is what makes it feel expensive, because the blur is what makes it feel like the world stepped back rather than a dialog opening on top of it.
 
 ### 5. Everything types. Keep it.
 
-The typing grammar is Jay's and he likes it. Preserve it and hold the craft bar: jittered keystroke intervals, a pause after punctuation, fast backspace, blinking block caret, pre-sized box so zero layout shift. The caret is `forest-line`, never amber.
+The typing grammar is Jaiyen's and he likes it. Preserve it and hold the craft bar: jittered keystroke intervals, a pause after punctuation, fast backspace, blinking block caret, pre-sized box so zero layout shift. The caret is `forest-line`, never amber.
 
 `scout-orbit` and `scout-glass` inform this section. Read both before touching it.
 
@@ -239,7 +239,7 @@ The typing grammar is Jay's and he likes it. Preserve it and hold the craft bar:
 
 ## Copy on other websites, and where the line is
 
-Jay's instruction: base the UI on other websites, copy the pattern, have a reason.
+Jaiyen's instruction: base the UI on other websites, copy the pattern, have a reason.
 
 He is right, and more right than an earlier draft of this brief allowed. Here is the line, and it is not a matter of taste, it is roughly where the law is too.
 
@@ -249,7 +249,7 @@ He is right, and more right than an earlier draft of this brief allowed. Here is
 Nobody owns a scroll pattern. Every good site on the internet learned its structure from another site. This is how the craft works and refusing to do it is not integrity, it is just slower. If a competitor's dataset page answers the buyer's format question well, take the structure, cite it, move on.
 
 **Never copy:**
-- Sentences. Not their headline, not their subhead, not "the same but for us." The twenty people getting Jay's cold email have read Claru's site. Wearing their phrasing means being read as their clone by the exact audience most likely to notice
+- Sentences. Not their headline, not their subhead, not "the same but for us." The twenty people getting Jaiyen's cold email have read Claru's site. Wearing their phrasing means being read as their clone by the exact audience most likely to notice
 - Marks, logotypes, or brand identity
 - Assets. Their images, their video, their licensed fonts, their source code. Lifting a layout idea is normal practice. Lifting their code or their assets is infringement, and it is a real risk, not a hypothetical one
 
@@ -274,7 +274,7 @@ Hard rules. They override `VOICE.md`, which handles everything else.
 
 You will hit things this brief does not cover. Two rules. Which applies depends entirely on the kind of unknown.
 
-**Design, structure, copy, IA, motion, page count, naming, everything that is a taste call: decide.** Do not ask. Do not stall. Do not leave a placeholder. Be dominant, ship it, and write one line in `DECISIONS.md` as `[agent] chose X over Y because Z`. Jay reviews the set in the morning and reverses what he wants. This is most of the site and it is the default.
+**Design, structure, copy, IA, motion, page count, naming, everything that is a taste call: decide.** Do not ask. Do not stall. Do not leave a placeholder. Be dominant, ship it, and write one line in `DECISIONS.md` as `[agent] chose X over Y because Z`. Jaiyen reviews the set in the morning and reverses what he wants. This is most of the site and it is the default.
 
 **Factual claims about Vallum Labs: `FACTS.md` or nothing.** Never invent, never estimate, never round, never soften.
 
@@ -282,7 +282,7 @@ These do not conflict, and the way they do not conflict is the most important pa
 
 **A placeholder and a fabrication are the same failure.** Both mean writing a sentence whose shape requires a fact you do not have. The fix is neither to fill the slot nor to leave it empty. The fix is to write a different sentence.
 
-- Placeholder: "We have captured [X] hours across [Y] sites." Fails. Jay never wants to see this
+- Placeholder: "We have captured [X] hours across [Y] sites." Fails. Jaiyen never wants to see this
 - Fabrication: "We have captured 500 hours across 12 sites." Fails. Zero hours exist and this goes to people who will ask
 - Correct: "Every hour is annotated to the Ego4D schema, face-blurred before export, and delivered with a signed consent chain." True today, needs no number, and it is better copy because it is specific about the thing that is actually differentiated
 

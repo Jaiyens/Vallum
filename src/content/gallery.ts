@@ -3,7 +3,7 @@
 // clips; AI panels play generated unpopulated environments and must never
 // contain people.
 //
-// Founder override 2026-07-16 (Jay's morning correction): all eight original
+// Founder override 2026-07-16 (Jaiyen's morning correction): all eight original
 // stat panels are restored verbatim, each with its citation, overriding the
 // FACTS.md two-stat site cap for this section. Every citation renders. The
 // full statistic and its source live in the click takeover; the panel itself

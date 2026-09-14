@@ -6,9 +6,9 @@ The only source of truth for factual claims on vallumlabs.com.
 
 **And no placeholder either.** A placeholder and a fabrication are the same failure: writing a sentence whose shape requires a fact you do not have. Do not fill the slot. Do not leave the slot. Write a different sentence.
 
-No `TBD`, `TODO`, `[bracket]`, `lorem`, `coming soon`, `XX`, or `fill in later` ever reaches the rendered page. `verify.sh` greps for them and they are a P0. The page ships finished, using only true sentences. If a section feels thin without a number, the section is written wrong. Rewrite the section. Log the gap in `findings/needs-fact.md` for Jay's morning read, then ship the page complete without it.
+No `TBD`, `TODO`, `[bracket]`, `lorem`, `coming soon`, `XX`, or `fill in later` ever reaches the rendered page. `verify.sh` greps for them and they are a P0. The page ships finished, using only true sentences. If a section feels thin without a number, the section is written wrong. Rewrite the section. Log the gap in `findings/needs-fact.md` for Jaiyen's morning read, then ship the page complete without it.
 
-Jay is the only person who may add to this file. Agents may read it. Agents may not edit it.
+Jaiyen is the only person who may add to this file. Agents may read it. Agents may not edit it.
 
 Last verified: 2026-07-15.
 
@@ -24,7 +24,7 @@ Last verified: 2026-07-15.
 
 ## Founder
 
-- Jaiyen Shetty. Goes by Jay
+- Jaiyen Shetty
 - 18 years old
 - Studying at UC Berkeley, Haas and Computer Science
 - From a Fresno, California farming family
@@ -96,7 +96,7 @@ As of 2026-07-15 none of the following exist. An agent that writes any of them h
 - **Any buyer, customer, client, pilot, contract, or LOI.** None exist
 - **Any logo wall, "trusted by," "working with," or "partners include."** Naming 1X, NVIDIA, Generalist AI, Mecka, or Encord anywhere that implies a relationship is forbidden. They may be described as the category of buyer for this data. That is the only permitted framing, and it must be unambiguous
 - **Any revenue, ARR, or bookings.** Zero
-- **Any team, "we," headcount, advisors, or plural first person implying more than one person.** Jay is the only person. First-person plural is acceptable as a company voice. Any claim about people is not
+- **Any team, "we," headcount, advisors, or plural first person implying more than one person.** Jaiyen is the only person. First-person plural is acceptable as a company voice. Any claim about people is not
 - **Any funding, round, raise, investor, or valuation.** The site is buyer-facing. Raise language belongs in investor emails only, never on the site
 - **The 185,000 acres.** Those were prior letters of interest for a retired product. Never revenue, never Vallum Labs, never on this site
 - **Any dataset size, clip count, or annotation count for Vallum Labs**
@@ -121,7 +121,7 @@ The anti-AI director law is a fact rule, not a style rule. It is the provenance 
 
 - **No AI-generated human may appear anywhere on the site.** Not in the hero, not in a Helix panel, not in a texture, not blurred in a background plate
 - AI-generated imagery is permitted **only** for unpopulated environments: aerials, terrain, structures, empty decks, weather, haze
-- Real footage of people is permitted only from files Jay shot or licensed. If it did not come from a directory Jay controls, it is not real footage and it does not go on the site
+- Real footage of people is permitted only from files Jaiyen shot or licensed. If it did not come from a directory Jaiyen controls, it is not real footage and it does not go on the site
 - No stock photograph or stock clip of a worker, ever. A company whose entire claim is that it films workers cannot illustrate itself with someone else's photograph of a worker. This is the single most checkable lie available and it would be caught
 - Empty dangerous places next to a cited fatality number read as haunting and cost nothing. That is the intended register where real footage does not exist
 

@@ -43,7 +43,7 @@ What you do judge: whether the light rhythm carries the argument. Dark is the wo
 4. **The signature.** One element this page is remembered by, or competent and forgettable? Competent and forgettable is a finding
 5. **Restraint.** What could be removed and lose nothing? Name it
 6. **Does it read as generated?** Below. Your most important check
-7. **Old money, measured.** Jay's register: modern, strong, smart, sophisticated, old money. That decomposes. Space as the flex. Rules, not cards. Materials, not effects. Nothing pulses. No status pills, no mono-caps eyebrows. Each of those is checkable in a screenshot, so check them individually rather than judging the vibe
+7. **Old money, measured.** Jaiyen's register: modern, strong, smart, sophisticated, old money. That decomposes. Space as the flex. Rules, not cards. Materials, not effects. Nothing pulses. No status pills, no mono-caps eyebrows. Each of those is checkable in a screenshot, so check them individually rather than judging the vibe
 8. **Glass, the right kind.** Real glass is optical: what is behind is genuinely behind, seen through, refracted. Glassmorphism is a frosted rectangle with a white border and a soft shadow, and it is a 2021 trend, and it is the opposite of old money. If you see a border or a shadow on a glass element, finding
 
 ## The generated-design tell

@@ -1,7 +1,7 @@
 // Copy for the future rig section, which closes the home page ahead of the
 // wordmark (founder, 2026-09-03: it sat inside the white paper at /research
 // for part of that day and was brought back to / the same day). The
-// caption's kit fact was reconciled that day to Jay's research document,
+// caption's kit fact was reconciled that day to Jaiyen's research document,
 // which supersedes the July ledger. The visual is a pure scroll-scrubbed
 // explosion (see RigScrub.tsx) with no annotations: the section pins on the
 // closed unit, holds, then expands as you keep scrolling.

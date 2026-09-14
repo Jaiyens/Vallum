@@ -299,7 +299,7 @@ export function HeroExperience() {
             }
             // Over the letters the lens takes the full engaged radius, the
             // same circle as the figure reveal, so the vine wordmark reads
-            // through a big window (Jay 2026-07-22). Slow motion, the focus
+            // through a big window (Jaiyen 2026-07-22). Slow motion, the focus
             // veil, and magnification still belong to the figures only, so
             // this rung sets the ring alone and returns before the figure
             // hit test. Checked before the block kind so the name gets the

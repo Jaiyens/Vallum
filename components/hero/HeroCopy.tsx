@@ -71,7 +71,7 @@ const ENTRANCE = {
   fallbackFade: 1.2,
 } as const;
 
-// Wordmark, cue, beats, and state tags. The bottom mono line is gone (Jay's
+// Wordmark, cue, beats, and state tags. The bottom mono line is gone (Jaiyen's
 // 2026-07-16 correction); its element is removed rather than rendered empty,
 // and HeroExperience's monoline setter degrades to a no-op when the node is
 // absent. The entrance fires on load only, never on scroll. The CSS initial
