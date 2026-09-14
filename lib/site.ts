@@ -6,7 +6,7 @@ export const SITE_URL = "https://vallumlabs.com";
 // PLACEHOLDER: swap for the real cal.com booking URL.
 export const CAL_COM_LINK = "https://cal.com/CAL_COM_LINK_PLACEHOLDER";
 
-// Jay's address, published by him on the research document handed over
+// Jaiyen's address, published by him on the research document handed over
 // 2026-09-03, so it is a real fact and no longer a placeholder. DormantAsk
 // in components/sections/dormant-contact.tsx watches this constant and
 // turns the single ask echo into a live mailto now that it resolves.

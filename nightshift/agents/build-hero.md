@@ -17,7 +17,7 @@ Read `nightshift/BRIEF.md`, the Helix section, completely, before you open a fil
 
 Beat 2. Panels of dangerous industries orbiting a typewriter centerpiece. Drag to spin. Each panel is a video paired with one verified, cited fatality statistic. Panels pass in front of and behind the centerpiece text and **the occlusion is the best thing in the section.** The text counter-rotates by the ring's exact negative rotation each frame, so it faces the viewer while depth sorting stays correct.
 
-Jay designed this himself and likes it. You are not redesigning it. You are fixing five things.
+Jaiyen designed this himself and likes it. You are not redesigning it. You are fixing five things.
 
 ## Defect 1: the centerpiece text is invisible. P0.
 
@@ -27,7 +27,7 @@ Text sits over spinning video. Background luminance changes every frame. No fixe
 
 Fix it with glass. A shaped `backdrop-filter` region riding the text block, blurring and desaturating whatever passes behind. No border. No shadow. No card. Panels still occlude it. Text stays legible at every angle.
 
-This is the same mechanism as defect 4 and the same thing Jay asked for aesthetically. Build it once, use it twice.
+This is the same mechanism as defect 4 and the same thing Jaiyen asked for aesthetically. Build it once, use it twice.
 
 **Verify by measurement, not by looking.** Write a script that steps rotation through at least 12 angles, screenshots each, and computes contrast between the text color and the mean luminance of the region behind it. Every angle clears 4.5:1 or the fix is not done. Report the numbers.
 
@@ -51,23 +51,23 @@ Three.js `OrbitControls` is not in the r128 bundle. The repo uses react-three-fi
 
 ## Defect 4: rings, and a real focus state. P1.
 
-Jay wants Saturn, or an atom. Rings on multiple inclinations reads as both, and here it happens to mean something: coverage, orbit, a world being circled. Build it.
+Jaiyen wants Saturn, or an atom. Rings on multiple inclinations reads as both, and here it happens to mean something: coverage, orbit, a world being circled. Build it.
 
 Click a panel:
 
-- The scene canvas blurs and desaturates. **The whole background, not a region.** This is the "too much happening" fix and Jay asked for it directly
+- The scene canvas blurs and desaturates. **The whole background, not a region.** This is the "too much happening" fix and Jaiyen asked for it directly
 - Auto-rotate stops. Orbit input releases
 - The panel resolves forward through glass and holds the detail: clip, industry, statistic, citation
 - Escape closes. Click-outside closes. Real focus trap. Focus returns to the panel that opened it
 - `prefers-reduced-motion`: no orbit, no auto-rotate, panels in a static readable arrangement, click still opens detail. Not a broken section, a different one
 
-Jay asked for something cooler than a modal. The video is the cooler thing and it is already there. The blur is what makes it feel expensive, because the blur makes the world step back instead of a dialog opening on top of it.
+Jaiyen asked for something cooler than a modal. The video is the cooler thing and it is already there. The blur is what makes it feel expensive, because the blur makes the world step back instead of a dialog opening on top of it.
 
 Watch the cost. Blurring a live WebGL canvas per frame is not free. Measure frame time at 375 before and after. If a CSS filter on the canvas container tanks it, render to a target and blur once. Do not ship 12fps on a phone because the effect was nice on a laptop.
 
 ## Defect 5: the typing. Keep it.
 
-Jay's, and he likes it. Preserve it and hold the bar: jittered keystroke intervals, a pause after punctuation, fast backspace, blinking block caret, box pre-sized to the longest line so layout shift is zero. Caret is `forest-line`. Never amber.
+Jaiyen's, and he likes it. Preserve it and hold the bar: jittered keystroke intervals, a pause after punctuation, fast backspace, blinking block caret, box pre-sized to the longest line so layout shift is zero. Caret is `forest-line`. Never amber.
 
 ## Rules
 

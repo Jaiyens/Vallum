@@ -14,8 +14,9 @@ import { FRAME_HEIGHT, FRAME_WIDTH, RIG_STILLS } from "./frames-manifest";
 // the frame's dark backdrop into the page, reading as a glow/vignette
 // (banned by LOOK.md's Materials rules, no gradient exception for photography).
 // Since 2026-09-09 the section surface is the render's own field colour
-// (founder), so the 1280x720 rectangle has no edge to hide: the rig floats
-// on one continuous dark field and the captions sit in bone on it.
+// (founder), and since 2026-09-14 the frames' field is flattened onto that
+// tone edge to edge (scripts/flatten-rig-field.mjs), so the 1280x720
+// rectangle has no edge to hide: the rig floats on one continuous dark field.
 
 export function RigClosedPoster() {
   return (
@@ -85,11 +86,6 @@ export function RigPinnedStage({ visual }: { visual?: React.ReactNode }) {
               imgClassName="absolute inset-0 h-full w-full"
             />
           </div>
-          {/* F-0413: caption sits below the render, not overlaid on it. The
-              small step in bone at 72% on the render's own dark field. */}
-          <p translate="no" className="mt-2 text-center text-sm text-bone/72">
-            {SECTION_COPY.caption}
-          </p>
         </div>
       </div>
     </div>
@@ -106,9 +102,6 @@ export function RigMobileBlock() {
           alt={SECTION_COPY.visualLabel}
         />
       </div>
-      <p translate="no" className="mt-2 text-center text-sm text-bone/72">
-        {SECTION_COPY.caption}
-      </p>
     </div>
   );
 }

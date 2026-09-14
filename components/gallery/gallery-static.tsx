@@ -30,7 +30,7 @@ export function StaticCenterLine({ className = "" }: { className?: string }) {
 }
 
 // A visually hidden roll-up of every panel's industry, statistic, and source.
-// The bottom ledger strip is gone (Jay's 2026-07-16 correction), so this is
+// The bottom ledger strip is gone (Jaiyen's 2026-07-16 correction), so this is
 // where a screen reader still gets all eight cited numbers as a single list,
 // mounted once on the section for every mode.
 export function StatsSummary() {

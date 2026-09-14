@@ -1,4 +1,4 @@
-// UI copy for the /research route: the white paper. Source is Jay's own
+// UI copy for the /research route: the white paper. Source is Jaiyen's own
 // research page, handed over 2026-09-03. Every string below ships verbatim
 // from that document; nothing here is authored, paraphrased, rounded or
 // hedged, and no string may be paraphrased at a call site either (F-0013).
@@ -10,10 +10,10 @@
 // FACTS.md), capture is stated as HEVC monocular RGB 1920x1080 (a codec
 // claim FACTS.md does not hold), the annotation schema is Ego4D-narration
 // shaped rather than the keypoint schema on /dataset, and the pilot is
-// quantified again at 20 to 40 curated hours, a quantity Jay's 2026-07-16
+// quantified again at 20 to 40 curated hours, a quantity Jaiyen's 2026-07-16
 // correction had removed site-wide. Founder-supplied copy wins over the
 // stale ledger, so it ships; findings/needs-fact.md carries the request
-// for Jay to ratify these into FACTS.md and to reconcile /dataset.
+// for Jaiyen to ratify these into FACTS.md and to reconcile /dataset.
 
 // Section order is the founder document's order. The order and the anchor
 // ids on /research derive from this array, never typed twice. Section
@@ -109,7 +109,7 @@ export const RESEARCH_PAGE = {
 
   labs: "If you train on human video and your corpus has no outdoor work in it, we fill that gap to your spec. Tell us the fields you need before we film. Footage cannot be reshot to a different schema. Paid pilots run 20 to 40 curated hours, delivered with a datasheet and held-out scores.",
 
-  // The document's own ask. Jay published this address himself, so it is
+  // The document's own ask. Jaiyen published this address himself, so it is
   // a ledgered contact fact now, not an invented one (needs-fact item 1).
   askLead: "Write to",
   askEmail: "jaiyen_shetty@berkeley.edu",

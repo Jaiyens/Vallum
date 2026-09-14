@@ -18,7 +18,7 @@ Vallum Labs films people doing work that sometimes kills them, and licenses the 
 
 Palantir is the case study. Technically respected, commercially successful, and a name a lot of people flinch at. The flinch has causes and they are mostly design: darkness as default, the visual grammar of surveillance, and a tone that treats humans as inputs. None of it was necessary. All of it was chosen.
 
-Jay's actual position is good. Robots should take the jobs that kill people so that people stop dying doing them. That is a defensible thing to believe and a decent reason to build a company. If the site does not leave you with that, the site is failing at the easiest part of its job.
+Jaiyen's actual position is good. Robots should take the jobs that kill people so that people stop dying doing them. That is a defensible thing to believe and a decent reason to build a company. If the site does not leave you with that, the site is failing at the easiest part of its job.
 
 ## What you read
 

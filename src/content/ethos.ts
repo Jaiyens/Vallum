@@ -38,19 +38,19 @@ export const ETHOS_COPY = {
       "I came to Cape Town on July 16, 2026, for the Western Cape harvest. The access this work needs starts with someone who already knows a farm.",
     ],
     // 2-word verb phrase naming the destination, per VOICE's CTA shape.
-    linkLabel: "Meet Jay",
+    linkLabel: "Meet Jaiyen",
   },
 
   // Beat 7, wordmark footer. Entity line and a one-line echo of beat 5's
   // offer, no invented email or URL. Nav labels point at real routes only.
   footer: {
     entityLine: "Vallum Labs Inc. Cape Town, South Africa.",
-    // Rewritten 2026-07-16: price line removed (Jay's morning correction).
-    // States the pilot is open and points at the existing "Meet Jay" route
+    // Rewritten 2026-07-16: price line removed (Jaiyen's morning correction).
+    // States the pilot is open and points at the existing "Meet Jaiyen" route
     // above; no invented email or URL.
-    askEcho: "A paid pilot is open. Reach Jay to start one.",
+    askEcho: "A paid pilot is open. Reach Jaiyen to start one.",
     homeLabel: "Home",
-    // Added 2026-09-03: Jay's research document, handed over that day, on
+    // Added 2026-09-03: Jaiyen's research document, handed over that day, on
     // its own tab. Briefly there were two document tabs, a "Research" one
     // and a "White paper" one; they merged (founder), so there is one label
     // and it is the genre word, which is also the kicker at the top of that

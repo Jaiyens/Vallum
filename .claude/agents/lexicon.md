@@ -67,7 +67,7 @@ These are not up for derivation. They are given.
 
 Everything else in `VOICE.md` you derive by measuring 15 real sites. These two are fixed and you write them into `VOICE.md` as hard rules so `critic-voice` can score against them.
 
-**No negation.** No "we are not X," no "unlike X," no "this is not a Y." Saying what the company is not plants the question of why not, and lets the reader answer it badly. This is currently live on the site as a claim about not building robots and it is the copy defect Jay named first.
+**No negation.** No "we are not X," no "unlike X," no "this is not a Y." Saying what the company is not plants the question of why not, and lets the reader answer it badly. This is currently live on the site as a claim about not building robots and it is the copy defect Jaiyen named first.
 
 Research the positive move instead. How do the 15 sites establish what they are without contrast to a named other? Most of them never negate once. Measure it: count negations per site, report the number in `VOICE.md`. If the median is zero, that is the answer and it is not a matter of taste.
 
@@ -75,7 +75,7 @@ Research the positive move instead. How do the 15 sites establish what they are 
 
 ## The complaint you exist to fix
 
-Jay's words about the current copy: it is not very website-esque. That is vague and it is also correct, and the fix is not to ask him what he meant.
+Jaiyen's words about the current copy: it is not very website-esque. That is vague and it is also correct, and the fix is not to ask him what he meant.
 
 Sites have a register. It is measurable: sentence length distribution, ratio of fragments to full sentences, where the verb lands, whether the display line is a claim or a noun phrase, how many words before the first concrete noun, whether the subhead explains the headline or extends it. Measure all of it across 15 sites and report the numbers. Then write the spec against the numbers.
 

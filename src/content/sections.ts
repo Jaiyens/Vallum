@@ -21,9 +21,9 @@ export const TURN_COPY = {
   heading: "Machines are learning this work by watching",
   // RETIRED FROM RENDER 2026-09-03. The turn moved onto /white-paper and
   // then merged into /research, whose masthead already carries this claim in
-  // Jay's own words as RESEARCH_PAGE.thesis. Shipping both put the same
+  // Jaiyen's own words as RESEARCH_PAGE.thesis. Shipping both put the same
   // sentence twice on one page, so the founder-authored line wins and this
-  // one stops rendering. Kept, not deleted: it is Jay's 2026-07-16 copy and
+  // one stops rendering. Kept, not deleted: it is Jaiyen's 2026-07-16 copy and
   // the string may be wanted again if the turn ever gets its own page.
   positioning:
     "We collect consent-cleared, action-labeled egocentric video and license it to robotics and world-model teams.",
@@ -53,11 +53,11 @@ export const METHOD_COPY = {
   // them breaks; the *Label keys are new.
   // RETIRED FROM RENDER 2026-09-03, all six step keys below. The three
   // method steps merged into /research, where consent, the collection
-  // window, and the capture kit are each stated at length in Jay's own
+  // window, and the capture kit are each stated at length in Jaiyen's own
   // words (RESEARCH_PAGE.consent, .status/.operations*, .hardware). Since
   // 2026-09-04 `heading` no longer ships either: the consent band it titled
   // is gone, so all of METHOD_COPY is retired from render. The step strings
-  // stay here, reconciled to Jay's facts, so nothing in the repo states the
+  // stay here, reconciled to Jaiyen's facts, so nothing in the repo states the
   // superseded July window or the head-strap-only kit.
   peopleLabel: "Consent first",
   people:
@@ -73,10 +73,10 @@ export const DATASET_COPY = {
   // RETIRED FROM RENDER 2026-09-03. The home "record" section
   // (components/sections/dataset.tsx) came off / at the founder's request;
   // /dataset renders the same schema, consent stack, and offer from
-  // dataset-page.ts. Kept, not deleted: `heading` and `lead` are Jay's
+  // dataset-page.ts. Kept, not deleted: `heading` and `lead` are Jaiyen's
   // 2026-07-16 copy and are wanted again if the record returns to /.
   //
-  // Renamed 2026-07-16 (Jay hates "What ships with every clip"). This
+  // Renamed 2026-07-16 (Jaiyen hates "What ships with every clip"). This
   // section is becoming a designed schema artifact, so the heading now
   // names the artifact itself rather than describing shipping contents.
   heading: "The record",
